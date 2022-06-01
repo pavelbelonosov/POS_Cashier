@@ -1,0 +1,39 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/layout :: head">
+    <meta charset="UTF-8" />
+    <title>Bank-Acquiring App</title>
+</head>
+<body>
+<header th:replace="fragments/layout :: header">
+    <p>menu</p>
+</header>
+
+<main>
+    <div class="jumbotron jumbotron-fluid">
+        <div class="container">
+            <h1>Hi</h1>
+            <div  th:if="${terminal==null}">
+                <p>Please, set working terminal in settings</p>
+            </div>
+
+        </div>
+    </div>
+
+    <section class="container">
+        <input type="text" id="amount" />
+        <p>
+            <button onclick="makePayment()">Make payment</button>
+        </p>
+        <h3>Cheques:</h3>
+        <div  th:if="${terminal!=null}">
+        <li th:each="transaction : ${transactions}">
+            <span th:text="${transaction.cheque!= null}?${transaction.cheque}:'NA'">terminal cheques</span><br/>
+        </li>
+        </div>
+    </section>
+</main>
+<script th:inline="javascript"> var contextRoot = /*[[@{/}]]*/ '';</script>
+<script th:src="@{/javascript/transactions.js}" defer></script>
+</body>
+</html>

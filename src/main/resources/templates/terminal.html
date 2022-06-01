@@ -1,0 +1,43 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/layout :: head">
+    <meta charset="UTF-8" />
+    <title>Bank-Acquiring App</title>
+</head>
+<body>
+<header th:replace="fragments/layout :: header">
+    <p>menu</p>
+</header>
+
+<main>
+    <section class="container">
+        <h3 th:text="${terminal.tid}"> TID</h3>
+        <div class="col-5">
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <td>ID</td>
+                <td>Status</td>
+                <td>Amount</td>
+                <td>Cheque</td>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:if="${terminal.transactions==null}">
+                <td colspan="4">Transactions not found</td>
+            </tr>
+            <tr th:each="transaction : ${terminal.transactions}">
+                <td th:text="${transaction.id}">1</td>
+                <td th:text="${transaction.status}">Status</td>
+                <td th:text="${transaction.amount}">Amount</td>
+                <td style="white-space: pre-wrap" th:text="${transaction.cheque}">Cheque</td>
+            </tr>
+            </tbody>
+        </table>
+        </div>
+    </section>
+
+</main>
+
+</body>
+</html>

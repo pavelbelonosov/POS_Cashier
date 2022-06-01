@@ -1,0 +1,27 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/layout :: head">
+    <meta charset="UTF-8" />
+    <title>Bank-Acquiring App</title>
+</head>
+<body>
+<header th:replace="fragments/layout :: header">
+    <p>menu</p>
+</header>
+<section class="container">
+<h1>Login, please</h1>
+<p th:if="${loginError}" class="error">Wrong user or password</p>
+<form th:action="@{/login.html}" method="post">
+    <label for="username">Username</label>:
+    <input type="text" id="username" name="username" autofocus="autofocus" /> <br />
+    <label for="password">Password</label>:
+    <input type="password" id="password" name="password" /> <br />
+    <input type="submit" value="Log in" />
+    <a th:href="@{/accounts}">
+        <input type="button" value="Registration" />
+    </a>
+</form>
+</section>
+
+</body>
+</html>
