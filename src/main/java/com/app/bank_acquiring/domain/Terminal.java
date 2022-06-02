@@ -18,6 +18,7 @@ public class Terminal extends AbstractPersistable<Long> {
 
     private int tid;
     private String ip;
+    private String chequeHeader;
     @ManyToOne
     private Account account;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "terminal")

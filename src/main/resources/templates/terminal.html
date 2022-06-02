@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="fragments/layout :: head">
-    <meta charset="UTF-8" />
+    <meta charset="UTF-8"/>
     <title>Bank-Acquiring App</title>
 </head>
 <body>
@@ -11,29 +11,45 @@
 
 <main>
     <section class="container">
-        <h3 th:text="${terminal.tid}"> TID</h3>
-        <div class="col-5">
-        <table class="table table-striped">
-            <thead>
-            <tr>
-                <td>ID</td>
-                <td>Status</td>
-                <td>Amount</td>
-                <td>Cheque</td>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:if="${terminal.transactions==null}">
-                <td colspan="4">Transactions not found</td>
-            </tr>
-            <tr th:each="transaction : ${terminal.transactions}">
-                <td th:text="${transaction.id}">1</td>
-                <td th:text="${transaction.status}">Status</td>
-                <td th:text="${transaction.amount}">Amount</td>
-                <td style="white-space: pre-wrap" th:text="${transaction.cheque}">Cheque</td>
-            </tr>
-            </tbody>
-        </table>
+        <div class="row">
+            <div class="col-3">
+                <h3 th:text="'TID: '+ ${terminal.tid}"> TID</h3>
+                <form class="form-group" th:action="@{/terminals/{id}(id=${terminal.id})}" method="POST">
+                    <div class="form-group">
+                        <label for="ip">IP-address:</label>
+                        <input type="text" id="ip" name="ip" class="form-control" th:placeholder="${terminal.ip}"/>
+                        <label for="ip">Cheque header:</label>
+                        <input type="text" id="chequeHeader" name="chequeHeader" class="form-control"
+                               th:placeholder="${terminal.chequeHeader}"/>
+                    </div>
+                    <button type="submit" class="btn btn-success">Update info</button>
+                </form>
+            </div>
+
+            <div class="col-5">
+                <h3> Transactions </h3>
+                <table class="table table-sm table-striped">
+                    <thead>
+                    <tr>
+                        <td>ID</td>
+                        <td>Status</td>
+                        <td>Amount</td>
+                        <td>Cheque</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:if="${terminal.transactions.empty}">
+                        <td colspan="4">Transactions not found</td>
+                    </tr>
+                    <tr th:each="transaction : ${terminal.transactions}">
+                        <td th:text="${transaction.id}">1</td>
+                        <td th:text="${transaction.status}">Status</td>
+                        <td th:text="${transaction.amount}">Amount</td>
+                        <td style="white-space: pre-wrap" th:text="${transaction.cheque}">Cheque</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </section>
 

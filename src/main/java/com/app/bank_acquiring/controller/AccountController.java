@@ -66,16 +66,17 @@ public class AccountController {
 
     @Transactional
     @PostMapping("/accounts/current/terminals")
-    public String setAccountTerminals(@RequestParam int tid, @RequestParam String ip,
+    public String setAccountTerminals(@RequestParam int tid, @RequestParam String ip, @RequestParam String chequeHeader,
                                       @AuthenticationPrincipal UserDetails currentUser) throws IOException {
         Account acc = accountRepository.findByUsername(currentUser.getUsername());
         Terminal terminal = new Terminal();
         terminal.setTid(tid);
         terminal.setIp(ip);
+        terminal.setChequeHeader(chequeHeader);
         terminal.setAccount(acc);
         terminalRepository.save(terminal);
         acc.getTerminals().add(terminal);
-        uposService.createUserUpos(acc, terminal);
+        uposService.createUserUpos(acc.getId(), terminal);
         return "redirect:/accounts/current";
     }
 

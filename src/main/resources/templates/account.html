@@ -12,84 +12,79 @@
 <main>
     <section class="container">
         <div class="row">
-        <div class="col-3">
-        <h3 th:text="${account.username}">Account</h3>
-        <table class="table table-bordered">
-            <tr>
-                <th scope="row">Role:</th>
-                <td th:text="${account.authority}"></td>
-            </tr>
-            <tr>
-                <th scope="row">Terminal in work:</th>
-                <td th:text="${account.workTerminalTid}"></td>
-            </tr>
-        </table>
-        </div>
+            <div class="col-3">
+                <h3 th:text="${account.username}">Account</h3>
+                <table class="table table-bordered">
+                    <tr>
+                        <th scope="row">Role:</th>
+                        <td th:text="${account.authority}"></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Terminal in work:</th>
+                        <td th:text="${account.workTerminalTid}"></td>
+                    </tr>
+                </table>
 
-        <div class="col-7">
-            <h3>My terminals:</h3>
-            <table class="table table-bordered table-striped">
-                <thead>
-                <tr>
-                    <td>ID</td>
-                    <td>TID</td>
-                    <td>IP</td>
-                    <td>In work</td>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:if="${account.terminals.empty}">
-                    <td colspan="4">No terminals added</td>
-                </tr>
-                <tr th:each="terminal : ${account.terminals}">
-                    <td><a th:href="@{/terminals/{id}(id=${terminal.id})}" th:target="_blank" th:text="${terminal.id}">1</a></td>
-                    <td th:text="${terminal.tid}">Tid</td>
-                    <td th:text="${terminal.ip}">Ip address</td>
-                    <td th:text="${terminal.tid == account.workTerminalTid}?'True':' '">
-                    <td><form th:action="@{/terminals/{id}(id=${terminal.id})}" th:method="delete"><input type="submit" value="Delete"/></form></td>
-                </tr>
-                </tbody>
-            </table>
-            <form th:action="@{/accounts/current/terminals/workingterminal}" method="POST">
-                <div class="form-group">
-                <select name="terminalId">
-                    <option th:each="terminal : ${account.terminals}" th:value="${terminal.id}" th:text="${terminal.tid}"></option>
-                </select>
-                </div>
-                <button class="btn btn-primary" type="submit">Set working terminal</button>
-            </form>
-
-        </div>
-
-        </div>
-
-    </section>
-    <section class="container">
-        <div class="row">
-        <h3>Add new terminal:</h3>
-        </div>
-        <form th:action="@{/accounts/current/terminals}" method="POST">
-            <div class="row">
-                <div class="col-xs-3">
-                    <label for="tid">Terminal ID:</label>
-                    <input type="text" id="tid" name="tid" class="form-control" placeholder="Enter terminal ID"/>
-                </div>
+                <h3>Add new terminal:</h3>
+                <form class="form-group" th:action="@{/accounts/current/terminals}" method="POST">
+                    <div class="form-group">
+                        <label for="tid">Terminal ID:</label>
+                        <input type="text" id="tid" name="tid" class="form-control" placeholder="12345678"/>
+                        <label for="ip">IP-address:</label>
+                        <input type="text" id="ip" name="ip" class="form-control" placeholder="0.0.0.0"/>
+                        <label for="ip">Cheque header:</label>
+                        <input type="text" id="chequeHeader" name="chequeHeader" class="form-control"
+                               placeholder="MyShop | tel.02"/>
+                    </div>
+                    <button type="submit" class="btn btn-success">Save</button>
+                </form>
             </div>
-            <div class="row">
-                <div class="col-xs-3">
-                    <label for="ip">IP-address:</label>
-                    <input type="ip" id="ip" name="ip" class="form-control" placeholder="Enter terminal IP"/>
-                </div>
-            </div>
-            <p></p>
-            <div class="row">
-                <input type="submit" value="Save" class="btn btn-success"/>
-            </div>
-        </form>
 
+            <div class="col-6">
+                <h3>My terminals:</h3>
+                <table class="table table-bordered table-striped text-center">
+                    <thead>
+                    <tr>
+                        <td>ID</td>
+                        <td>TID</td>
+                        <td>IP</td>
+                        <td>Header</td>
+                        <td>In work</td>
+                        <td></td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:if="${account.terminals.empty}">
+                        <td colspan="4">No terminals added</td>
+                    </tr>
+                    <tr th:each="terminal : ${account.terminals}">
+                        <td><a th:href="@{/terminals/{id}(id=${terminal.id})}" th:target="_blank"
+                               th:text="${terminal.id}">1</a></td>
+                        <td th:text="${terminal.tid}">Tid</td>
+                        <td th:text="${terminal.ip}">Ip address</td>
+                        <td th:text="${terminal.chequeHeader}">Header</td>
+                        <td th:text="${terminal.tid == account.workTerminalTid}?'True':' '">
+                        <td>
+                            <form th:action="@{/terminals/{id}(id=${terminal.id})}" th:method="delete"><input
+                                    type="submit" value="Delete"/></form>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <form class="form-inline" th:action="@{/accounts/current/terminals/workingterminal}" method="POST">
+                    <div class="form-group mx-sm-3 mb-2">
+                        <select class="form-control" name="terminalId">
+                            <option th:each="terminal : ${account.terminals}" th:value="${terminal.id}"
+                                    th:text="${terminal.tid}"></option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary mb-2" type="submit">Set working terminal</button>
+                </form>
+            </div>
+        </div>
     </section>
 
 </main>
-
 </body>
 </html>

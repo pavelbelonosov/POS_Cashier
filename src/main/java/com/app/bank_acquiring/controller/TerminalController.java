@@ -13,6 +13,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.FileNotFoundException;
+
 @Controller
 public class TerminalController {
 
@@ -41,11 +43,27 @@ public class TerminalController {
         return "redirect:/terminals";
     }
 
+    @PostMapping("/terminals/{id}")
+    public String updateTerminal(@RequestParam String ip, @RequestParam String chequeHeader,
+                                 @PathVariable Long id, @AuthenticationPrincipal UserDetails currentUser) throws FileNotFoundException {
+        Account acc = accountRepository.findByUsername(currentUser.getUsername());
+        Terminal terminal = terminalRepository.getOne(id);
+        if(!ip.isEmpty()){
+            terminal.setIp(ip);
+        }
+        if(!chequeHeader.isEmpty()){
+            terminal.setChequeHeader(chequeHeader);
+        }
+        terminalRepository.save(terminal);
+        uposService.updateUposSettings(acc.getId(),terminal);
+        return "redirect:/terminals/"+id;
+    }
+
     @DeleteMapping("/terminals/{id}")
     public String deleteTerminal(@PathVariable Long id, @AuthenticationPrincipal UserDetails currentUser) {
         Account acc = accountRepository.findByUsername(currentUser.getUsername());
         Terminal terminal = terminalRepository.getOne(id);
-        uposService.deleteUserUpos(acc,terminal);
+        uposService.deleteUserUpos(acc.getId(),terminal.getTid());
         terminalRepository.delete(terminal);
         return "redirect:/accounts/current";
     }

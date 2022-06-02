@@ -17,26 +17,40 @@ public class UposService {
     private final String uposBase = "C:/temp/bank/upos";
 
     @Autowired
-    AccountRepository accountRepository;
+    private AccountRepository accountRepository;
 
-    public void createUserUpos(Account account, Terminal terminal) throws IOException {
-        File uposBase = new File(this.uposBase);
-        File userUpos = new File("C:/temp/bank/" + account.getId() + "/" + terminal.getTid());
-        FileUtils.copyDirectory(uposBase, userUpos);
+    public void createUserUpos(Long accountId, Terminal terminal) throws IOException {
+        File upos = new File(this.uposBase);
+        File userUpos = new File("C:/temp/bank/" + accountId + "/" + terminal.getTid());
+        FileUtils.copyDirectory(upos, userUpos);
         try (PrintWriter pw = new PrintWriter(userUpos + "/pinpad.ini")) {
             //pw.println("pinpadIpAddr=" + terminal.getIp());
             //pw.println("ipport=8888");
+            pw.println("header=" + terminal.getChequeHeader());
             pw.println("comport=9");
             pw.println("showscreens=1");
             pw.println("printerfile=cheque.txt");
         }
     }
 
-    public boolean makePayment(Account account, Terminal terminal, int amount)  {
-        String dir = "C:/temp/bank/" + account.getId() + "/" + terminal.getTid()+"/";
-        Process process = null;
+    public void updateUposSettings(Long accountId, Terminal terminal) throws FileNotFoundException {
+        File pinpadIni = new File("C:/temp/bank/" + accountId + "/" + terminal.getTid() + "/pinpad.ini");
+        try (PrintWriter pw = new PrintWriter(pinpadIni)) {
+            //pw.println("pinpadIpAddr=" + terminal.getIp());
+            //pw.println("ipport=8888");
+            pw.println("header=" + terminal.getChequeHeader());
+            pw.println("comport=99");
+            pw.println("showscreens=0");
+            pw.println("printerfile=cheque.txt");
+        }
+    }
+
+    public boolean makePayment(Long accountId, int terminalTid, int amount) {
+        String dir = "C:/temp/bank/" + accountId + "/" + terminalTid + "/";
+        Process process;
         try {
             process = new ProcessBuilder(dir + "loadparm.exe", "9", "1").start();
+            //process = new ProcessBuilder(dir + "loadparm.exe", "1", (amount * 100) + "").start();
             process.waitFor();
             return true;
         } catch (Exception e) {
@@ -44,9 +58,9 @@ public class UposService {
         }
     }
 
-    public String readCheque(Account account, Terminal terminal) throws IOException {
-        String dir = "C:/temp/bank/" + account.getId() + "/" + terminal.getTid()+"/";
-        try (FileInputStream fis = new FileInputStream(dir+"cheque.txt")) {
+    public String readCheque(Long accountId, int terminalTid) throws IOException {
+        String dir = "C:/temp/bank/" + accountId + "/" + terminalTid + "/";
+        try (FileInputStream fis = new FileInputStream(dir + "cheque.txt")) {
             byte[] buffer = new byte[fis.available()];
             fis.read(buffer, 0, fis.available());
             String content = new String(buffer, "cp866");
@@ -55,13 +69,20 @@ public class UposService {
         }
     }
 
-    public boolean deleteUserUpos(Account account, Terminal terminal){
-        File userUpos = new File("C:/temp/bank/" + account.getId() + "/" + terminal.getTid()+"/");
+    public boolean deleteUserUpos(Long accountId, int terminalTid) {
+        File userUpos = new File("C:/temp/bank/" + accountId + "/" + terminalTid + "/");
         try {
             FileUtils.deleteDirectory(userUpos);
             return true;
         } catch (IOException e) {
             return false;
         }
+    }
+
+    public boolean defineTransactionStatus(String cheque) {
+        if (cheque.contains("одобрено") || cheque.contains("итоги совпали")) {
+            return true;
+        }
+        return false;
     }
 }
