@@ -1,28 +1,98 @@
 <!DOCTYPE HTML>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/layout :: head">
-    <meta charset="UTF-8" />
-    <title>Bank-Acquiring App</title>
-</head>
+<div th:replace="fragments/layout :: head(text='Terminals')"></div>
 <body>
-<header th:replace="fragments/layout :: header">
-    <p>menu</p>
-</header>
-
+<div th:replace="fragments/layout :: header"></div>
 <main>
     <section class="container">
-        <form th:action="@{/terminals}" method="POST">
-        Terminal ID:<input type="text" id="tid" name="tid"/> <br />
-        IP: <input type="ip" id="ip" name="ip" /> <br />
-            <input type="submit" value="Save terminal"/>
-        </form>
+        <div class="row">
+            <div class="col-md-auto">
+                <h3>Добавить терминал:</h3>
+                <form class="form-group" th:action="@{/terminals}" th:object="${terminal}" method="POST">
+                    <div class="form-group">
+                        <label for="tid">Terminal ID:</label>
+                        <input type="text" th:field="*{tid}" id="tid" name="tid" class="form-control"
+                               placeholder="12345678"/>
+                        <p th:if="${#fields.hasErrors('tid')}" th:errors="*{tid}" th:style="'color:red'">Tid
+                            validation</p>
+                        <label for="mid">Merchant ID:</label>
+                        <input type="text" th:field="*{mid}" id="mid" name="mid" class="form-control"
+                               placeholder="123456789000"/>
+                        <p th:if="${#fields.hasErrors('mid')}" th:errors="*{mid}" th:style="'color:red'">Mid
+                            validation</p>
+                        <label for="ip">IP-адрес:</label>
+                        <input type="text" th:field="*{ip}" id="ip" name="ip" class="form-control"
+                               placeholder="0.0.0.0"/>
+                        <p th:if="${#fields.hasErrors('ip')}" th:errors="*{ip}" th:style="'color:red'">IP validation</p>
+                        <label for="ip">Заголовок чека:</label>
+                        <input type="text" th:field="*{chequeHeader}" id="chequeHeader" name="chequeHeader"
+                               class="form-control"
+                               placeholder="MyShop | tel.02"/>
+                        <p th:if="${#fields.hasErrors('chequeHeader')}" th:errors="*{chequeHeader}"
+                           th:style="'color:red'">Cheque Header validation</p>
+                        <label for="shop">Магазин:</label>
+                        <select class="form-control" id="shop" name="shop">
+                            <option th:each="shop : ${account.shops}" th:value="${shop.id}"
+                                    th:text="${shop.name} + ' ' +  ${shop.address}"></option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-success">Сохранить</button>
+                </form>
+            </div>
+            <div class="col-md-auto">
+                <h3>Мои терминалы:</h3>
+                <div th:if="${!account.shops.empty}">
+                    <ul class="list-group">
+                        <li class="list-group-item" th:each="shop : ${account.shops}">
+                            <h4 th:text="${shop.name}">Shop name</h4>
+                            <small th:text="${shop.address}"></small>
+                            <table class="table table-bordered table-striped text-center">
+                                <thead>
+                                <tr>
+                                    <td>ID</td>
+                                    <td>TID</td>
+                                    <td>MID</td>
+                                    <td>IP</td>
+                                    <td>Заголовок чека</td>
+                                    <td>В работе</td>
+                                    <td></td>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:if="${shop.terminals.empty}">
+                                    <td colspan="7">No terminals added</td>
+                                </tr>
+                                <tr th:each="term : ${shop.terminals}">
+                                    <td><a th:href="@{/terminals/{id}(id=${term.id})}" th:target="_blank"
+                                           th:text="${term.id}">1</a></td>
+                                    <td th:text="${term.tid}">Tid</td>
+                                    <td th:text="${term.mid}">Mid</td>
+                                    <td th:text="${term.ip}">Ip address</td>
+                                    <td th:text="${term.chequeHeader}">Header</td>
+                                    <td th:text="${term.tid == account.workTerminalTid}?'Да':' '">In work</td>
+                                    <td>
+                                        <form th:action="@{/terminals/{id}(id=${term.id})}" th:method="delete"><input
+                                                type="submit" value="Удалить"/></form>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </li>
+                    </ul>
+                    <form class="form-inline" th:action="@{/accounts/current/terminals/workingterminal}" method="POST">
+                        <div class="form-group mx-sm-3 mb-5">
+                            <select class="form-control" name="terminalId">
+                                <option th:each="term : ${account.terminals}" th:value="${term.id}"
+                                        th:text="${term.tid}"></option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary mb-5" type="submit">Встать за кассу</button>
+                    </form>
+                </div>
+            </div>
+        </div>
     </section>
-
-    <ol>
-        <li th:each="terminal : ${terminals}">
-            <span th:text="${terminal.tid}">tid</span><br/>
-        </li>
-    </ol>
+    <div th:replace="fragments/layout :: footer"></div>
 </main>
 
 </body>

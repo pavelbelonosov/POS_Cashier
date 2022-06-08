@@ -1,9 +1,7 @@
-package com.app.bank_acquiring.security;
-import java.util.ArrayList;
+package com.app.bank_acquiring.config;
 import java.util.Arrays;
-import java.util.List;
 
-import com.app.bank_acquiring.domain.Account;
+import com.app.bank_acquiring.domain.account.Account;
 import com.app.bank_acquiring.repository.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -33,6 +31,6 @@ public class CustomUserDetailService implements UserDetailsService {
                 true,
                 true,
                 true,
-                Arrays.asList(new SimpleGrantedAuthority(account.getAuthority())));
+                Arrays.asList(new SimpleGrantedAuthority(account.getAuthority().toString())));
     }
 }

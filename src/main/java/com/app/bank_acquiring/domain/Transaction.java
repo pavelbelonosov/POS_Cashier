@@ -20,7 +20,7 @@ import java.util.List;
 public class Transaction extends AbstractPersistable<Long> {
 
     private boolean status;
-    private int amount;
+    private double amount;
     @ManyToOne
     @JsonIgnore
     private Terminal terminal;

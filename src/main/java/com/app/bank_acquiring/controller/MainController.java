@@ -1,7 +1,6 @@
 package com.app.bank_acquiring.controller;
 
-import com.app.bank_acquiring.domain.Account;
-import com.app.bank_acquiring.domain.Terminal;
+import com.app.bank_acquiring.domain.account.Account;
 import com.app.bank_acquiring.repository.AccountRepository;
 import com.app.bank_acquiring.repository.TerminalRepository;
 import com.app.bank_acquiring.service.UposService;
@@ -12,8 +11,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-
-import java.util.ArrayList;
 
 @Controller
 public class MainController {

@@ -1,22 +1,15 @@
-package com.app.bank_acquiring.security;
-import java.util.ArrayList;
-import java.util.List;
+package com.app.bank_acquiring.config;
+import com.app.bank_acquiring.domain.account.Authority;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.authentication.configurers.provisioning.InMemoryUserDetailsManagerConfigurer;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
 @Configuration
 @EnableWebSecurity
@@ -32,10 +25,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         http.headers().frameOptions().sameOrigin();
 
         http.authorizeRequests()
-                .antMatchers( "/", "/accounts").permitAll()
+                .antMatchers( "/", "/accounts/registration","/images/**").permitAll()
                 .antMatchers("/h2-console","/h2-console/**").permitAll()
                 //.antMatchers("/h2-console","/h2-console/**").hasAuthority("ADMIN")
-                .antMatchers("/main").hasAnyAuthority("cashier", "ADMIN")
+                .antMatchers("/main").hasAnyAuthority(Authority.CASHIER.toString(),
+                        Authority.HEAD_CASHIER.toString(),Authority.ADMIN.toString())
                 .anyRequest().authenticated();
 
         http

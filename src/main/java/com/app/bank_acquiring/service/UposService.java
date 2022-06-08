@@ -1,6 +1,5 @@
 package com.app.bank_acquiring.service;
 
-import com.app.bank_acquiring.domain.Account;
 import com.app.bank_acquiring.domain.Terminal;
 import com.app.bank_acquiring.repository.AccountRepository;
 import org.apache.commons.io.FileUtils;
@@ -8,8 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
-import java.util.Arrays;
-import java.util.List;
 
 @Service
 public class UposService {
@@ -45,12 +42,12 @@ public class UposService {
         }
     }
 
-    public boolean makePayment(Long accountId, int terminalTid, int amount) {
+    public boolean makePayment(Long accountId, String terminalTid, double amount) {
         String dir = "C:/temp/bank/" + accountId + "/" + terminalTid + "/";
         Process process;
         try {
             process = new ProcessBuilder(dir + "loadparm.exe", "9", "1").start();
-            //process = new ProcessBuilder(dir + "loadparm.exe", "1", (amount * 100) + "").start();
+            //process = new ProcessBuilder(dir + "loadparm.exe", "1", (int)(amount * 100) + "").start();
             process.waitFor();
             return true;
         } catch (Exception e) {
@@ -58,7 +55,7 @@ public class UposService {
         }
     }
 
-    public String readCheque(Long accountId, int terminalTid) throws IOException {
+    public String readCheque(Long accountId, String terminalTid) throws IOException {
         String dir = "C:/temp/bank/" + accountId + "/" + terminalTid + "/";
         try (FileInputStream fis = new FileInputStream(dir + "cheque.txt")) {
             byte[] buffer = new byte[fis.available()];
@@ -69,7 +66,7 @@ public class UposService {
         }
     }
 
-    public boolean deleteUserUpos(Long accountId, int terminalTid) {
+    public boolean deleteUserUpos(Long accountId, String terminalTid) {
         File userUpos = new File("C:/temp/bank/" + accountId + "/" + terminalTid + "/");
         try {
             FileUtils.deleteDirectory(userUpos);

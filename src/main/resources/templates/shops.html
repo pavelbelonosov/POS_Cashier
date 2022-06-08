@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<div th:replace="fragments/layout :: head(text='Shops')"></div>
+<body>
+<div th:replace="fragments/layout :: header"></div>
+
+<section class="container">
+  <h2>Магазины</h2>
+  <ol>
+    <li th:each="shop : ${shops}">
+      <span th:text="${shop.name}">name</span>
+      <span th:text="${shop.address}">address</span>
+      <span th:text="${shop.city}">name</span>
+    </li>
+  </ol>
+</section>
+
+<section class="container">
+  <form class="form-group" method="POST" th:action="@{/shops}" th:object="${shop}">
+    <label for="name">name</label>:
+    <input type="text" id="name" name="name" /> <br />
+    <label for="city">City</label>:
+    <input type="text" id="city" name="city" /> <br />
+    <label for="address">Address</label>:
+    <input type="text" id="address" name="address" /> <br />
+    <input type="submit" value="Создать новый магазин"/><br />
+  </form>
+</section>
+<div th:replace="fragments/layout :: footer"></div>
+</body>
+</html>

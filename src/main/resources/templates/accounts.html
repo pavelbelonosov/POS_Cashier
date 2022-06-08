@@ -1,31 +1,94 @@
 <!DOCTYPE HTML>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/layout :: head">
-    <meta charset="UTF-8" />
-    <title>Accounts</title>
-</head>
+<div th:replace="fragments/layout :: head(text='Employees')"></div>
 <body>
-<header th:replace="fragments/layout :: header">
-    <p>menu</p>
-</header>
+<div th:replace="fragments/layout :: header"></div>
 
 <section class="container">
-<h2>Users</h2>
-<ol>
-    <li th:each="account : ${accounts}">
-        <span th:text="${account.username}">msg</span>
-    </li>
-</ol>
-</section>
+    <div class="row">
+        <div class="col-md-auto">
+            <h3>Добавить сотрудника:</h3>
+            <form class="form-group" th:action="@{/accounts}" th:object="${account}" method="POST">
+                <div class="form-group">
+                    <label for="username">Логин:</label>
+                    <input type="text" id="username" name="username" class="form-control"
+                           placeholder=" "/>
 
-<section class="container">
-<form method="POST" th:action="@{/accounts}">
-    <label for="username">Username</label>:
-    <input type="text" id="username" name="username" autofocus="autofocus" /> <br />
-    <label for="password">Password</label>:
-    <input type="password" id="password" name="password" /> <br />
-    <input type="submit" value="Add new account!"/><br />
-</form>
+                    <label for="password">Задать пароль для входа:</label>
+                    <input type="password" id="password" name="password" class="form-control"
+                           placeholder=" "/>
+                    <div th:object="${accountInfo}">
+                        <label for="firstName">Имя:<span>&#42;</span></label>
+                        <input type="text" id="firstName" name="firstName"
+                               class="form-control form-control-sm"
+                               placeholder="Иван"/>
+                        <label for="lastName">Фамилия:<span>&#42;</span></label>
+                        <input type="text" id="lastName" name="lastName"
+                               class="form-control form-control-sm" placeholder="Иванов"/>
+                        <label for="telephoneNumber">Телефон:<span>&#42;</span></label>
+                        <input type="text" id="telephoneNumber" name="telephoneNumber"
+                               class="form-control form-control-sm" placeholder="+7(9__)___-__-__"/>
+                    </div>
+
+                    <label for="shop" th:text="${account.shops.empty}?'Создайте магазин!':'Магазин:'">Магазин:</label>
+                    <select class="form-control" id="shop" name="shop">
+                        <option th:each="shop : ${account.shops}" th:value="${shop.id}"
+                                th:text="${shop.name} + ' ' +  ${shop.address}"></option>
+                    </select>
+                    <label for="authority">Роль:</label>
+                    <select class="form-control" id="authority" name="authority">
+                        <option th:each="authority : ${authorities}" th:value="${authority}"
+                                th:text="${authority.explanation}"></option>
+                    </select>
+                </div>
+                <div th:if="${account.shops.empty || account.shops==null}">
+                    <button type="submit" class="btn btn-secondary" disabled>Добавить сотрудника</button>
+                </div>
+                <div th:if="${!account.shops.empty && account.shops!=null}">
+                    <button type="submit" class="btn btn-success">Добавить сотрудника</button>
+                </div>
+                <small><span>&#42;</span> - поля необязательные к заполнению</small>
+            </form>
+        </div>
+        <div class="col-md-auto">
+            <h3>Сотрудники:</h3>
+            <table class="table table-bordered table-striped text-center">
+                <thead>
+                <tr>
+                    <td>ID</td>
+                    <td>Логин</td>
+                    <td>Имя</td>
+                    <td>Фамилия</td>
+                    <td>Телефон</td>
+                    <td>Магазин</td>
+                    <td>Роль</td>
+                    <td></td>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:if="${employees.empty}">
+                    <td colspan="8">Нет добавленных сотрудников</td>
+                </tr>
+                <tr th:each="employee : ${employees}">
+                    <td><a th:href="@{/accounts/{id}(id=${employee.id})}" th:target="_blank"
+                           th:text="${employee.id}">1</a></td>
+                    <td th:text="${employee.username}">Login</td>
+                    <td th:text="${employee.accountInfo != null}? ${employee.accountInfo.firstName}:' '">Firstname</td>
+                    <td th:text="${employee.accountInfo != null}? ${employee.accountInfo.lastName}:' '">Lastname</td>
+                    <td th:text="${employee.accountInfo != null}? ${employee.accountInfo.telephoneNumber}:' '">Tel</td>
+                    <td th:text="${employee.shops[0].name}"></td>
+                    <td th:text="${employee.authority.explanation}">Authority</td>
+                    <td>
+                        <form th:action="@{/shops/{shopId}/accounts/{accountId}(shopId=${employee.shops[0].id}, accountId=${employee.id})}"
+                              th:method="delete"><input
+                                type="submit" value="Удалить"/></form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </section>
+<div th:replace="fragments/layout :: footer"></div>
 </body>
 </html>

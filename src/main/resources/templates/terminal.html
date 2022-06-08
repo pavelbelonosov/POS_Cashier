@@ -1,47 +1,41 @@
 <!DOCTYPE HTML>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/layout :: head">
-    <meta charset="UTF-8"/>
-    <title>Bank-Acquiring App</title>
-</head>
+<div th:replace="fragments/layout :: head(text='Terminal')"></div>
 <body>
-<header th:replace="fragments/layout :: header">
-    <p>menu</p>
-</header>
-
+<div th:replace="fragments/layout :: header"></div>
 <main>
     <section class="container">
         <div class="row">
-            <div class="col-3">
-                <h3 th:text="'TID: '+ ${terminal.tid}"> TID</h3>
-                <form class="form-group" th:action="@{/terminals/{id}(id=${terminal.id})}" method="POST">
+            <div class="col-md-auto">
+                <h3 th:text="'TID: '+ ${term.tid}"> TID</h3>
+                <form class="form-group" th:action="@{/terminals/{id}(id=${term.id})}" method="POST">
                     <div class="form-group">
                         <label for="ip">IP-address:</label>
-                        <input type="text" id="ip" name="ip" class="form-control" th:placeholder="${terminal.ip}"/>
+                        <input type="text" id="ip" name="ip" class="form-control" th:placeholder="${term.ip}"/>
                         <label for="ip">Cheque header:</label>
                         <input type="text" id="chequeHeader" name="chequeHeader" class="form-control"
-                               th:placeholder="${terminal.chequeHeader}"/>
+                               th:placeholder="${term.chequeHeader}"/>
                     </div>
-                    <button type="submit" class="btn btn-success">Update info</button>
+                    <button type="submit" class="btn btn-success">Обновить данные</button>
                 </form>
             </div>
 
-            <div class="col-5">
-                <h3> Transactions </h3>
+            <div class="col-md-auto">
+                <h3> Транзакции </h3>
                 <table class="table table-sm table-striped">
                     <thead>
                     <tr>
                         <td>ID</td>
                         <td>Status</td>
-                        <td>Amount</td>
-                        <td>Cheque</td>
+                        <td>Сумма</td>
+                        <td>Чек</td>
                     </tr>
                     </thead>
                     <tbody>
-                    <tr th:if="${terminal.transactions.empty}">
+                    <tr th:if="${term.transactions.empty}">
                         <td colspan="4">Transactions not found</td>
                     </tr>
-                    <tr th:each="transaction : ${terminal.transactions}">
+                    <tr th:each="transaction : ${term.transactions}">
                         <td th:text="${transaction.id}">1</td>
                         <td th:text="${transaction.status}">Status</td>
                         <td th:text="${transaction.amount}">Amount</td>
@@ -52,8 +46,7 @@
             </div>
         </div>
     </section>
-
+    <div th:replace="fragments/layout :: footer"></div>
 </main>
-
 </body>
 </html>

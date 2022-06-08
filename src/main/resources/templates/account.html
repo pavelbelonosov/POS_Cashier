@@ -1,90 +1,82 @@
 <!DOCTYPE HTML>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/layout :: head">
-    <meta charset="UTF-8"/>
-    <title th:text="${account.username}">Account name</title>
-</head>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.springframework.org/security/tags">
+<div th:replace="fragments/layout :: head(text='Settings')"></div>
 <body>
-<header th:replace="fragments/layout :: header">
-    <p>menu</p>
-</header>
-
+<div th:replace="fragments/layout :: header"></div>
 <main>
     <section class="container">
         <div class="row">
-            <div class="col-3">
-                <h3 th:text="${account.username}">Account</h3>
-                <table class="table table-bordered">
-                    <tr>
-                        <th scope="row">Role:</th>
-                        <td th:text="${account.authority}"></td>
-                    </tr>
-                    <tr>
-                        <th scope="row">Terminal in work:</th>
-                        <td th:text="${account.workTerminalTid}"></td>
-                    </tr>
-                </table>
-
-                <h3>Add new terminal:</h3>
-                <form class="form-group" th:action="@{/accounts/current/terminals}" method="POST">
+            <div class="col-md-auto">
+                <h3>Сотрудник:</h3>
+                <form class="form-group" th:action="@{/accounts/{id}(id=${employee.id})}" th:object="${account}"
+                      method="POST">
                     <div class="form-group">
-                        <label for="tid">Terminal ID:</label>
-                        <input type="text" id="tid" name="tid" class="form-control" placeholder="12345678"/>
-                        <label for="ip">IP-address:</label>
-                        <input type="text" id="ip" name="ip" class="form-control" placeholder="0.0.0.0"/>
-                        <label for="ip">Cheque header:</label>
-                        <input type="text" id="chequeHeader" name="chequeHeader" class="form-control"
-                               placeholder="MyShop | tel.02"/>
+                        <div th:object="${accountInfo}">
+                            <label for="firstName">Имя:</label>
+                            <input type="text" id="firstName" name="firstName" class="form-control form-control-sm"
+                                   placeholder=""/>
+
+                            <label for="lastName">Фамилия:</label>
+                            <input type="text" id="lastName" name="lastName"
+                                   class="form-control form-control-sm"
+                                   placeholder=""/>
+                            <label for="telephoneNumber">Телефон:</label>
+                            <input type="text" id="telephoneNumber" name="telephoneNumber"
+                                   class="form-control form-control-sm" placeholder=""/>
+                            <label for="email">Почта:</label>
+                            <input type="text" id="email" name="email"
+                                   class="form-control form-control-sm" placeholder=""/>
+                        </div>
+                        <div th:if="${owner.id} != ${employee.id}">
+                            <label for="shop">Магазин:</label>
+                            <select class="form-control form-control-sm" id="shop" name="shop">
+                                <option th:each="shop : ${owner.shops}" th:value="${shop.id}"
+                                        th:text="${shop.name} + ' ' +  ${shop.address}"></option>
+                            </select>
+                            <label for="authority">Роль:</label>
+                            <select class="form-control form-control-sm" id="authority" name="authority">
+                                <option th:each="authority : ${authorities}" th:value="${authority}"
+                                        th:text="${authority.explanation}"></option>
+                            </select>
+                            <label for="password">Сменить пароль для входа:</label>
+                            <input type="password" id="password" name="password" class="form-control form-control-sm"
+                                   placeholder=" "/>
+                        </div>
                     </div>
-                    <button type="submit" class="btn btn-success">Save</button>
+                        <button type="submit" class="btn btn-success">Обновить данные</button>
                 </form>
             </div>
 
-            <div class="col-6">
-                <h3>My terminals:</h3>
-                <table class="table table-bordered table-striped text-center">
-                    <thead>
+            <div class="col-md-auto">
+                <h3 th:text="${employee.username}">Account</h3>
+                <table class="table table-bordered ">
                     <tr>
-                        <td>ID</td>
-                        <td>TID</td>
-                        <td>IP</td>
-                        <td>Header</td>
-                        <td>In work</td>
-                        <td></td>
+                        <td>ФИО:</td>
+                        <td th:text="${employee.accountInfo.firstName} + ' ' + ${employee.accountInfo.lastName}"></td>
                     </tr>
-                    </thead>
-                    <tbody>
-                    <tr th:if="${account.terminals.empty}">
-                        <td colspan="4">No terminals added</td>
+                    <tr>
+                        <td>Роль:</td>
+                        <td th:text="${employee.authority.explanation}"></td>
                     </tr>
-                    <tr th:each="terminal : ${account.terminals}">
-                        <td><a th:href="@{/terminals/{id}(id=${terminal.id})}" th:target="_blank"
-                               th:text="${terminal.id}">1</a></td>
-                        <td th:text="${terminal.tid}">Tid</td>
-                        <td th:text="${terminal.ip}">Ip address</td>
-                        <td th:text="${terminal.chequeHeader}">Header</td>
-                        <td th:text="${terminal.tid == account.workTerminalTid}?'True':' '">
-                        <td>
-                            <form th:action="@{/terminals/{id}(id=${terminal.id})}" th:method="delete"><input
-                                    type="submit" value="Delete"/></form>
-                        </td>
+                    <tr>
+                        <td>Телефон:</td>
+                        <td th:text="${employee.accountInfo.telephoneNumber}"></td>
                     </tr>
-                    </tbody>
+                    <tr>
+                        <td>Почта:</td>
+                        <td th:text="${employee.accountInfo.email}"></td>
+                    </tr>
+                    <tr>
+                        <td>Терминал в работе:</td>
+                        <td th:text="${employee.workTerminalTid}"></td>
+                    </tr>
                 </table>
 
-                <form class="form-inline" th:action="@{/accounts/current/terminals/workingterminal}" method="POST">
-                    <div class="form-group mx-sm-3 mb-2">
-                        <select class="form-control" name="terminalId">
-                            <option th:each="terminal : ${account.terminals}" th:value="${terminal.id}"
-                                    th:text="${terminal.tid}"></option>
-                        </select>
-                    </div>
-                    <button class="btn btn-primary mb-2" type="submit">Set working terminal</button>
-                </form>
             </div>
         </div>
     </section>
-
+    <div th:replace="fragments/layout :: footer"></div>
 </main>
 </body>
 </html>

@@ -1,6 +1,6 @@
 package com.app.bank_acquiring.controller;
 
-import com.app.bank_acquiring.domain.Account;
+import com.app.bank_acquiring.domain.account.Account;
 import com.app.bank_acquiring.domain.Terminal;
 import com.app.bank_acquiring.domain.Transaction;
 import com.app.bank_acquiring.repository.AccountRepository;
@@ -13,7 +13,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.util.List;
 
 @RestController
 public class TransactionRestApi {

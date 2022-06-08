@@ -1,0 +1,26 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<div th:replace="fragments/layout :: head(text='Registration')"></div>
+<body>
+
+
+
+<section class="container">
+    <form method="POST" th:action="@{/accounts/registration}">
+        <label for="username">Username</label>:
+        <input type="text" id="username" name="username" autofocus="autofocus" /> <br />
+        <label for="password">Password</label>:
+        <input type="password" id="password" name="password" /> <br />
+        <input type="submit" value="Зарегистрироваться"/><br />
+    </form>
+    <div  th:if="${!errors.empty}">
+        <ol>
+            <li th:each="error : ${errors}">
+                <p th:style="'color:red'" th:text="${error}">Registration error</p>
+            </li>
+        </ol>
+    </div>
+</section>
+<div th:replace="fragments/layout :: footer"></div>
+</body>
+</html>
