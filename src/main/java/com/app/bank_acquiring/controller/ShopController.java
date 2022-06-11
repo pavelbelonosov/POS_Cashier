@@ -2,6 +2,8 @@ package com.app.bank_acquiring.controller;
 
 import com.app.bank_acquiring.domain.Shop;
 import com.app.bank_acquiring.domain.account.Account;
+import com.app.bank_acquiring.domain.account.AccountInfo;
+import com.app.bank_acquiring.repository.AccountInfoRepository;
 import com.app.bank_acquiring.repository.AccountRepository;
 
 import com.app.bank_acquiring.repository.ShopRepository;
@@ -28,13 +30,12 @@ public class ShopController {
     @Autowired
     private AccountRepository accountRepository;
     @Autowired
-    private TerminalRepository terminalRepository;
+    private AccountInfoRepository accountInfoRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
     @Autowired
     private ShopRepository shopRepository;
 
-    @Secured("ADMIN")
     @GetMapping("/shops")
     public String listShops(Model model, @AuthenticationPrincipal UserDetails currentUser) {
         Account user = accountRepository.findByUsername(currentUser.getUsername());
@@ -47,7 +48,7 @@ public class ShopController {
         return new Shop();
     }
 
-    @Secured("ADMIN")
+
     @PostMapping("/shops")
     public String createShop(@Valid @ModelAttribute Shop shop, BindingResult bindingResult,
                              @AuthenticationPrincipal UserDetails currentUser, Model model) {
@@ -63,20 +64,23 @@ public class ShopController {
 
         return "redirect:/shops";
     }
-    @Secured("ADMIN")
+
+
     @Transactional
     @DeleteMapping("/shops/{shopId}/accounts/{accountId}")
     public String deleteAccount(@PathVariable Long shopId, @PathVariable Long accountId,
                                 @AuthenticationPrincipal UserDetails currentUser) {
         Account owner = accountRepository.findByUsername(currentUser.getUsername());
         Account employee = accountRepository.getOne(accountId);
-        System.out.println(employee.getUsername());
+        AccountInfo accountInfo = employee.getAccountInfo();
         Shop shop = shopRepository.getOne(shopId);
         if (!owner.getShops().contains(shop)) {
             throw new RuntimeException("Current account doesn't have this shop");
         }
         shop.getAccounts().remove(employee);
+        accountInfoRepository.delete(accountInfo);
         accountRepository.delete(employee);
+
         return "redirect:/accounts";
     }
 }

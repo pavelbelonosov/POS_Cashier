@@ -36,7 +36,12 @@
                                     th:text="${shop.name} + ' ' +  ${shop.address}"></option>
                         </select>
                     </div>
-                    <button type="submit" class="btn btn-success">Сохранить</button>
+                    <div th:if="${account.shops.empty || account.shops==null}">
+                        <button type="submit" class="btn btn-secondary" disabled>Сохранить</button>
+                    </div>
+                    <div th:if="${!account.shops.empty && account.shops!=null}">
+                        <button type="submit" class="btn btn-dark">Сохранить</button>
+                    </div>
                 </form>
             </div>
             <div class="col-md-auto">
@@ -86,7 +91,7 @@
                                         th:text="${term.tid}"></option>
                             </select>
                         </div>
-                        <button class="btn btn-primary mb-5" type="submit">Встать за кассу</button>
+                        <button class="btn btn-dark mb-5" type="submit">Встать за кассу</button>
                     </form>
                 </div>
             </div>

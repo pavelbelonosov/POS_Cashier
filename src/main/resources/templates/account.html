@@ -1,6 +1,5 @@
 <!DOCTYPE HTML>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.springframework.org/security/tags">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <div th:replace="fragments/layout :: head(text='Settings')"></div>
 <body>
 <div th:replace="fragments/layout :: header"></div>
@@ -8,25 +7,37 @@
     <section class="container">
         <div class="row">
             <div class="col-md-auto">
-                <h3>Сотрудник:</h3>
-                <form class="form-group" th:action="@{/accounts/{id}(id=${employee.id})}" th:object="${account}"
+                <h3>Обновить инфо:</h3>
+                <form class="form-group"
+                      th:action="@{${owner.id==employee.id ? '/accounts/current':'/accounts/{id}'}(id=${employee.id})}"
+                      th:object="${account}"
                       method="POST">
                     <div class="form-group">
                         <div th:object="${accountInfo}">
                             <label for="firstName">Имя:</label>
                             <input type="text" id="firstName" name="firstName" class="form-control form-control-sm"
                                    placeholder=""/>
-
+                            <p th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"
+                               th:style="'color:red'">fname
+                                validation</p>
                             <label for="lastName">Фамилия:</label>
                             <input type="text" id="lastName" name="lastName"
                                    class="form-control form-control-sm"
                                    placeholder=""/>
-                            <label for="telephoneNumber">Телефон:</label>
-                            <input type="text" id="telephoneNumber" name="telephoneNumber"
+                            <p th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}" th:style="'color:red'">
+                                lname
+                                validation</p>
+                            <label for="telephoneNumber">Телефон (10 цифр без 8):</label>
+                            <input type="tel" pattern="^(([0-9]){10})$" id="telephoneNumber"
+                                   name="telephoneNumber"
                                    class="form-control form-control-sm" placeholder=""/>
+                            <p th:if="${#fields.hasErrors('telephoneNumber')}" th:errors="*{telephoneNumber}"
+                               th:style="'color:red'">tel validation</p>
                             <label for="email">Почта:</label>
-                            <input type="text" id="email" name="email"
+                            <input type="email" id="email" name="email"
                                    class="form-control form-control-sm" placeholder=""/>
+                            <p th:if="${#fields.hasErrors('email')}" th:errors="*{email}" th:style="'color:red'">email
+                                validation</p>
                         </div>
                         <div th:if="${owner.id} != ${employee.id}">
                             <label for="shop">Магазин:</label>
@@ -39,21 +50,24 @@
                                 <option th:each="authority : ${authorities}" th:value="${authority}"
                                         th:text="${authority.explanation}"></option>
                             </select>
-                            <label for="password">Сменить пароль для входа:</label>
-                            <input type="password" id="password" name="password" class="form-control form-control-sm"
-                                   placeholder=" "/>
                         </div>
                     </div>
-                        <button type="submit" class="btn btn-success">Обновить данные</button>
+                    <button type="submit" class="btn btn-dark">Сохранить изменения</button>
                 </form>
+
             </div>
 
+
             <div class="col-md-auto">
-                <h3 th:text="${employee.username}">Account</h3>
+                <h3 th:text="${employee.username}" align="center">Account</h3>
                 <table class="table table-bordered ">
                     <tr>
                         <td>ФИО:</td>
                         <td th:text="${employee.accountInfo.firstName} + ' ' + ${employee.accountInfo.lastName}"></td>
+                    </tr>
+                    <tr>
+                        <td>Магазин:</td>
+                        <td th:text="${!employee.shops.empty} ? ${employee.shops[0].name}: ' '"></td>
                     </tr>
                     <tr>
                         <td>Роль:</td>
@@ -73,6 +87,31 @@
                     </tr>
                 </table>
 
+            </div>
+            <div class="col-md-auto">
+                <h3>Сменить пароль:</h3>
+                <form class="form-group"
+                      th:action="@{${owner.id==employee.id ? '/accounts/current/newpwd':'/accounts/{id}/newpwd'}(id=${employee.id})}"
+                      method="POST">
+                    <div class="form-group">
+                        <div th:if="${owner.id} == ${employee.id}">
+                            <label for="oldPassword">Старый пароль:</label>
+                            <input type="password" id="oldPassword" name="oldPassword"
+                                   class="form-control form-control-sm"
+                                   placeholder=""/>
+                        </div>
+                        <label for="password">Новый пароль:</label>
+                        <input type="password" id="password" name="password" class="form-control form-control-sm"
+                               placeholder=""/>
+                        <label for="repeatPwd">Повторите пароль:</label>
+                        <input type="password" id="repeatPwd" name="repeatPwd" class="form-control form-control-sm"
+                               placeholder=""/>
+                    </div>
+                    <button type="submit" class="btn btn-dark">Сменить пароль</button>
+                    <small th:if="${!errors.empty}">
+                        <p th:style="'color:red'" th:text="${errors[0]}">Pwd error</p>
+                    </small>
+                </form>
             </div>
         </div>
     </section>

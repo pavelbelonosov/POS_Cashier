@@ -1,8 +1,7 @@
 package com.app.bank_acquiring.domain.account;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 
 import com.app.bank_acquiring.domain.Shop;
 import com.app.bank_acquiring.domain.Terminal;
@@ -22,12 +21,14 @@ import java.util.NoSuchElementException;
 @AllArgsConstructor
 public class Account extends AbstractPersistable<Long> {
 
-    @NotEmpty(message = "Логин не может быть пустым")
-    @Size(min = 8, max = 40, message = "Название должно содержать не больше 40 букв")
+    @NotNull(message = "Логин не может быть пустым")
+    @NotBlank(message = "Логин не может быть пустым")
+    @Size(min = 8,max=40,message = "Логин от 8 до 40 символов")
     private String username;
 
-    @NotEmpty(message = "Пароль не может быть пустым")
-    @Size(min = 8, message = "Слишком короткий пароль")
+    @NotNull(message = "Пароль не может быть пустым")
+    @NotBlank(message = "Пароль не может быть пустым")
+    @Size(min = 6, message = "Слишком короткий пароль")
     private String password;
 
     @ManyToMany(mappedBy = "accounts")
@@ -39,9 +40,10 @@ public class Account extends AbstractPersistable<Long> {
     @OneToMany(mappedBy = "account")
     private List<Terminal> terminals = new ArrayList<>();
 
-    @OneToOne(cascade = CascadeType.REMOVE, mappedBy = "account")
+    @OneToOne(mappedBy = "account")
     private AccountInfo accountInfo;
 
+    @Pattern(regexp = "^[0-9]{8}$", message = "Неверный формат TID")
     private String workTerminalTid;
 
     public Terminal getWorkingTerminal() {

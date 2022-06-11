@@ -22,10 +22,12 @@
             <li class="nav-item" th:if="${#authorization.expression('hasAuthority(''ADMIN'')')}">
                 <a class="nav-link" th:href="@{/terminals}">Терминалы</a>
             </li>
+        </ul>
+        <ul class="navbar-nav ml-auto navbar-right">
             <li class="nav-item">
-                <a class="nav-link" th:href="@{/accounts/current}">Настройки</a>
+                <a class="nav-link" th:href="@{/accounts/current}" th:text ="${#authentication.principal.username}"></a>
             </li>
-            <li class="nav-item" th:if="${#authorization.expression('isAuthenticated()')}">
+            <li class="nav-item " th:if="${#authorization.expression('isAuthenticated()')}">
                 <a class="nav-link" th:href="@{/logout}" onclick="$('#form').submit();">Выйти</a>
                 <form style="visibility: hidden" id="form" method="post" th:action="@{/logout}"></form>
             </li>
@@ -33,7 +35,7 @@
     </nav>
 </header>
 <footer class="footer fixed-bottom" th:fragment="footer">
-    <div class="footer-copyright text-center py-4">© 2022 Copyright:
+    <div class="footer-copyright text-center py-1">© 2022 Copyright:
         <a href="mailto: pablo11grande@gmail.com"> pablo11grande@gmail.com</a>
     </div>
 </footer>

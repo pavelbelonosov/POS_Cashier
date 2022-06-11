@@ -4,7 +4,7 @@
 <body>
 <div th:replace="fragments/layout :: header"></div>
 
-<section class="container">
+<section class="container-fluid">
     <div class="row">
         <div class="col-md-auto">
             <h3>Добавить сотрудника:</h3>
@@ -12,27 +12,36 @@
                 <div class="form-group">
                     <label for="username">Логин:</label>
                     <input type="text" id="username" name="username" class="form-control"
-                           placeholder=" "/>
-
+                           placeholder="" required/>
+                    <p th:if="${#fields.hasErrors('username')}" th:errors="*{username}" th:style="'color:red'">Username
+                        validation</p>
                     <label for="password">Задать пароль для входа:</label>
                     <input type="password" id="password" name="password" class="form-control"
-                           placeholder=" "/>
+                           placeholder="" required/>
+                    <p th:if="${#fields.hasErrors('password')}" th:errors="*{password}" th:style="'color:red'">PWD
+                        validation</p>
                     <div th:object="${accountInfo}">
                         <label for="firstName">Имя:<span>&#42;</span></label>
                         <input type="text" id="firstName" name="firstName"
                                class="form-control form-control-sm"
                                placeholder="Иван"/>
+                        <p th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}" th:style="'color:red'">fname
+                            validation</p>
                         <label for="lastName">Фамилия:<span>&#42;</span></label>
                         <input type="text" id="lastName" name="lastName"
                                class="form-control form-control-sm" placeholder="Иванов"/>
-                        <label for="telephoneNumber">Телефон:<span>&#42;</span></label>
-                        <input type="text" id="telephoneNumber" name="telephoneNumber"
-                               class="form-control form-control-sm" placeholder="+7(9__)___-__-__"/>
-                    </div>
+                        <p th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}" th:style="'color:red'">lname
+                            validation</p>
+                        <label for="telephoneNumber">Телефон:</label>
+                        <input type="tel" pattern="^(([0-9]){10})$" id="telephoneNumber" name="telephoneNumber"
+                               class="form-control" placeholder="" required/>
+                        <p th:if="${#fields.hasErrors('telephoneNumber')}" th:errors="*{telephoneNumber}" th:style="'color:red'">tel
+                            validation</p>
 
-                    <label for="shop" th:text="${account.shops.empty}?'Создайте магазин!':'Магазин:'">Магазин:</label>
+                    </div>
+                    <label for="shop" th:text="${owner.shops.empty}?'Создайте магазин!':'Магазин:'">Магазин:</label>
                     <select class="form-control" id="shop" name="shop">
-                        <option th:each="shop : ${account.shops}" th:value="${shop.id}"
+                        <option th:each="shop : ${owner.shops}" th:value="${shop.id}"
                                 th:text="${shop.name} + ' ' +  ${shop.address}"></option>
                     </select>
                     <label for="authority">Роль:</label>
@@ -41,11 +50,11 @@
                                 th:text="${authority.explanation}"></option>
                     </select>
                 </div>
-                <div th:if="${account.shops.empty || account.shops==null}">
-                    <button type="submit" class="btn btn-secondary" disabled>Добавить сотрудника</button>
+                <div th:if="${owner.shops.empty || owner.shops==null}">
+                    <button type="submit" class="btn btn-secondary" disabled>Сохранить</button>
                 </div>
-                <div th:if="${!account.shops.empty && account.shops!=null}">
-                    <button type="submit" class="btn btn-success">Добавить сотрудника</button>
+                <div th:if="${!owner.shops.empty && owner.shops!=null}">
+                    <button type="submit" class="btn btn-dark">Сохранить</button>
                 </div>
                 <small><span>&#42;</span> - поля необязательные к заполнению</small>
             </form>

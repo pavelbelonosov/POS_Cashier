@@ -1,4 +1,5 @@
 package com.app.bank_acquiring.config;
+
 import com.app.bank_acquiring.domain.account.Authority;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -25,11 +26,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         http.headers().frameOptions().sameOrigin();
 
         http.authorizeRequests()
-                .antMatchers( "/", "/accounts/registration","/images/**").permitAll()
-                .antMatchers("/h2-console","/h2-console/**").permitAll()
+                .antMatchers("/", "/images/**", "/accounts/registration").permitAll()
+                .antMatchers("/h2-console", "/h2-console/**").permitAll()
                 //.antMatchers("/h2-console","/h2-console/**").hasAuthority("ADMIN")
+                .antMatchers("/shops", "/shop/**", "/accounts", "/terminals").hasAuthority("ADMIN")
                 .antMatchers("/main").hasAnyAuthority(Authority.CASHIER.toString(),
-                        Authority.HEAD_CASHIER.toString(),Authority.ADMIN.toString())
+                        Authority.HEAD_CASHIER.toString(), Authority.ADMIN.toString())
                 .anyRequest().authenticated();
 
         http
@@ -44,8 +46,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(customUserDetailsService).passwordEncoder(passwordEncoder());
-
-
     }
 
     @Bean

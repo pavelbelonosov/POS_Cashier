@@ -18,10 +18,10 @@ import java.util.List;
 public class Terminal extends AbstractPersistable<Long> {
 
     @NotEmpty(message = "TID cannot be empty")
-    @Size(min = 8, max = 8, message = "TID должен содержать 8 цифр" )
+    @Pattern(regexp = "^[0-9]{8}$", message = "Неверный формат TID")
     private String tid;
 
-    @Size(min = 12, max = 12, message = "MID должен содержать 12 цифр")
+    @Pattern(regexp = "^[0-9]{12}$", message = "Неверынй формат MID")
     private String mid;
 
     @Pattern(regexp = "^[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}$", message = "Неверный формат IP-адреса")

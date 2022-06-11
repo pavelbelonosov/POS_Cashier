@@ -61,7 +61,7 @@ public class TerminalController {
         return new Terminal();
     }
 
-    @Secured("ADMIN")
+
     @Transactional
     @PostMapping("/terminals")
     public String setAccountTerminals(@Valid @ModelAttribute Terminal terminal, BindingResult bindingResult,
@@ -88,7 +88,7 @@ public class TerminalController {
         return "redirect:/terminals";
     }
 
-    @Secured("ADMIN")
+
     @PostMapping("/terminals/{id}")
     public String updateTerminal(@RequestParam String ip, @RequestParam String chequeHeader,
                                  @PathVariable Long id, @AuthenticationPrincipal UserDetails currentUser) throws FileNotFoundException {
@@ -108,7 +108,6 @@ public class TerminalController {
         return "redirect:/terminals/"+id;
     }
 
-    @Secured("ADMIN")
     @DeleteMapping("/terminals/{id}")
     public String deleteTerminal(@PathVariable Long id, @AuthenticationPrincipal UserDetails currentUser) {
         Account acc = accountRepository.findByUsername(currentUser.getUsername());
