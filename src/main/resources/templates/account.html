@@ -9,24 +9,21 @@
             <div class="col-md-auto">
                 <h3>Обновить инфо:</h3>
                 <form class="form-group"
-                      th:action="@{${owner.id==employee.id ? '/accounts/current':'/accounts/{id}'}(id=${employee.id})}"
-                      th:object="${account}"
-                      method="POST">
+                      th:action="@{${owner.id==employee.id ? '/accounts/current':'/accounts/{id}'}(id=${employee.id})}" method="POST">
                     <div class="form-group">
                         <div th:object="${accountInfo}">
                             <label for="firstName">Имя:</label>
                             <input type="text" id="firstName" name="firstName" class="form-control form-control-sm"
-                                   placeholder=""/>
+                                   placeholder="" maxlength="50"/>
                             <p th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"
                                th:style="'color:red'">fname
                                 validation</p>
                             <label for="lastName">Фамилия:</label>
                             <input type="text" id="lastName" name="lastName"
                                    class="form-control form-control-sm"
-                                   placeholder=""/>
+                                   placeholder="" maxlength="50"/>
                             <p th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}" th:style="'color:red'">
-                                lname
-                                validation</p>
+                                lname validation</p>
                             <label for="telephoneNumber">Телефон (10 цифр без 8):</label>
                             <input type="tel" pattern="^(([0-9]){10})$" id="telephoneNumber"
                                    name="telephoneNumber"
@@ -92,25 +89,25 @@
                 <h3>Сменить пароль:</h3>
                 <form class="form-group"
                       th:action="@{${owner.id==employee.id ? '/accounts/current/newpwd':'/accounts/{id}/newpwd'}(id=${employee.id})}"
-                      method="POST">
+                      th:object="${account}" method="POST">
                     <div class="form-group">
+
                         <div th:if="${owner.id} == ${employee.id}">
-                            <label for="oldPassword">Старый пароль:</label>
-                            <input type="password" id="oldPassword" name="oldPassword"
+                            <label for="password">Старый пароль:</label>
+                            <input type="password" id="password" name="password"
                                    class="form-control form-control-sm"
-                                   placeholder=""/>
+                                   placeholder="" minlength="8" required/>
                         </div>
-                        <label for="password">Новый пароль:</label>
-                        <input type="password" id="password" name="password" class="form-control form-control-sm"
-                               placeholder=""/>
+                        <p th:if="${#fields.hasErrors('password')}" th:errors="*{password}" th:style="'color:red'">
+                            PWD validation</p>
+                        <label for="newPassword">Новый пароль:</label>
+                        <input type="password" id="newPassword" name="newPassword" class="form-control form-control-sm"
+                               placeholder="" minlength="8" required/>
                         <label for="repeatPwd">Повторите пароль:</label>
                         <input type="password" id="repeatPwd" name="repeatPwd" class="form-control form-control-sm"
-                               placeholder=""/>
+                               placeholder="" minlength="8" required/>
                     </div>
                     <button type="submit" class="btn btn-dark">Сменить пароль</button>
-                    <small th:if="${!errors.empty}">
-                        <p th:style="'color:red'" th:text="${errors[0]}">Pwd error</p>
-                    </small>
                 </form>
             </div>
         </div>

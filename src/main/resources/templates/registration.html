@@ -10,18 +10,18 @@
             <form class="form-group mt-4" th:action="@{/accounts/registration}" th:object="${account}" method="post">
                 <div class="form-group">
                     <label for="username">Логин</label>:
-                    <input type="text" class="form-control" id="username" name="username" autofocus="autofocus"/>
+                    <input type="text" class="form-control" id="username" name="username" autofocus="autofocus" minlength="8" required/>
                     <p th:if="${#fields.hasErrors('username')}" th:errors="*{username}" th:style="'color:red'">Username
                         validation</p>
                     <label for="password">Пароль</label>:
-                    <input type="password" class="form-control" id="password" name="password"/>
+                    <input type="password" class="form-control" id="password" name="password" minlength="8" required/>
                     <p th:if="${#fields.hasErrors('password')}" th:errors="*{password}" th:style="'color:red'">PWD
                         validation</p>
                     <label for="repeatPWD">Повторите пароль</label>:
-                    <input type="password" class="form-control" id="repeatPWD" name="repeatPWD"/>
+                    <input type="password" class="form-control" id="repeatPWD" name="repeatPWD" minlength="8" required/>
                     <div th:object="${accountInfo}">
                         <label for="email">Почта</label>:
-                        <input type="email" class="form-control" id="email" name="email"/>
+                        <input type="email" class="form-control" id="email" name="email" required/>
                         <p th:if="${#fields.hasErrors('email')}" th:errors="*{email}" th:style="'color:red'">email
                             validation</p>
                     </div>

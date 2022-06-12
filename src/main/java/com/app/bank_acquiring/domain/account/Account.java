@@ -28,7 +28,7 @@ public class Account extends AbstractPersistable<Long> {
 
     @NotNull(message = "Пароль не может быть пустым")
     @NotBlank(message = "Пароль не может быть пустым")
-    @Size(min = 6, message = "Слишком короткий пароль")
+    @Size(min = 8, message = "Слишком короткий пароль")
     private String password;
 
     @ManyToMany(mappedBy = "accounts")

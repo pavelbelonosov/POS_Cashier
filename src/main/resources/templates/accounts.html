@@ -12,24 +12,24 @@
                 <div class="form-group">
                     <label for="username">Логин:</label>
                     <input type="text" id="username" name="username" class="form-control"
-                           placeholder="" required/>
+                           placeholder="" minlength="8" required/>
                     <p th:if="${#fields.hasErrors('username')}" th:errors="*{username}" th:style="'color:red'">Username
                         validation</p>
                     <label for="password">Задать пароль для входа:</label>
                     <input type="password" id="password" name="password" class="form-control"
-                           placeholder="" required/>
+                           placeholder="" minlength="8" required/>
                     <p th:if="${#fields.hasErrors('password')}" th:errors="*{password}" th:style="'color:red'">PWD
                         validation</p>
                     <div th:object="${accountInfo}">
                         <label for="firstName">Имя:<span>&#42;</span></label>
                         <input type="text" id="firstName" name="firstName"
                                class="form-control form-control-sm"
-                               placeholder="Иван"/>
+                               placeholder="Иван" maxlength="50"/>
                         <p th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}" th:style="'color:red'">fname
                             validation</p>
                         <label for="lastName">Фамилия:<span>&#42;</span></label>
                         <input type="text" id="lastName" name="lastName"
-                               class="form-control form-control-sm" placeholder="Иванов"/>
+                               class="form-control form-control-sm" placeholder="Иванов" maxlength="50"/>
                         <p th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}" th:style="'color:red'">lname
                             validation</p>
                         <label for="telephoneNumber">Телефон:</label>
