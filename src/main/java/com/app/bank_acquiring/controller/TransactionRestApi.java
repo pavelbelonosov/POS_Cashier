@@ -12,7 +12,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 @RestController
 public class TransactionRestApi {
@@ -40,16 +41,19 @@ public class TransactionRestApi {
 
     @PostMapping("/api/v1/transactions/pay")
     public Transaction makePayment(@RequestBody Transaction transaction,
-                                   @AuthenticationPrincipal UserDetails currentUser) throws IOException, InterruptedException {
+                                   @AuthenticationPrincipal UserDetails currentUser)  {
         Account user = accountRepository.findByUsername(currentUser.getUsername());
-        Terminal terminal = user.getWorkingTerminal();
+        Terminal terminal = terminalRepository.findByTid(user.getWorkTerminalTid());
+        System.out.println(terminal.getTid()+" "+ terminal.getAccount().getUsername());
         String cheque = "";
-        if (uposService.makePayment(user.getId(), terminal.getTid(), transaction.getAmount())){
-            cheque = uposService.readCheque(user.getId(),terminal.getTid());
+        if (uposService.makePayment(terminal.getAccount().getId(), terminal.getShop().getId(), terminal.getTid(), transaction.getAmount())) {
+            cheque = uposService.readCheque(terminal.getAccount().getId(), terminal.getShop().getId(), terminal.getTid());
         }
         transaction.setStatus(uposService.defineTransactionStatus(cheque));
+        transaction.setDateTime(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
         transaction.setTerminal(terminal);
         transaction.setCheque(cheque);
+        transaction.setCashier(user.getUsername());
         return transactionRepository.save(transaction);
     }
 }

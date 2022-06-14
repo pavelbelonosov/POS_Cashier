@@ -7,6 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface TerminalRepository extends JpaRepository<Terminal,Long> {
-    Terminal findByTid(int tid);
+    Terminal findByTid(String tid);
     List<Terminal> findByAccount(Account account);
 }

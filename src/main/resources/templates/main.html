@@ -8,10 +8,23 @@
     <div class="jumbotron jumbotron-fluid">
         <div class="container">
             <h1>Hi</h1>
-            <div  th:if="${terminal==null}">
-                <p>Please, set working terminal in settings</p>
+            <div th:if="${account.workTerminalTid==null}">
+                <p>Please, add and set working terminal in settings</p>
             </div>
             <p id="transactionInfo"></p>
+
+            <div th:if="${account.authority.explanation!='Администратор'}">
+                <form class="form-inline" th:action="@{/accounts/current/terminals/workingterminal}" method="POST">
+                    <div class="form-group mx-sm-3 mb-5">
+                        <select class="form-control" name="terminalId">
+                            <option th:each="term : ${account.shops[0].terminals}" th:value="${term.id}"
+                                    th:text="${term.tid}+ ' Магазин ' + ${account.shops[0].name} + ' '+ ${account.shops[0].address}"></option>
+                        </select>
+                    </div>
+                    <button class="btn btn-dark mb-5" type="submit">Встать за кассу</button>
+                </form>
+            </div>
+
         </div>
     </div>
 
@@ -20,8 +33,8 @@
             <button onclick="makePayment()">Make payment</button>
         </p>
         <h3>Cheques:</h3>
-        <div  th:if="${terminal!=null && !transactions.empty}">
-            <span th:text="${transactions[#lists.size(transactions) - 1].cheque}">terminal last transaction</span>
+        <div  th:if="${terminal!=null && !terminal.transactions.empty}">
+            <span th:text="${terminal.transactions[#lists.size(terminal.transactions) - 1].cheque}">terminal last transaction</span>
         </div>
     </section>
 </main>

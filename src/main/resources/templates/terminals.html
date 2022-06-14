@@ -1,33 +1,44 @@
 <!DOCTYPE HTML>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
-<div th:replace="fragments/layout :: head(text='Terminals')"></div>
+<div th:replace="fragments/layout :: head(text='Мои терминалы')"></div>
 <body>
 <div th:replace="fragments/layout :: header"></div>
 <main>
     <section class="container">
         <div class="row">
             <div class="col-md-auto">
+                <h3>Встать за кассу:</h3>
+                <form class="form-inline" th:action="@{/accounts/current/terminals/workingterminal}" method="POST">
+                    <div class="form-group mr-2">
+                        <select class="form-control" name="terminalId">
+                            <option th:each="term : ${account.terminals}" th:value="${term.id}"
+                                    th:text="${term.tid}"></option>
+                        </select>
+                    </div>
+                    <button class="btn btn-dark" type="submit">Встать за кассу</button>
+                </form><br>
                 <h3>Добавить терминал:</h3>
                 <form class="form-group" th:action="@{/terminals}" th:object="${terminal}" method="POST">
                     <div class="form-group">
                         <label for="tid">Terminal ID:</label>
                         <input type="text" th:field="*{tid}" id="tid" name="tid" class="form-control"
-                               placeholder="12345678"/>
+                               placeholder="12345678" required/>
                         <p th:if="${#fields.hasErrors('tid')}" th:errors="*{tid}" th:style="'color:red'">Tid
                             validation</p>
                         <label for="mid">Merchant ID:</label>
                         <input type="text" th:field="*{mid}" id="mid" name="mid" class="form-control"
-                               placeholder="123456789000"/>
+                               placeholder="123456789000" required/>
                         <p th:if="${#fields.hasErrors('mid')}" th:errors="*{mid}" th:style="'color:red'">Mid
                             validation</p>
                         <label for="ip">IP-адрес:</label>
                         <input type="text" th:field="*{ip}" id="ip" name="ip" class="form-control"
-                               placeholder="0.0.0.0"/>
+                               placeholder="0.0.0.0" pattern="^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$"
+                               required/>
                         <p th:if="${#fields.hasErrors('ip')}" th:errors="*{ip}" th:style="'color:red'">IP validation</p>
                         <label for="ip">Заголовок чека:</label>
                         <input type="text" th:field="*{chequeHeader}" id="chequeHeader" name="chequeHeader"
                                class="form-control"
-                               placeholder="MyShop | tel.02"/>
+                               placeholder="Название | Адрес"/>
                         <p th:if="${#fields.hasErrors('chequeHeader')}" th:errors="*{chequeHeader}"
                            th:style="'color:red'">Cheque Header validation</p>
                         <label for="shop">Магазин:</label>
@@ -65,34 +76,35 @@
                                 </thead>
                                 <tbody>
                                 <tr th:if="${shop.terminals.empty}">
-                                    <td colspan="7">No terminals added</td>
+                                    <td colspan="7">Нет добавленных терминалов</td>
                                 </tr>
                                 <tr th:each="term : ${shop.terminals}">
-                                    <td><a th:href="@{/terminals/{id}(id=${term.id})}" th:target="_blank"
-                                           th:text="${term.id}">1</a></td>
+                                    <td><a th:href="@{/terminals/{id}(id=${term.id})}" th:text="${term.id}">1</a></td>
                                     <td th:text="${term.tid}">Tid</td>
                                     <td th:text="${term.mid}">Mid</td>
                                     <td th:text="${term.ip}">Ip address</td>
                                     <td th:text="${term.chequeHeader}">Header</td>
-                                    <td th:text="${term.tid == account.workTerminalTid}?'Да':' '">In work</td>
+                                    <td th:text="${term.tid == account.workTerminalTid}?'Да':''"></td>
                                     <td>
                                         <form th:action="@{/terminals/{id}(id=${term.id})}" th:method="delete"><input
                                                 type="submit" value="Удалить"/></form>
                                     </td>
                                 </tr>
+                                <tr th:if="${!shop.terminals.empty}" th:each="acc: ${shop.accounts}">
+                                    <div th:if="${acc.id!=account.id}">
+                                        <td colspan="7"
+                                            th:text="${acc.workTerminalTid!=null}?${acc.workTerminalTid} + ' в работе у сотрудника '+ ${acc.username}:''">
+                                            Terminals at work
+                                        </td>
+                                    </div>
+
+                                </tr>
                                 </tbody>
                             </table>
+
                         </li>
                     </ul>
-                    <form class="form-inline" th:action="@{/accounts/current/terminals/workingterminal}" method="POST">
-                        <div class="form-group mx-sm-3 mb-5">
-                            <select class="form-control" name="terminalId">
-                                <option th:each="term : ${account.terminals}" th:value="${term.id}"
-                                        th:text="${term.tid}"></option>
-                            </select>
-                        </div>
-                        <button class="btn btn-dark mb-5" type="submit">Встать за кассу</button>
-                    </form>
+
                 </div>
             </div>
         </div>

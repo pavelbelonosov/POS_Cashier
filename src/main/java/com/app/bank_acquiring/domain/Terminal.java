@@ -17,13 +17,15 @@ import java.util.List;
 @AllArgsConstructor
 public class Terminal extends AbstractPersistable<Long> {
 
-    @NotEmpty(message = "TID cannot be empty")
+    @NotNull(message = "TID не может быть пустым")
+    @NotEmpty(message = "TID не может быть пустым")
     @Pattern(regexp = "^[0-9]{8}$", message = "Неверный формат TID")
     private String tid;
 
-    @Pattern(regexp = "^[0-9]{12}$", message = "Неверынй формат MID")
+    @Pattern(regexp = "^[0-9]{12}$", message = "Неверный формат MID")
     private String mid;
 
+    @NotNull(message = "IP не может быть пустым")
     @Pattern(regexp = "^[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}$", message = "Неверный формат IP-адреса")
     private String ip;
 
@@ -39,4 +41,7 @@ public class Terminal extends AbstractPersistable<Long> {
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "terminal")
     private List<Transaction> transactions = new ArrayList<>();
+
+
+
 }

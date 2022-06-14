@@ -1,5 +1,6 @@
 package com.app.bank_acquiring.controller;
 
+import com.app.bank_acquiring.domain.Terminal;
 import com.app.bank_acquiring.domain.account.Account;
 import com.app.bank_acquiring.repository.AccountRepository;
 import com.app.bank_acquiring.repository.TerminalRepository;
@@ -41,13 +42,9 @@ public class MainController {
     @GetMapping("/main")
     public String view(Model model, @AuthenticationPrincipal UserDetails currentUser) {
         Account user = accountRepository.findByUsername(currentUser.getUsername());
-        model.addAttribute("terminal", user.getWorkingTerminal());
-        if(user.getWorkingTerminal()==null){
-            model.addAttribute("transactions", null);
-        } else{
-            model.addAttribute("transactions", user.getWorkingTerminal().getTransactions());
-        }
-
+        Terminal terminal = terminalRepository.findByTid(user.getWorkTerminalTid());
+        model.addAttribute("account", user);
+        model.addAttribute("terminal",terminal);
         return "main";
     }
 }

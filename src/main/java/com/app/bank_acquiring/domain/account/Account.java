@@ -23,7 +23,7 @@ public class Account extends AbstractPersistable<Long> {
 
     @NotNull(message = "Логин не может быть пустым")
     @NotBlank(message = "Логин не может быть пустым")
-    @Size(min = 8,max=40,message = "Логин от 8 до 40 символов")
+    @Size(min = 8, max = 40, message = "Логин от 8 до 40 символов")
     private String username;
 
     @NotNull(message = "Пароль не может быть пустым")
@@ -47,13 +47,9 @@ public class Account extends AbstractPersistable<Long> {
     private String workTerminalTid;
 
     public Terminal getWorkingTerminal() {
-        try {
-            return terminals.stream()
-                    .filter(terminal -> terminal.getTid().equals(workTerminalTid))
-                    .findFirst().get();
-        } catch (NoSuchElementException e) {
-            return null;
-        }
+        return terminals.stream()
+                .filter(terminal -> terminal.getTid().equals(workTerminalTid))
+                .findFirst().orElse(null);
     }
 
 }

@@ -79,7 +79,7 @@
                     <td colspan="8">Нет добавленных сотрудников</td>
                 </tr>
                 <tr th:each="employee : ${employees}">
-                    <td><a th:href="@{/accounts/{id}(id=${employee.id})}" th:target="_blank"
+                    <td><a th:href="@{/accounts/{id}(id=${employee.id})}"
                            th:text="${employee.id}">1</a></td>
                     <td th:text="${employee.username}">Login</td>
                     <td th:text="${employee.accountInfo != null}? ${employee.accountInfo.firstName}:' '">Firstname</td>
