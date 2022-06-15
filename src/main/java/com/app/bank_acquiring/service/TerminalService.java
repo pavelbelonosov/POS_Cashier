@@ -1,7 +1,7 @@
 package com.app.bank_acquiring.service;
 
 import com.app.bank_acquiring.domain.Terminal;
-import com.app.bank_acquiring.domain.Transaction;
+import com.app.bank_acquiring.domain.transaction.Transaction;
 import com.app.bank_acquiring.domain.account.Account;
 import com.app.bank_acquiring.repository.AccountRepository;
 import com.app.bank_acquiring.repository.TerminalRepository;

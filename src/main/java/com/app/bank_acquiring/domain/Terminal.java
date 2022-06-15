@@ -1,6 +1,7 @@
 package com.app.bank_acquiring.domain;
 
 import com.app.bank_acquiring.domain.account.Account;
+import com.app.bank_acquiring.domain.transaction.Transaction;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

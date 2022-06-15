@@ -1,7 +1,7 @@
 package com.app.bank_acquiring.repository;
 
 import com.app.bank_acquiring.domain.Terminal;
-import com.app.bank_acquiring.domain.Transaction;
+import com.app.bank_acquiring.domain.transaction.Transaction;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
