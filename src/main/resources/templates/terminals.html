@@ -65,7 +65,6 @@
                             <table class="table table-bordered table-striped text-center">
                                 <thead>
                                 <tr>
-                                    <td>ID</td>
                                     <td>TID</td>
                                     <td>MID</td>
                                     <td>IP</td>
@@ -76,11 +75,10 @@
                                 </thead>
                                 <tbody>
                                 <tr th:if="${shop.terminals.empty}">
-                                    <td colspan="7">Нет добавленных терминалов</td>
+                                    <td colspan="6">Нет добавленных терминалов</td>
                                 </tr>
                                 <tr th:each="term : ${shop.terminals}">
-                                    <td><a th:href="@{/terminals/{id}(id=${term.id})}" th:text="${term.id}">1</a></td>
-                                    <td th:text="${term.tid}">Tid</td>
+                                    <td> <a th:href="@{/terminals/{id}(id=${term.id})}" th:text="${term.tid}">Tid</a></td>
                                     <td th:text="${term.mid}">Mid</td>
                                     <td th:text="${term.ip}">Ip address</td>
                                     <td th:text="${term.chequeHeader}">Header</td>
@@ -92,7 +90,7 @@
                                 </tr>
                                 <tr th:if="${!shop.terminals.empty}" th:each="acc: ${shop.accounts}">
                                     <div th:if="${acc.id!=account.id}">
-                                        <td colspan="7"
+                                        <td colspan="6"
                                             th:text="${acc.workTerminalTid!=null}?${acc.workTerminalTid} + ' в работе у сотрудника '+ ${acc.username}:''">
                                             Terminals at work
                                         </td>

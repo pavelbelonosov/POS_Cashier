@@ -45,7 +45,7 @@
 
             <div class="col-md-auto">
                 <h3> Транзакции: </h3>
-                <table class="table table-sm table-striped">
+                <table class="table table-hover table-responsive table-sm" id="dataTable" data-page-length='50' data-order='[[1, "desc"]]'>
                     <thead>
                     <tr>
                         <td>ID</td>
@@ -74,7 +74,15 @@
             </div>
         </div>
     </section>
-    <div th:replace="fragments/layout :: footer"></div>
 </main>
+
+<div th:replace="fragments/layout :: footer"></div>
 </body>
 </html>
+<script type="text/javascript" language="javascript" src="https://code.jquery.com/jquery-3.5.1.js"></script>
+<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+<script language="javascript" type="text/javascript">
+    $(document).ready( function () {
+        $('#dataTable').DataTable();
+    } );
+    </script>

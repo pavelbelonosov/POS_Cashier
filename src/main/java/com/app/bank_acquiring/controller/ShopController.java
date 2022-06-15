@@ -8,6 +8,8 @@ import com.app.bank_acquiring.repository.AccountRepository;
 
 import com.app.bank_acquiring.repository.ShopRepository;
 import com.app.bank_acquiring.repository.TerminalRepository;
+import com.app.bank_acquiring.service.AccountService;
+import com.app.bank_acquiring.service.ShopService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -23,64 +25,50 @@ import javax.validation.Valid;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 
 @Controller
 public class ShopController {
 
     @Autowired
-    private AccountRepository accountRepository;
+    private AccountService accountService;
     @Autowired
-    private AccountInfoRepository accountInfoRepository;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-    @Autowired
-    private ShopRepository shopRepository;
-
-    @GetMapping("/shops")
-    public String listShops(Model model, @AuthenticationPrincipal UserDetails currentUser) {
-        Account user = accountRepository.findByUsername(currentUser.getUsername());
-        model.addAttribute("shops", user.getShops());
-        return "shops";
-    }
+    private ShopService shopService;
 
     @ModelAttribute
     public Shop getNewShop() {
         return new Shop();
     }
 
+    @GetMapping("/shops")
+    public String getShops(Model model, @AuthenticationPrincipal UserDetails currentUser) {
+        Account user = accountService.findByUsername(currentUser.getUsername());
+        model.addAttribute("shops", user.getShops());
+        return "shops";
+    }
 
     @PostMapping("/shops")
     public String createShop(@Valid @ModelAttribute Shop shop, BindingResult bindingResult,
                              @AuthenticationPrincipal UserDetails currentUser, Model model) {
-        Account acc = accountRepository.findByUsername(currentUser.getUsername());
         if (bindingResult.hasErrors()) {
-            model.addAttribute("shops", acc.getShops());
-            return "shops";
+           return getShops(model, currentUser);
         }
-        List<Account> list = new ArrayList<>();
-        list.add(acc);
-        shop.setAccounts(list);
-        shopRepository.save(shop);
+        shopService.createShop(shop,currentUser);
+        return "redirect:/shops";
+    }
 
+    @DeleteMapping("/shops/{id}")
+    public String deleteShop(@PathVariable Long id,
+                                @AuthenticationPrincipal UserDetails currentUser) {
+        shopService.deleteShop(id,currentUser);
         return "redirect:/shops";
     }
 
 
-    @Transactional
     @DeleteMapping("/shops/{shopId}/accounts/{accountId}")
     public String deleteAccount(@PathVariable Long shopId, @PathVariable Long accountId,
                                 @AuthenticationPrincipal UserDetails currentUser) {
-        Account owner = accountRepository.findByUsername(currentUser.getUsername());
-        Account employee = accountRepository.getOne(accountId);
-        AccountInfo accountInfo = employee.getAccountInfo();
-        Shop shop = shopRepository.getOne(shopId);
-        if (!owner.getShops().contains(shop)) {
-            throw new RuntimeException("Current account doesn't have this shop");
-        }
-        shop.getAccounts().remove(employee);
-        accountInfoRepository.delete(accountInfo);
-        accountRepository.delete(employee);
-
+        shopService.deleteAccountFromShop(shopId,accountId,currentUser);
         return "redirect:/accounts";
     }
 }

@@ -65,10 +65,18 @@ public class AccountService {
     @Transactional
     public void updateCurrentAccount(Account current, AccountInfo newAccountInfo) {
         AccountInfo userInfo = current.getAccountInfo();
-        userInfo.setFirstName(newAccountInfo.getFirstName());
-        userInfo.setLastName(newAccountInfo.getLastName());
-        userInfo.setTelephoneNumber(newAccountInfo.getTelephoneNumber());
-        userInfo.setEmail(newAccountInfo.getEmail());
+        if (!newAccountInfo.getFirstName().isEmpty()){
+            userInfo.setFirstName(newAccountInfo.getFirstName());
+        }
+        if (!newAccountInfo.getLastName().isEmpty()){
+            userInfo.setLastName(newAccountInfo.getLastName());
+        }
+        if (!newAccountInfo.getTelephoneNumber().isEmpty()){
+            userInfo.setTelephoneNumber(newAccountInfo.getTelephoneNumber());
+        }
+        if (!newAccountInfo.getEmail().isEmpty()){
+            userInfo.setEmail(newAccountInfo.getEmail());
+        }
         accountInfoRepository.save(userInfo);
     }
 
@@ -106,6 +114,5 @@ public class AccountService {
             throw new RuntimeException("Current account doesn't have access to this user");
         }
     }
-
 
 }

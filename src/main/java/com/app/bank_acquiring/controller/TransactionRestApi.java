@@ -1,5 +1,6 @@
 package com.app.bank_acquiring.controller;
 
+import com.app.bank_acquiring.domain.TransactionDto;
 import com.app.bank_acquiring.domain.account.Account;
 import com.app.bank_acquiring.domain.Terminal;
 import com.app.bank_acquiring.domain.Transaction;
@@ -35,12 +36,12 @@ public class TransactionRestApi {
     }*/
 
     @GetMapping("/api/v1/transactions/{id}")
-    public Transaction getTransaction(@PathVariable Long id) {
-        return transactionRepository.getOne(id);
+    public TransactionDto getTransaction(@PathVariable Long id) {
+        return convertToDto(transactionRepository.getOne(id));
     }
 
     @PostMapping("/api/v1/transactions/pay")
-    public Transaction makePayment(@RequestBody Transaction transaction,
+    public TransactionDto makePayment(@RequestBody Transaction transaction,
                                    @AuthenticationPrincipal UserDetails currentUser)  {
         Account user = accountRepository.findByUsername(currentUser.getUsername());
         Terminal terminal = terminalRepository.findByTid(user.getWorkTerminalTid());
@@ -54,6 +55,12 @@ public class TransactionRestApi {
         transaction.setTerminal(terminal);
         transaction.setCheque(cheque);
         transaction.setCashier(user.getUsername());
-        return transactionRepository.save(transaction);
+        transactionRepository.save(transaction);
+        return convertToDto(transaction);
+    }
+
+    protected TransactionDto convertToDto(Transaction entity) {
+        TransactionDto dto = new TransactionDto(entity.getId(),false, entity.getDateTime(),entity.getAmount(),entity.getCheque());
+        return dto;
     }
 }

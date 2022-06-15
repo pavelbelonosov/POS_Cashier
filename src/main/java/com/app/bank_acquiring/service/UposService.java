@@ -87,7 +87,7 @@ public class UposService {
             //return Arrays.asList(content.split("\n"));
             return content;
         } catch (Exception e) {
-            return null;
+            return "";
         }
     }
 
@@ -103,8 +103,8 @@ public class UposService {
 
     public boolean defineTransactionStatus(String cheque) {
 
-        if (cheque.contains("одобрено") || cheque.contains("итоги совпали")
-                || cheque.contains("Процессинг:работает")) {
+        if (cheque!=null&&(cheque.contains("одобрено") || cheque.contains("итоги совпали")
+                || cheque.contains("Процессинг:работает"))) {
             return true;
         }
         return false;
