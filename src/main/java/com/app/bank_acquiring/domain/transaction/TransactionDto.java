@@ -11,7 +11,7 @@ import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
-@Entity
+
 @Data
 @NoArgsConstructor
 public class TransactionDto {

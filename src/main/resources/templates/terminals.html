@@ -35,7 +35,7 @@
                                placeholder="0.0.0.0" pattern="^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$"
                                required/>
                         <p th:if="${#fields.hasErrors('ip')}" th:errors="*{ip}" th:style="'color:red'">IP validation</p>
-                        <label for="ip">Заголовок чека:</label>
+                        <label for="chequeHeader">Заголовок чека:</label>
                         <input type="text" th:field="*{chequeHeader}" id="chequeHeader" name="chequeHeader"
                                class="form-control"
                                placeholder="Название | Адрес"/>

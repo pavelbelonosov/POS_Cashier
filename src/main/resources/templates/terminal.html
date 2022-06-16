@@ -8,9 +8,10 @@
         <div class="row">
             <div class="col-md-auto">
                 <h3 th:text="'TID: '+ ${terminal.tid}"> TID</h3>
-                <form class="form-group" th:action="@{/terminals/{id}/test(id=${terminal.id})}" th:method="POST">
+                <form class="form-group" th:action="@{/terminals/{id}/test(id=${terminal.id})}" th:method="GET">
                     <button type="submit" class="btn btn-dark">Тест соединения</button>
-                    <span th:if="${!terminal.transactions.empty}" th:text="${terminal.transactions[0].status==true}?'Успешно':'Тест не пройден'"></span>
+                    <span th:if="${!terminal.transactions.empty}"
+                          th:text="${terminal.transactions[0].status==true}?'Успешно':'Тест не пройден'"></span>
                 </form>
                 <table class="table table-bordered ">
                     <tr>
@@ -45,11 +46,13 @@
 
             <div class="col-md-auto">
                 <h3> Транзакции: </h3>
-                <table class="table table-hover table-responsive table-sm" id="dataTable" data-page-length='50' data-order='[[1, "desc"]]'>
+                <table class="table table-hover table-responsive table-sm" id="dataTable" data-page-length='50'
+                       data-order='[[1, "desc"]]'>
                     <thead>
                     <tr>
                         <td>ID</td>
                         <td>Статус</td>
+                        <td>Тип</td>
                         <td>Время</td>
                         <td>Сумма</td>
                         <td>Чек</td>
@@ -58,11 +61,12 @@
                     </thead>
                     <tbody>
                     <tr th:if="${terminal.transactions.empty}">
-                        <td colspan="6">Операции не найдены</td>
+                        <td colspan="7">Операции не найдены</td>
                     </tr>
                     <tr th:each="transaction : ${terminal.transactions}">
                         <td th:text="${transaction.id}">1</td>
                         <td th:text="${transaction.status}">Status</td>
+                        <td th:text="${transaction.type.explanation}">Type</td>
                         <td th:text="${transaction.dateTime}">Status</td>
                         <td th:text="${transaction.amount}">Amount</td>
                         <td style="white-space: pre-wrap" th:text="${transaction.cheque}">Cheque</td>
@@ -80,9 +84,11 @@
 </body>
 </html>
 <script type="text/javascript" language="javascript" src="https://code.jquery.com/jquery-3.5.1.js"></script>
-<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" language="javascript"
+        src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
 <script language="javascript" type="text/javascript">
     $(document).ready( function () {
         $('#dataTable').DataTable();
     } );
-    </script>
+
+</script>

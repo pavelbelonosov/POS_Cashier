@@ -56,7 +56,7 @@ public class TerminalController {
         return "terminal";
     }
 
-    @PostMapping("/terminals/{id}/test")
+    @GetMapping("/terminals/{id}/test")
     public String testTerminalConnection(@PathVariable Long id,
                                   @AuthenticationPrincipal UserDetails currentUser) {
         terminalService.testConnection(id,currentUser);

@@ -1,6 +1,7 @@
 package com.app.bank_acquiring.domain;
 
 import com.app.bank_acquiring.domain.account.Account;
+import com.app.bank_acquiring.domain.product.Product;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -33,5 +34,8 @@ public class Shop extends AbstractPersistable<Long> {
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "shop")
     private List<Terminal> terminals;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "shop")
+    private List<Product> products;
 
 }

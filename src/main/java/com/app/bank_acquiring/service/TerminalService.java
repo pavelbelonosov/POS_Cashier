@@ -3,6 +3,7 @@ package com.app.bank_acquiring.service;
 import com.app.bank_acquiring.domain.Terminal;
 import com.app.bank_acquiring.domain.transaction.Transaction;
 import com.app.bank_acquiring.domain.account.Account;
+import com.app.bank_acquiring.domain.transaction.Type;
 import com.app.bank_acquiring.repository.AccountRepository;
 import com.app.bank_acquiring.repository.TerminalRepository;
 import com.app.bank_acquiring.repository.TransactionRepository;
@@ -42,7 +43,7 @@ public class TerminalService {
     }
 
     @Transactional
-    public void updateTerminal(Long id, UserDetails currentUser, String ip, String chequeHeader) throws FileNotFoundException {
+    public void updateTerminal(Long id, UserDetails currentUser, String ip, String chequeHeader) {
         Terminal terminal = getValidatedTerminal(id, currentUser);
         if (!ip.isEmpty()) {
             terminal.setIp(ip);
@@ -53,15 +54,17 @@ public class TerminalService {
         //terminalRepository.save(terminal);
         uposService.updateUposSettings(accountRepository.findByUsername(currentUser.getUsername()).getId(), terminal);
     }
+
     @Transactional
-    public boolean testConnection(Long terminalId, UserDetails currentUser){
+    public boolean testConnection(Long terminalId, UserDetails currentUser) {
         Account current = accountRepository.findByUsername(currentUser.getUsername());
         Terminal terminal = terminalRepository.getOne(terminalId);
-        validateIdAccess(current,terminal);
-        if(uposService.testPSDB(terminal.getAccount().getId(),terminal.getShop().getId(),terminal.getTid())){
+        validateIdAccess(current, terminal);
+        if (uposService.testPSDB(terminal.getAccount().getId(), terminal.getShop().getId(), terminal.getTid())) {
             Transaction test = new Transaction();
-            String testCheque = uposService.readCheque(terminal.getAccount().getId(),terminal.getShop().getId(),terminal.getTid());
+            String testCheque = uposService.readCheque(terminal.getAccount().getId(), terminal.getShop().getId(), terminal.getTid());
             test.setStatus(uposService.defineTransactionStatus(testCheque));
+            test.setType(Type.TEST);
             test.setDateTime(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
             test.setCheque(testCheque);
             test.setTerminal(terminal);

@@ -4,6 +4,7 @@ import com.app.bank_acquiring.domain.transaction.TransactionDto;
 import com.app.bank_acquiring.domain.account.Account;
 import com.app.bank_acquiring.domain.Terminal;
 import com.app.bank_acquiring.domain.transaction.Transaction;
+import com.app.bank_acquiring.domain.transaction.Type;
 import com.app.bank_acquiring.repository.AccountRepository;
 import com.app.bank_acquiring.repository.TerminalRepository;
 import com.app.bank_acquiring.repository.TransactionRepository;
@@ -17,7 +18,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
 @RestController
-public class TransactionRestApi {
+public class TransactionRestController {
 
     @Autowired
     private TransactionRepository transactionRepository;
@@ -51,16 +52,17 @@ public class TransactionRestApi {
             cheque = uposService.readCheque(terminal.getAccount().getId(), terminal.getShop().getId(), terminal.getTid());
         }
         transaction.setStatus(uposService.defineTransactionStatus(cheque));
+        transaction.setType(Type.PAYMENT);
         transaction.setDateTime(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
         transaction.setTerminal(terminal);
         transaction.setCheque(cheque);
         transaction.setCashier(user.getUsername());
-        transactionRepository.save(transaction);
-        return convertToDto(transaction);
+        return convertToDto(transactionRepository.save(transaction));
     }
 
     protected TransactionDto convertToDto(Transaction entity) {
-        TransactionDto dto = new TransactionDto(entity.getId(),false, entity.getDateTime(),entity.getAmount(),entity.getCheque());
+        TransactionDto dto = new TransactionDto(entity.getId(),false, entity.getDateTime(),
+                entity.getAmount(),entity.getCheque());
         return dto;
     }
 }
