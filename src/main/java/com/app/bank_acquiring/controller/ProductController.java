@@ -7,8 +7,16 @@ import com.app.bank_acquiring.domain.product.MeasurementUnit;
 import com.app.bank_acquiring.domain.product.Product;
 import com.app.bank_acquiring.domain.product.Type;
 import com.app.bank_acquiring.repository.ProductRepository;
+import com.app.bank_acquiring.repository.ShopRepository;
 import com.app.bank_acquiring.service.AccountService;
+import com.app.bank_acquiring.service.ProductService;
+import com.app.bank_acquiring.service.ShopService;
+import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.parameters.P;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,19 +25,24 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.tools.FileObject;
 import javax.validation.Valid;
+import java.io.File;
+import java.io.IOException;
 import java.util.Collections;
 
 @Controller
 public class ProductController {
 
     @Autowired
-    private ProductRepository productRepository;
-    @Autowired
     private AccountService accountService;
+    @Autowired
+    private ShopService shopService;
+    @Autowired
+    private ProductService productService;
 
     @ModelAttribute
-    public Product getProduct(){
+    public Product getProduct() {
         return new Product();
     }
 
@@ -46,10 +59,19 @@ public class ProductController {
     @GetMapping("/products/{id}")
     public String getProductById(Model model, @PathVariable Long id,
                                  @AuthenticationPrincipal UserDetails currentUser) {
-        Account user = accountService.findByUsername(currentUser.getUsername());
-        Product product = productRepository.getOne(id);
-        model.addAttribute("product", product);
+        model.addAttribute("product", productService.getProduct(id, currentUser));
         return "product";
+    }
+
+    @GetMapping("/shops/{id}/products/file")
+    public ResponseEntity<byte[]> getExcelFile(@PathVariable Long id, @AuthenticationPrincipal UserDetails currentUser) {
+        Account user = accountService.findByUsername(currentUser.getUsername());
+        Shop shop = shopService.getShop(id, currentUser);
+        byte[] content = productService.createExcelFile(user.getId(), shop.getId(), shop.getProducts());
+        final HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+        headers.add("Content-Disposition", "attachment; filename=products_" + shop.getId() + ".xlsx");
+        return new ResponseEntity<>(content, headers, HttpStatus.CREATED);
     }
 
     @PostMapping("/products")
@@ -59,7 +81,15 @@ public class ProductController {
             return getProducts(model, currentUser);
         }
         product.setShop(shop);
-        productRepository.save(product);
+        productService.saveProduct(product);
+        return "redirect:/products";
+    }
+
+
+    @DeleteMapping("/products/{id}")
+    public String deleteProductById(@PathVariable Long id,
+                                    @AuthenticationPrincipal UserDetails currentUser) {
+        productService.deleteProduct(id, currentUser);
         return "redirect:/products";
     }
 }

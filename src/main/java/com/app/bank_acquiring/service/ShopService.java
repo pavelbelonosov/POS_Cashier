@@ -7,6 +7,7 @@ import com.app.bank_acquiring.repository.AccountInfoRepository;
 import com.app.bank_acquiring.repository.AccountRepository;
 import com.app.bank_acquiring.repository.ShopRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.parameters.P;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,7 +28,15 @@ public class ShopService {
     private UposService uposService;
 
     @Transactional
-    public void createShop(Shop shop, UserDetails currentUser){
+    public Shop getShop(Long id, UserDetails currentUser) {
+        Account current = accountRepository.findByUsername(currentUser.getUsername());
+        Shop shop = shopRepository.getOne(id);
+        validateShopIdAccess(shop, current);
+        return shop;
+    }
+
+    @Transactional
+    public void createShop(Shop shop, UserDetails currentUser) {
         Account owner = accountRepository.findByUsername(currentUser.getUsername());
         List<Account> accounts = new ArrayList<>();
         accounts.add(owner);
@@ -65,14 +74,18 @@ public class ShopService {
     }
 
     private void validateShopIdAccess(Shop shop, Account owner) {
-        if (!owner.getShops().contains(shop)) {
-            throw new RuntimeException("Current account doesn't have access to this shop");
+        if (shop != null) {
+            if (!owner.getShops().contains(shop)) {
+                throw new RuntimeException("Current account doesn't have access to this shop");
+            }
         }
     }
 
     private void validateEmployeeIdAccess(Shop shop, Account employee) {
-        if (!shop.getAccounts().contains(employee)) {
-            throw new RuntimeException("Current shop doesn't have access to this employee");
+        if (shop != null && employee != null) {
+            if (!shop.getAccounts().contains(employee)) {
+                throw new RuntimeException("Current shop doesn't have access to this employee");
+            }
         }
     }
 

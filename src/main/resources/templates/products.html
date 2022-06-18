@@ -1,58 +1,59 @@
 <!DOCTYPE HTML>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
-<div th:replace="fragments/layout :: head(text='Мои терминалы')"></div>
+<div th:replace="fragments/layout :: head(text='База товаров')"></div>
 <body>
 <div th:replace="fragments/layout :: header"></div>
 <main>
-    <section class="container">
+    <section class="container-fluid">
         <div class="row">
             <div class="col-md-auto">
-                <h3>Карточка товара:</h3>
-                <form class="form-group" th:action="@{/products}" th:object="${product}" method="POST">
+                <form class="form-group " th:action="@{/products}" th:object="${product}" method="POST">
+                    <h3>Укажите магазин:</h3>
+                    <select class="form-control form-control-sm" id="shop" name="shop" onchange="shopVisibility(this.value)">
+                        <option value="0"></option>
+                        <option th:each="shop : ${account.shops}" th:value="${shop.id}"
+                                th:text="${shop.name} + ' ' +  ${shop.address}"></option>
+                    </select><br>
+                    <h4>Карточка товара:</h4>
                     <div class="form-group">
-                        <select class="form-control" id="type" onchange="changeVisibility(this.value)" name="type">
+                        <select class="form-control form-control-sm" id="type" onchange="changeVisibility(this.value)" name="type">
                             <option th:value="${typeItem}" th:text="${typeItem.explanation}"></option>
                             <option th:value="${typeService}" th:text="${typeService.explanation}"></option>
                         </select>
                         <label for="name">Наименование:</label>
-                        <input type="text" th:field="*{name}" id="name" name="name" class="form-control"
+                        <input type="text" th:field="*{name}" id="name" name="name" class="form-control form-control-sm"
                                placeholder="" maxlength="100" required/>
                         <p th:if="${#fields.hasErrors('name')}" th:errors="*{name}" th:style="'color:red'">name
                             validation</p>
                         <label for="purchasePrice">Цена закупки:</label>
                         <input type="text" th:field="*{purchasePrice}" id="purchasePrice" name="purchasePrice"
-                               class="form-control"
+                               class="form-control form-control-sm"
                                placeholder="0.0"/>
                         <p th:if="${#fields.hasErrors('purchasePrice')}" th:errors="*{purchasePrice}"
                            th:style="'color:red'">purchasePrice
                             validation</p>
                         <label for="sellingPrice">Цена продажи:</label>
                         <input type="text" th:field="*{sellingPrice}" id="sellingPrice" name="sellingPrice"
-                               class="form-control"
+                               class="form-control form-control-sm"
                                placeholder="0.0"/>
                         <p th:if="${#fields.hasErrors('sellingPrice')}" th:errors="*{sellingPrice}"
                            th:style="'color:red'">sellingPrice validation</p>
                         <label for="measurementUnit">Единица измерения:</label>
-                        <select class="form-control" id="measurementUnit" name="measurementUnit">
+                        <select class="form-control form-control-sm" id="measurementUnit" name="measurementUnit">
                             <option th:each="measurementUnit : ${measurementUnits}" th:value="${measurementUnit}"
                                     th:text="${measurementUnit.explanation}"></option>
                         </select>
                         <label for="vendorCode">Артикул:</label>
                         <input type="text" th:field="*{vendorCode}" id="vendorCode" name="vendorCode"
-                               class="form-control"
+                               class="form-control form-control-sm"
                                placeholder=""/>
                         <p th:if="${#fields.hasErrors('vendorCode')}" th:errors="*{vendorCode}" th:style="'color:red'">
                             vendorCode validation</p>
                         <label for="barCode">Штрих-код:</label>
-                        <input type="text" th:field="*{barCode}" id="barCode" name="barCode" class="form-control"
+                        <input type="text" th:field="*{barCode}" id="barCode" name="barCode" class="form-control form-control-sm"
                                placeholder=""/>
                         <p th:if="${#fields.hasErrors('barCode')}" th:errors="*{barCode}" th:style="'color:red'">barCode
                             validation</p>
-                        <label for="shop">Магазин:</label>
-                        <select class="form-control" id="shop" name="shop">
-                            <option th:each="shop : ${account.shops}" th:value="${shop.id}"
-                                    th:text="${shop.name} + ' ' +  ${shop.address}"></option>
-                        </select>
                     </div>
                     <h3 th:if="${account.shops.empty || account.shops==null}" th:text="'Создайте магазин'"></h3>
                     <div th:if="${!account.shops.empty && account.shops!=null}">
@@ -62,44 +63,57 @@
             </div>
             <div class="col-md-auto">
                 <h3>Товары:</h3>
-                <div th:if="${!account.shops.empty}">
-                    <ul class="list-group">
-                        <li class="list-group-item" th:each="shop : ${account.shops}">
-                            <h4 th:text="${shop.name}">Shop name</h4>
-                            <small th:text="${shop.address}"></small>
-                            <table class="table table-bordered table-striped text-center">
-                                <thead>
-                                <tr>
-                                    <td>ID</td>
-                                    <td>Название</td>
-                                    <td>Тип</td>
-                                    <td>Цена продажи</td>
-                                    <td>Цена закупки</td>
-                                    <td></td>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr th:if="${shop.products.empty}">
-                                    <td colspan="6">Нет добавленных товаров</td>
-                                </tr>
-                                <tr th:each="prod : ${shop.products}">
-                                    <td><a th:href="@{/products/{id}(id=${product.id})}" th:text="${prod.id}">Tid</a>
-                                    </td>
-                                    <td th:text="${prod.name}">Name</td>
-                                    <td th:text="${prod.type.explanation}">Type</td>
-                                    <td th:text="${prod.sellingPrice}">sellingPrice</td>
-                                    <td th:text="${prod.purchasePrice}">purchasePrice</td>
-                                    <td>
-                                        <form th:action="@{/products/{id}(id=${product.id})}" th:method="delete"><input
-                                                type="submit" value="Удалить"/></form>
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
+                <div id="productsList">
+                    <div th:if="${!account.shops.empty}">
+                        <ul class="list-group">
+                            <li class="list-group-item " th:each="shop : ${account.shops}" th:id="'list'+${shop.id}"
+                                style="display: none">
+                                <div class="col-md-12 d-flex">
+                                    <h4 th:text="${shop.name}">Shop name<small th:text="${shop.address}"></small></h4>
 
-                        </li>
-                    </ul>
+                                    <a type="button" class="btn btn-dark ml-auto" th:href="@{/shops/{id}/products/file(id=${shop.id})}" target="_blank">Выгрузить в Excel</a>
+                                </div>
+                                <div class="col-md-12 d-flex">
+                                <small th:text="${shop.address}"></small>
+                                </div>
+                                <table class="table table-bordered table-striped text-center table-sm">
+                                    <thead>
+                                    <tr>
+                                        <td>ID</td>
+                                        <td>Наименование</td>
+                                        <td>Тип</td>
+                                        <td>Артикул</td>
+                                        <td>Цена продажи</td>
+                                        <td>Цена закупки</td>
+                                        <td>Остаток</td>
+                                        <td></td>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr th:if="${shop.products.empty}">
+                                        <td colspan="8">Нет добавленных товаров</td>
+                                    </tr>
+                                    <tr th:each="prod : ${shop.products}">
+                                        <td id="productId"><a th:href="@{/products/{id}(id=${product.id})}"
+                                               th:text="${prod.id}">Tid</a>
+                                        </td>
+                                        <td id="productName" th:text="${prod.name}">Name</td>
+                                        <td id="productType" th:text="${prod.type.explanation}">Type</td>
+                                        <td id="productVendorCode" th:text="${prod.vendorCode}">VendorCode</td>
+                                        <td id="productSellingPrice" th:text="${prod.sellingPrice}">sellingPrice</td>
+                                        <td th:text="${prod.purchasePrice}">purchasePrice</td>
+                                        <td id="productRemains" th:text="${prod.id}">Remaining</td>
+                                        <td>
+                                            <form th:action="@{/products/{id}(id=${prod.id})}" th:method="delete"><input
+                                                    type="submit" value="Удалить"/></form>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
 
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
@@ -107,22 +121,25 @@
     <div th:replace="fragments/layout :: footer"></div>
 </main>
 </body>
+<script th:inline="javascript"> var contextRoot = /*[[@{/}]]*/ '';</script>
 <script>
 function changeVisibility(value) {
-
 if(value==="SERVICE"){
-document.getElementById("sellingPrice").disabled=true;
 document.getElementById("purchasePrice").disabled=true;
 document.getElementById("measurementUnit").disabled=true
 document.getElementById("vendorCode").disabled=true;
 document.getElementById("barCode").disabled=true;
 }
-
 if(value==="ITEM"){
-var elems = document.querySelectorAll('[disabled]');
-for (var i = 0; i < elems.length; i++) {
-elems[i].removeAttribute('disabled');
-}}
+document.querySelectorAll('[disabled]')
+        .forEach(e=>e.removeAttribute('disabled'));
+}
+}
+
+function shopVisibility(value){
+document.querySelectorAll('[class*=list-group-item]')
+        .forEach( x=> x.setAttribute("style","display:none"));
+document.getElementById("list"+value).style.display = "block";
 }
 </script>
 </html>

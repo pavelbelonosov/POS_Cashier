@@ -32,12 +32,12 @@ public class Product extends AbstractPersistable<Long> {
     private String vendorCode;
 
     @DecimalMin(value = "0.0")
-    @Digits(integer=6, fraction=2)
+    @Digits(integer=6, fraction=2,message = "Неверный формат цены")
     private BigDecimal purchasePrice;
 
     @DecimalMin(value = "0.0", inclusive = false)
-    @DecimalMax(value = "1000000")
-    @Digits(integer=6, fraction=2)
+    @DecimalMax(value = "1000000", message = "Превышена максимальная цена")
+    @Digits(integer=6, fraction=2, message = "Неверный формат цены")
     private BigDecimal sellingPrice;
 
     @Enumerated(EnumType.STRING)
