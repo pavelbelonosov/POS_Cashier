@@ -1,6 +1,5 @@
 package com.app.bank_acquiring.service;
 
-import com.app.bank_acquiring.domain.Shop;
 import com.app.bank_acquiring.domain.account.Account;
 import com.app.bank_acquiring.domain.product.Product;
 import com.app.bank_acquiring.repository.AccountRepository;
@@ -75,13 +74,9 @@ public class ProductService {
         Workbook workbook = new XSSFWorkbook();
 
         Sheet sheet = workbook.createSheet("Товары");
-        sheet.setColumnWidth(0, 4000);
-        sheet.setColumnWidth(1, 4000);
-        sheet.setColumnWidth(2, 4000);
-        sheet.setColumnWidth(3, 4000);
-        sheet.setColumnWidth(4, 4000);
-        sheet.setColumnWidth(5, 4000);
-
+        for (int i = 0; i < 6; i++) {
+            sheet.setColumnWidth(i, 4000);
+        }
         Row header = sheet.createRow(0);
 
         CellStyle headerStyle = workbook.createCellStyle();
@@ -118,6 +113,10 @@ public class ProductService {
         headerCell.setCellValue("Штрихкод");
         headerCell.setCellStyle(headerStyle);
 
+        headerCell = header.createCell(6);
+        headerCell.setCellValue("Остаток");
+        headerCell.setCellStyle(headerStyle);
+
         for (int i = 0; i < products.size(); i++) {
             Product product = products.get(i);
             CellStyle style = workbook.createCellStyle();
@@ -125,27 +124,41 @@ public class ProductService {
 
             Row row = sheet.createRow(2 + i);
             Cell cell = row.createCell(0);
-            cell.setCellValue(product.getName());
+            if (product.getName() != null) {
+                cell.setCellValue(product.getName());
+            }
             cell.setCellStyle(style);
 
             cell = row.createCell(1);
-            cell.setCellValue(product.getType().getExplanation());
+            if (product.getType() != null) {
+                cell.setCellValue(product.getType().getExplanation());
+            }
             cell.setCellStyle(style);
 
             cell = row.createCell(2);
-            cell.setCellValue(product.getVendorCode());
+            if (product.getVendorCode() != null) {
+                cell.setCellValue(product.getVendorCode());
+            }
             cell.setCellStyle(style);
 
             cell = row.createCell(3);
-            cell.setCellValue(product.getPurchasePrice().toString());
+            if (product.getPurchasePrice() != null) {
+                cell.setCellValue(product.getPurchasePrice().toString());
+            }
             cell.setCellStyle(style);
 
             cell = row.createCell(4);
-            cell.setCellValue(product.getSellingPrice().toString());
+            if (product.getSellingPrice() != null) {
+                cell.setCellValue(product.getSellingPrice().toString());
+            }
             cell.setCellStyle(style);
 
             cell = row.createCell(5);
             cell.setCellValue(product.getBarCode());
+            cell.setCellStyle(style);
+
+            cell = row.createCell(6);
+            cell.setCellValue(product.getBalance());
             cell.setCellStyle(style);
         }
         return workbook;

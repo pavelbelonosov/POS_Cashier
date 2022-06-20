@@ -21,7 +21,7 @@ public class Product extends AbstractPersistable<Long> {
 
     @NotEmpty(message = "Название не может быть пустым")
     @NotBlank(message = "Название не может состоять из пробелов")
-    @Size(min = 3, max = 100, message = "Допустимое название от 3 до 100 символов")
+    @Size(min = 3, max = 100, message = "Допустимое название от 3-100 символов")
     private String name;
 
     @Enumerated(EnumType.STRING)
@@ -31,17 +31,19 @@ public class Product extends AbstractPersistable<Long> {
 
     private String vendorCode;
 
-    @DecimalMin(value = "0.0")
-    @Digits(integer=6, fraction=2,message = "Неверный формат цены")
+    @DecimalMin(value = "0.00")
+    @Digits(integer = 6, fraction = 2, message = "Неверный формат цены")
     private BigDecimal purchasePrice;
 
-    @DecimalMin(value = "0.0", inclusive = false)
+    @DecimalMin(value = "0.00", inclusive = false)
     @DecimalMax(value = "1000000", message = "Превышена максимальная цена")
-    @Digits(integer=6, fraction=2, message = "Неверный формат цены")
+    @Digits(integer = 6, fraction = 2, message = "Неверный формат цены")
     private BigDecimal sellingPrice;
 
     @Enumerated(EnumType.STRING)
     private MeasurementUnit measurementUnit;
+
+    private int balance;
 
     @ManyToOne
     private Shop shop;
