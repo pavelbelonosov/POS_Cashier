@@ -95,7 +95,7 @@ public class TerminalService {
         List<Account> employees = listOfListsEmployees.stream()
                 .flatMap(List::stream)
                 .collect(Collectors.toList());
-        return employees.stream().filter(account -> account.getWorkTerminalTid() == terminal.getTid()).collect(Collectors.toList());
+        return employees.stream().filter(account -> account.getWorkTerminalTid().equals(terminal.getTid())).collect(Collectors.toList());
     }
 
     public Terminal getValidatedTerminal(Long id, UserDetails currentUser) {

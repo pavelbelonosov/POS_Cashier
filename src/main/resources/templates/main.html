@@ -1,45 +1,171 @@
 <!DOCTYPE HTML>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
-<div th:replace="fragments/layout :: head(text='Operations')"></div>
+<div th:replace="fragments/layout :: head(text='POS-кассир | Касса')"></div>
 <body>
 <div th:replace="fragments/layout :: header"></div>
 
 <main>
-    <div class="jumbotron jumbotron-fluid">
-        <div class="container">
-            <h1>Hi</h1>
-            <div th:if="${account.workTerminalTid==null}">
-                <p>Please, add and set working terminal in settings</p>
-            </div>
-            <p id="transactionInfo"></p>
-
-            <div th:if="${account.authority.explanation!='Администратор'}">
-                <form class="form-inline" th:action="@{/accounts/current/terminals/workingterminal}" method="POST">
+    <section class="container">
+        <div class="row">
+            <div class="col-md-auto">
+                <h3 th:if="${terminal==null}">Добавьте и выберите рабочий терминал</h3>
+                <form class="form-inline" th:if="${account.authority.explanation!='Администратор'}"
+                      th:action="@{/accounts/current/terminals/workingterminal}" method="POST">
                     <div class="form-group mx-sm-3 mb-5">
                         <select class="form-control" name="terminalId">
                             <option th:each="term : ${account.shops[0].terminals}" th:value="${term.id}"
                                     th:text="${term.tid}+ ' Магазин ' + ${account.shops[0].name} + ' '+ ${account.shops[0].address}"></option>
                         </select>
                     </div>
-                    <button class="btn btn-dark mb-5" type="submit">Встать за кассу</button>
+                    <button class="btn btn-dark" type="submit">Встать за кассу</button>
                 </form>
             </div>
-
+            <!div class="jumbotron jumbotron-fluid">
         </div>
-    </div>
+        <div class="row">
 
-    <section class="container">
-        <p>
-            <button onclick="makePayment()">Make payment</button>
-        </p>
-        <h3>Cheques:</h3>
-        <div  th:if="${terminal!=null && !terminal.transactions.empty}">
-            <span th:text="${terminal.transactions[#lists.size(terminal.transactions) - 1].cheque}">terminal last transaction</span>
+
+            <div class="col-md-auto">
+                <h5 align="center">Отсканируйте товар или добавьте из каталога</h5>
+                <form class="form-group" th:method="POST">
+
+                    <table th:if="${terminal!=null}" class="table table-stripped text-center" id="dataTable"
+                           data-page-length='3'
+                           data-order='[[1, "desc"]]'>
+                        <thead>
+                        <tr>
+                            <td></td>
+                            <td>Наименование</td>
+                            <td>Артикул</td>
+                            <td>Цена</td>
+                            <td>Кол-во</td>
+                            <td>Barcode</td>
+                        </tr>
+                        </thead>
+
+                        <tbody>
+
+                        <tr th:if="${terminal.shop.products.empty}">
+                            <td colspan="5">Нет добавленных товаров</td>
+                        </tr>
+                        <tr id="rows" th:each="prod : ${terminal.shop.products}" th:if="${prod.balance > 0}">
+                                <td><input type="checkbox" name="prods" th:value="${prod.id}"/></td>
+                                <td th:text="${prod.name}">Name</td>
+                                <td th:text="${prod.vendorCode}">VendorCode</td>
+                                <td th:text="${prod.sellingPrice}">sellingPrice</td>
+                                <td >
+                                    <input type="number" min="1" th:max="${prod.balance}" th:if="${prod.type.explanation=='Товар'}"
+                                           id="quantity" name="quantity" class="form-control form-control-sm w-30"
+                                           placeholder="0" style="width: 4em"/></td>
+                                <td th:text="${prod.barCode}">Barcode</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <button type="submit" class="btn btn-outline-dark btn-lg btn-block my-2"
+                            th:formaction="@{/shops/{shopId}/products/addtocart(shopId=${terminal.shop.id})}">К оплате
+                    </button>
+                </form>
+                <h4 align="center">Чек</h4>
+
+
+                    <ul class="list-group" th:if="${!productsInCheque.empty}"
+                        th:each="element, iterStat : ${productsInCheque}">
+                        <th:block
+                                th:with="amount=${productsAmountsInCheque[iterStat.index]}, price = ${element.sellingPrice * productsAmountsInCheque[iterStat.index]}">
+                            <li class="list-group-item list-group-item-secondary"
+                                th:text="${element.name}+' | x'+ ${amount} + ' | ' + ${price}+ ' р.'">
+                                <span class="badge"
+                                       th:text="${amount}"></span>
+                            </li>
+
+                        </th:block>
+
+                    </ul>
+
+
+
+                <div class="row">
+
+                    <p>
+                        <button onclick="makePayment()">Make payment</button>
+                    </p>
+                    <h3>Cheques:</h3>
+                    <div th:if="${terminal!=null && !terminal.transactions.empty}">
+                        <span th:text="${terminal.transactions[#lists.size(terminal.transactions) - 1].cheque}">terminal last transaction</span>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
+
 </main>
 <script th:inline="javascript"> var contextRoot = /*[[@{/}]]*/ '';</script>
 <script th:src="@{/javascript/transactions.js}" defer></script>
+<script type="text/javascript" language="javascript" src="https://code.jquery.com/jquery-3.5.1.js"></script>
+<script type="text/javascript" language="javascript"
+        src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+<script>
+$(document).ready( function () {
+$('#dataTable').DataTable();
+} );
+
+$('#dataTable').dataTable( {
+"buttons": [
+            'colvis'
+        ],
+  "lengthMenu": [ [3], [3] ],
+  "columnDefs": [ {
+      "targets": 0,
+      "searchable": false,
+      "orderable": false
+    },
+     {
+      "targets": 2,
+      "searchable": false,
+      "orderable": false
+    },
+    {
+      "targets": 4,
+      "searchable": false,
+      "orderable": false
+    },
+    {
+      "targets": 5,
+      "searchable": true,
+      "visible": false
+    }],
+
+    "language": {
+        "sProcessing":    "Вычисляю...",
+        "sLengthMenu":    "",
+        "sZeroRecords":   "Товар не найден или на остатке ноль",
+        "sEmptyTable":    "Товар не найден или на остатке ноль",
+        "sInfo":          "",
+        "sInfoEmpty":     "",
+        "sInfoFiltered":  "",
+        "sInfoPostFix":   "",
+        "sSearch":        "Поиск по штрих-коду/наименованию:",
+        "sUrl":           "",
+        "sInfoThousands":  ",",
+        "sLoadingRecords": "Загружаю...",
+        "oPaginate": {
+            "sFirst":    "",
+            "sLast":    "",
+            "sNext":    "",
+            "sPrevious": ""
+        },
+        "oAria": {
+            "sSortAscending":  ": Упорядочить по возрастанию",
+            "sSortDescending": ": Упорядочить по убыванию"
+        }
+    }
+} );
+
+
+
+
+
+</script>
 <div th:replace="fragments/layout :: footer"></div>
 </body>
 </html>

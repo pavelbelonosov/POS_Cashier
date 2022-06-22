@@ -63,7 +63,7 @@ public class ShopService {
         Shop shop = shopRepository.getOne(shopId);
         validateShopIdAccess(shop, owner);
         shop.getAccounts().removeIf(account -> {
-            if (account.getId() != owner.getId()) {
+            if (!account.getId().equals(owner.getId())) {
                 accountInfoRepository.delete(account.getAccountInfo());
                 accountRepository.delete(account);
             }

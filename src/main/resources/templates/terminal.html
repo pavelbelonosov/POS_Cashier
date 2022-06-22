@@ -90,5 +90,31 @@
     $(document).ready( function () {
         $('#dataTable').DataTable();
     } );
-
+$('table.display').dataTable( {
+  "lengthMenu": [ [10, 25, 50, -1], [10, 25, 50, "Все"] ],
+    "language": {
+        "sProcessing":    "Вычисляю...",
+        "sLengthMenu":    "Показать _MENU_",
+        "sZeroRecords":   "Результатов не найдено",
+        "sEmptyTable":    "Результатов не найдено",
+        "sInfo":          "Показано _START_ из  _TOTAL_ записей",
+        "sInfoEmpty":     "Показано 0 из 0 записей",
+        "sInfoFiltered":  "(Отобрано из _MAX_ записей)",
+        "sInfoPostFix":   "",
+        "sSearch":        "Найти:",
+        "sUrl":           "",
+        "sInfoThousands":  ",",
+        "sLoadingRecords": "Загружаю...",
+        "oPaginate": {
+            "sFirst":    "Первый",
+            "sLast":    "Последний",
+            "sNext":    "Вперед",
+            "sPrevious": "Назад"
+        },
+        "oAria": {
+            "sSortAscending":  ": Упорядочить по возрастанию",
+            "sSortDescending": ": Упорядочить по убыванию"
+        }
+    }
+} );
 </script>

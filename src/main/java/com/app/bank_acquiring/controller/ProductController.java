@@ -85,7 +85,7 @@ public class ProductController {
         if (prods == null || balances == null) {
             return "redirect:/products";
         }
-        List<String> list = balances.stream().filter(b -> !b.isEmpty()).collect(Collectors.toList());
+        List<String> list = balances.stream().filter(b -> !b.isEmpty()&&Integer.valueOf(b)>=0).collect(Collectors.toList());
         if (prods.length == list.size()) {
             for (int i = 0; i < prods.length; i++) {
                 productService.getProduct(prods[i], currentUser).setBalance(Integer.valueOf(list.get(i)));

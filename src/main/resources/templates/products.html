@@ -1,6 +1,6 @@
 <!DOCTYPE HTML>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
-<div th:replace="fragments/layout :: head(text='База товаров')"></div>
+<div th:replace="fragments/layout :: head(text='POS-кассир | База товаров')"></div>
 <body>
 <div th:replace="fragments/layout :: header"></div>
 <main>
@@ -40,7 +40,7 @@
                             <label for="sellingPrice">Цена продажи:</label>
                             <input type="text" th:field="*{sellingPrice}" id="sellingPrice" name="sellingPrice"
                                    class="form-control form-control-sm"
-                                   placeholder="0.0"/>
+                                   placeholder="0.0" required/>
                             <p th:if="${#fields.hasErrors('sellingPrice')}" th:errors="*{sellingPrice}"
                                th:style="'color:red'">sellingPrice validation</p>
                             <label for="measurementUnit">Единица измерения:</label>
@@ -64,7 +64,7 @@
                                 validation</p>
                             <label for="balance">Остаток:</label>
                             <input type="number" th:field="*{balance}" id="balance" name="balance"
-                                   class="form-control form-control-sm"
+                                   class="form-control form-control-sm" min="1"
                                    required/>
                             <p th:if="${#fields.hasErrors('balance')}" th:errors="*{balance}" th:style="'color:red'">
                                 balance
@@ -238,9 +238,5 @@ $('table.display').dataTable( {
         }
     }
 } );
-
-
-
-
 </script>
 </html>
