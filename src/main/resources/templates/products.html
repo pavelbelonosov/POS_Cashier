@@ -12,9 +12,11 @@
                         <select class="form-control form-control-sm" id="shop" name="shop"
                                 th:onchange="shopVisibility(this.value)">
                             <option value="0"></option>
-                            <option th:each="shop : ${account.shops}" th:value="${shop.id}"
+                            <option th:each="shop : ${account.shops}" th:value="${shop.id}" th:field="*{shop}"
                                     th:text="${shop.name} + ' ' +  ${shop.address}"></option>
                         </select>
+                        <p th:if="${#fields.hasErrors('shop')}" th:errors="*{shop}" th:style="'color:red'">shop
+                        validation</p>
                         <br>
                         <h4>Карточка товара:</h4>
                         <div class="form-group">
@@ -46,7 +48,7 @@
                             <label for="measurementUnit">Единица измерения:</label>
                             <select class="form-control form-control-sm" id="measurementUnit" name="measurementUnit">
                                 <option th:each="measurementUnit : ${measurementUnits}" th:value="${measurementUnit}"
-                                        th:text="${measurementUnit.explanation}"></option>
+                                        th:text="${measurementUnit.fullExplanation}"></option>
                             </select>
                             <label for="vendorCode">Артикул:</label>
                             <input type="text" th:field="*{vendorCode}" id="vendorCode" name="vendorCode"
@@ -63,8 +65,8 @@
                                 barCode
                                 validation</p>
                             <label for="balance">Остаток:</label>
-                            <input type="number" th:field="*{balance}" id="balance" name="balance"
-                                   class="form-control form-control-sm" min="1"
+                            <input type="text" th:field="*{balance}" id="balance" name="balance"
+                                   class="form-control form-control-sm" pattern="^[0-9]+(?:\.[0-9]+)?$"
                                    required/>
                             <p th:if="${#fields.hasErrors('balance')}" th:errors="*{balance}" th:style="'color:red'">
                                 balance
@@ -124,7 +126,7 @@
                                         <td th:text="${prod.sellingPrice}">sellingPrice</td>
                                         <td th:text="${prod.purchasePrice}">purchasePrice</td>
                                         <td><input type="text" size="6" th:if="${prod.type.explanation=='Товар'}"
-                                                   id="balances" name="balances" class="form-control form-control-sm"
+                                                   id="balances" name="balances" class="form-control form-control-sm" pattern="^[0-9]+(?:\.[0-9]+)?$"
                                                    th:placeholder="${prod.balance}"/></td>
                                     </tr>
                                     </tbody>

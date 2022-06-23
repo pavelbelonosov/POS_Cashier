@@ -28,11 +28,6 @@ public class TerminalController {
     @Autowired
     private TerminalService terminalService;
 
-    /*@GetMapping("/terminals")
-    public String list(Model model){
-        model.addAttribute("terminals",terminalRepository.findAll());
-        return "terminals";
-    }*/
 
     @ModelAttribute
     private Terminal getTerminal() {

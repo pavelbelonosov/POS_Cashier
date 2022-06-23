@@ -12,7 +12,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -79,6 +78,7 @@ public class TerminalService {
         Terminal terminal = getValidatedTerminal(id, currentUser);
         uposService.deleteUserUpos(accountRepository.findByUsername(currentUser.getUsername()).getId(),
                 terminal.getShop().getId(), terminal.getTid());
+        getAccountsWithWorkTerminal(terminal,currentUser).forEach(account -> account.setWorkTerminalTid(null));
         terminalRepository.delete(terminal);
     }
 
@@ -95,7 +95,10 @@ public class TerminalService {
         List<Account> employees = listOfListsEmployees.stream()
                 .flatMap(List::stream)
                 .collect(Collectors.toList());
-        return employees.stream().filter(account -> account.getWorkTerminalTid().equals(terminal.getTid())).collect(Collectors.toList());
+        return employees.stream().map(account -> account.getId()).distinct()
+                .map(id -> accountRepository.getOne(id))
+                .filter(account -> account.getWorkTerminalTid().equals(terminal.getTid()))
+                .collect(Collectors.toList());
     }
 
     public Terminal getValidatedTerminal(Long id, UserDetails currentUser) {
@@ -105,8 +108,12 @@ public class TerminalService {
         return terminal;
     }
 
+    public Terminal getTerminalByTid(String tid) {
+        return terminalRepository.findByTid(tid);
+    }
+
     private void validateIdAccess(Account account, Terminal terminal) {
-        if (!account.getTerminals().contains(terminal)) {
+        if (terminal == null || !account.getTerminals().contains(terminal)) {
             throw new RuntimeException("Current account doesn't have this terminal");
         }
     }

@@ -1,16 +1,21 @@
 package com.app.bank_acquiring.domain.product;
 
 public enum MeasurementUnit {
-    PIECE("Штука"), UNIT("Единица"), LITER("Литр"), KILOGRAM("Килограмм"),
-    PACK("Упаковка"), FRACTION("Дробь");
+    PIECE("Штука","шт."), UNIT("Единица","ед."), LITER("Литр","л"), KILOGRAM("Килограмм","кг"),
+    PACK("Упаковка","уп."), FRACTION("Дробь","др.");
 
-    private String explanation;
+    private String fullExplanation;
+    private String shortExplanation;
 
-    MeasurementUnit(String explanation) {
-        this.explanation = explanation;
+    MeasurementUnit(String explanation, String shortExplanation) {
+        this.fullExplanation = explanation;
+        this.shortExplanation = shortExplanation;
     }
 
-    public String getExplanation() {
-        return explanation;
+    public String getFullExplanation() {
+        return fullExplanation;
+    }
+    public String getShortExplanation() {
+        return shortExplanation;
     }
 }

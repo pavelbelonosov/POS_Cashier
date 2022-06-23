@@ -46,7 +46,7 @@
 
             <div class="col-md-auto">
                 <h3> Транзакции: </h3>
-                <table class="table table-hover table-responsive table-sm" id="dataTable" data-page-length='50'
+                <table class="table table-hover table-responsive table-sm" id="dataTable" data-page-length='10'
                        data-order='[[1, "desc"]]'>
                     <thead>
                     <tr>
@@ -90,7 +90,7 @@
     $(document).ready( function () {
         $('#dataTable').DataTable();
     } );
-$('table.display').dataTable( {
+$('#dataTable').dataTable( {
   "lengthMenu": [ [10, 25, 50, -1], [10, 25, 50, "Все"] ],
     "language": {
         "sProcessing":    "Вычисляю...",

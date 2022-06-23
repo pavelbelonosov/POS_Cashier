@@ -66,7 +66,6 @@
             <table class="table table-bordered table-striped text-center">
                 <thead>
                 <tr>
-                    <td>ID</td>
                     <td>Логин</td>
                     <td>ФИО</td>
                     <td>Телефон</td>
@@ -77,12 +76,10 @@
                 </thead>
                 <tbody>
                 <tr th:if="${employees.empty}">
-                    <td colspan="8">Нет добавленных сотрудников</td>
+                    <td colspan="7">Нет добавленных сотрудников</td>
                 </tr>
                 <tr th:each="employee : ${employees}">
-                    <td><a th:href="@{/accounts/{id}(id=${employee.id})}"
-                           th:text="${employee.id}">1</a></td>
-                    <td th:text="${employee.username}">Login</td>
+                    <td><a th:text="${employee.username}" th:href="@{/accounts/{id}(id=${employee.id})}"></a></td>
                     <td th:text="${employee.accountInfo != null}? ${employee.accountInfo.firstName} +' '+ ${employee.accountInfo.lastName}:' '">
                         Firstname
                     </td>

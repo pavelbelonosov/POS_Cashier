@@ -20,6 +20,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -85,7 +86,7 @@ public class ProductController {
         if (prods == null || balances == null) {
             return "redirect:/products";
         }
-        List<String> list = balances.stream().filter(b -> !b.isEmpty()&&Integer.valueOf(b)>=0).collect(Collectors.toList());
+        List<String> list = balances.stream().filter(b -> !b.isEmpty()).collect(Collectors.toList());
         if (prods.length == list.size()) {
             for (int i = 0; i < prods.length; i++) {
                 productService.getProduct(prods[i], currentUser).setBalance(Integer.valueOf(list.get(i)));
@@ -102,29 +103,22 @@ public class ProductController {
         if (prods == null || targetShopId == null) {
             return "redirect:/products";
         }
-        Shop shopFrom = shopService.getShop(shopId, currentUser); //just validation issue
-        Shop shopTo = shopService.getShop(targetShopId, currentUser);
-        for (int i = 0; i < prods.length; i++) {
-            Product oldProduct = productService.getProduct(prods[i], currentUser);
-            Product newProduct = new Product();
-            newProduct.setName(oldProduct.getName());
-            newProduct.setType(oldProduct.getType());
-            newProduct.setPurchasePrice(oldProduct.getPurchasePrice());
-            newProduct.setSellingPrice(oldProduct.getSellingPrice());
-            newProduct.setBarCode(oldProduct.getBarCode());
-            newProduct.setVendorCode(oldProduct.getVendorCode());
-            newProduct.setMeasurementUnit(oldProduct.getMeasurementUnit());
-            newProduct.setShop(shopTo);
-            productService.saveProduct(newProduct);
-        }
+        productService.copyProducts(prods, shopId, targetShopId, currentUser);
         return "redirect:/products";
     }
 
     @PostMapping("/products")
     public String createProduct(@Valid @ModelAttribute Product product, BindingResult bindingResult, @RequestParam Shop shop,
                                 @AuthenticationPrincipal UserDetails currentUser, Model model) {
+        if (shop == null) {
+            bindingResult.addError(new FieldError("product", "shop", "Укажите магазин"));
+        }
         if (bindingResult.hasErrors()) {
             return getProducts(model, currentUser);
+        }
+        if (product.getType() == Type.SERVICE) {
+            product.setBalance(Integer.MAX_VALUE);
+            product.setMeasurementUnit(MeasurementUnit.UNIT);
         }
         product.setShop(shop);
         productService.saveProduct(product);

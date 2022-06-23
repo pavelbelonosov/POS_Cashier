@@ -1,5 +1,6 @@
 package com.app.bank_acquiring.service;
 
+import com.app.bank_acquiring.domain.Shop;
 import com.app.bank_acquiring.domain.account.Account;
 import com.app.bank_acquiring.domain.product.Product;
 import com.app.bank_acquiring.repository.AccountRepository;
@@ -24,6 +25,8 @@ public class ProductService {
     private ProductRepository productRepository;
     @Autowired
     private AccountRepository accountRepository;
+    @Autowired
+    private ShopService shopService;
 
     @Transactional
     public Product getProduct(Long id, UserDetails currentUser) {
@@ -39,6 +42,25 @@ public class ProductService {
         Product product = productRepository.getOne(id);
         validateProductIdAccess(product, current);
         productRepository.delete(product);
+    }
+
+    @Transactional
+    public void copyProducts(long[] prodsIds, Long shopId, Long targetShopId, UserDetails currentUser) {
+        Shop shopFrom = shopService.getShop(shopId, currentUser); //just validation issue
+        Shop shopTo = shopService.getShop(targetShopId, currentUser);
+        for (int i = 0; i < prodsIds.length; i++) {
+            Product oldProduct = getProduct(prodsIds[i], currentUser);
+            Product newProduct = new Product();
+            newProduct.setName(oldProduct.getName());
+            newProduct.setType(oldProduct.getType());
+            newProduct.setPurchasePrice(oldProduct.getPurchasePrice());
+            newProduct.setSellingPrice(oldProduct.getSellingPrice());
+            newProduct.setBarCode(oldProduct.getBarCode());
+            newProduct.setVendorCode(oldProduct.getVendorCode());
+            newProduct.setMeasurementUnit(oldProduct.getMeasurementUnit());
+            newProduct.setShop(shopTo);
+            saveProduct(newProduct);
+        }
     }
 
     public void saveProduct(Product product) {

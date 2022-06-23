@@ -43,7 +43,7 @@ public class Product extends AbstractPersistable<Long> {
     @Enumerated(EnumType.STRING)
     private MeasurementUnit measurementUnit;
 
-    private int balance;
+    private double balance;
 
     @ManyToOne
     private Shop shop;
