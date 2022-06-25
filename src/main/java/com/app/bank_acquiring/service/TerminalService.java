@@ -97,7 +97,7 @@ public class TerminalService {
                 .collect(Collectors.toList());
         return employees.stream().map(account -> account.getId()).distinct()
                 .map(id -> accountRepository.getOne(id))
-                .filter(account -> account.getWorkTerminalTid().equals(terminal.getTid()))
+                .filter(account -> account.getWorkTerminalTid()!=null&&account.getWorkTerminalTid().equals(terminal.getTid()))
                 .collect(Collectors.toList());
     }
 

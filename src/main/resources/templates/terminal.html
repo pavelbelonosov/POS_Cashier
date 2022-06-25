@@ -1,6 +1,6 @@
 <!DOCTYPE HTML>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
-<div th:replace="fragments/layout :: head(text='Терминал')"></div>
+<div th:replace="fragments/layout :: head(text='POS-кассир | Терминал')"></div>
 <body>
 <div th:replace="fragments/layout :: header"></div>
 <main>
@@ -47,7 +47,7 @@
             <div class="col-md-auto">
                 <h3> Транзакции: </h3>
                 <table class="table table-hover table-responsive table-sm" id="dataTable" data-page-length='10'
-                       data-order='[[1, "desc"]]'>
+                       data-order='[[3, "desc"]]'>
                     <thead>
                     <tr>
                         <td>ID</td>

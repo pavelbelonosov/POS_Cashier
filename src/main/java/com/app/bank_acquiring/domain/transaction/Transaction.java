@@ -20,7 +20,7 @@ import java.util.List;
 public class Transaction extends AbstractPersistable<Long> {
 
     @NotNull
-    private boolean status;
+    private Boolean status;
     private LocalDateTime dateTime;
 
     @Enumerated(EnumType.STRING)

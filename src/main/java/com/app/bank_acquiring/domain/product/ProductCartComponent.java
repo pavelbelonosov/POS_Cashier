@@ -1,13 +1,9 @@
-package com.app.bank_acquiring.service;
+package com.app.bank_acquiring.domain.product;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import com.app.bank_acquiring.domain.product.Product;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
@@ -15,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
-public class ProductCart implements Serializable {
+public class ProductCartComponent implements Serializable {
 
     private Map<Product, Double> products = new HashMap<>();
 

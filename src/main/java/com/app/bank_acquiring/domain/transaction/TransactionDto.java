@@ -1,28 +1,31 @@
 package com.app.bank_acquiring.domain.transaction;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AllArgsConstructor;
+import com.app.bank_acquiring.domain.product.Product;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import javax.persistence.Entity;
-import javax.persistence.Lob;
-import javax.persistence.ManyToOne;
-import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 @Data
 @NoArgsConstructor
 public class TransactionDto {
 
-    private Long id;
-    private boolean status;
+    private long id;
+    private Boolean status;
     private LocalDateTime dateTime;
     private double amount;
     private String cheque;
+    private List<Long> productsList;
+    private List<Double> productsAmountList;
 
-    public TransactionDto(Long id, boolean status, LocalDateTime dateTime, double amount, String cheque){
+    public TransactionDto(Long id, boolean status, LocalDateTime dateTime,
+                          Double amount, String cheque, List<Long> products, List<Double> productsAmountList){
+        this.productsList = products;
+        this.productsAmountList = productsAmountList;
         this.id=id;
         this.status=status;
         this.amount=amount;

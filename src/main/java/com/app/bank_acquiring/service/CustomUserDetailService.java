@@ -1,4 +1,4 @@
-package com.app.bank_acquiring.config;
+package com.app.bank_acquiring.service;
 import java.util.Arrays;
 
 import com.app.bank_acquiring.domain.account.Account;

@@ -9,7 +9,8 @@
         <div class="row justify-content-center mb-4">
             <div class="col-*-*">
                 <h3 th:if="${terminal==null}">Добавьте и выберите рабочий терминал</h3>
-                <form class="form-inline" th:if="${account.authority.explanation!='Администратор'&&!account.shops[0].terminals.empty}"
+                <form class="form-inline"
+                      th:if="${account.authority.explanation!='Администратор'&&!account.shops[0].terminals.empty}"
                       th:action="@{/accounts/current/terminals/workingterminal}" method="POST">
                     <div class="form-group mr-2">
                         <select class="form-control" name="terminalId">
@@ -25,7 +26,7 @@
         <div class="row" th:if="${terminal!=null}">
             <div class="col-md-auto">
 
-                <form class="form-group" th:method="POST">
+                <form class="form-group" id="formForAddingProductsInCart" th:method="POST">
                     <h5 align="center">Отсканируйте товар или добавьте из каталога</h5>
                     <table th:if="${terminal!=null}" class="table table-stripped text-center" id="dataTable"
                            data-page-length='3'
@@ -52,23 +53,28 @@
                             <td th:text="${prod.vendorCode}">VendorCode</td>
                             <td th:text="${prod.sellingPrice}">sellingPrice</td>
                             <td>
-                                <th:block th:if="${prod.type.explanation=='Услуга'|| prod.measurementUnit.fullExplanation=='Штука'||prod.measurementUnit.fullExplanation=='Единица' ||prod.measurementUnit.fullExplanation=='Упаковка'||prod.measurementUnit.fullExplanation=='Дробь'}">
+                                <th:block
+                                        th:if="${prod.type.explanation=='Услуга'|| prod.measurementUnit.fullExplanation=='Штука'||prod.measurementUnit.fullExplanation=='Единица' ||prod.measurementUnit.fullExplanation=='Упаковка'||prod.measurementUnit.fullExplanation=='Дробь'}">
                                     <input type="number" th:min="1" th:max="${prod.balance}"
-                                            name="quantity" class="form-control form-control-sm w-30"
-                                           th:placeholder="'0 '+ ${prod.measurementUnit.shortExplanation}" style="width: 5em"/>
+                                           name="quantity" class="form-control form-control-sm w-30"
+                                           th:placeholder="'0 '+ ${prod.measurementUnit.shortExplanation}"
+                                           style="width: 5em"/>
                                 </th:block>
-                                <th:block th:if="${prod.measurementUnit.fullExplanation=='Килограмм'||prod.measurementUnit.fullExplanation=='Литр'}">
+                                <th:block
+                                        th:if="${prod.measurementUnit.fullExplanation=='Килограмм'||prod.measurementUnit.fullExplanation=='Литр'}">
                                     <input type="text"
-                                            name="quantity" class="form-control form-control-sm w-30"
-                                           th:placeholder="'0 '+ ${prod.measurementUnit.shortExplanation}" pattern="^[0-9]+(?:\.[0-9]+)?$" style="width: 5em"/>
+                                           name="quantity" class="form-control form-control-sm w-30"
+                                           th:placeholder="'0 '+ ${prod.measurementUnit.shortExplanation}"
+                                           pattern="^[0-9]+(?:\.[0-9]+)?$" style="width: 5em"/>
                                 </th:block>
-                                </td>
+                            </td>
                             <td th:text="${prod.barCode}">Barcode</td>
                         </tr>
                         </tbody>
                     </table>
-                    <button type="submit" class="btn btn-outline-dark btn-lg btn-block my-2"
-                            th:formaction="@{/shops/{shopId}/products/addtocart(shopId=${terminal.shop.id})}">Добавить в чек
+                    <button onclick="validateEmptyValuesAndSubmit" class="btn btn-outline-dark btn-lg btn-block my-2"
+                            th:formaction="@{/shops/{shopId}/products/addtocart(shopId=${terminal.shop.id})}">Добавить в
+                        чек
                     </button>
                 </form>
                 <div class="list-group">
@@ -76,25 +82,46 @@
                     <th:block th:if="${!productsInCheque.empty}"
                               th:each="element, iterStat : ${productsInCheque}"
                               th:with="amount=${productsAmountsInCheque[iterStat.index]}, price = ${#numbers.formatDecimal(element.sellingPrice * productsAmountsInCheque[iterStat.index], 1, 'COMMA', 2, 'POINT')}">
-                        <a th:href="@{/shops/{shopId}/productcart/{productId}/amount/{productAmount}(shopId=${terminal.shop.id}, productId=${element.id}, productAmount=${amount})}"
+                        <a name="productInCart"
+                           th:href="@{/shops/{shopId}/productcart/{productId}/amount/{productAmount}(shopId=${terminal.shop.id}, productId=${element.id}, productAmount=${amount})}"
                            class="list-group-item list-group-item-action list-group-item-success"
                            th:text="${element.name}+' | '+ ${amount} + ' '+ ${element.measurementUnit.shortExplanation} + ' | ' + ${price}+ ' р.  (Кликните, чтобы удалить)'"></span></a>
+                        <span hidden name="prodName" th:text="${element.id}"></span>
+                        <span hidden name="prodAmount" th:text="${amount}"></span>
                     </th:block>
-                    <h6 align="right">Итого:</h6> <h6 align="right" id="totalPrice" th:text="${chequeTotalPrice}" th:style="'color:red'"></h6>
+                    <div class="d-flex justify-content-between">
+                        <a th:href="@{/shops/{shopId}/productcart/delete(shopId=${terminal.shop.id})}">Очистить чек</a>
+                        <h6 align="right">Итого:</h6>
+                    </div>
+                    <h6 align="right" id="totalPrice" th:text="${chequeTotalPrice}" th:style="'color:red'"></h6>
+
+                    <div class="btn-toolbar mb-3" role="toolbar">
+                        <div class="btn-group btn-lg btn-block my-2" role="group">
+                            <button onclick="makePayment()" class="btn btn-dark"
+                            >Оплата
+                            </button>
+                            <button onclick="makePayment()" class="btn btn-dark">
+                                Возврат
+                            </button>
+                        </div>
+                    </div>
+                    <p id="transactionInfo"></p>
+
                 </div>
 
-                    <div class="row">
+                <div class="row">
 
-                        <p>
-                            <button onclick="makePayment()">Make payment</button>
-                        </p>
-                        <h3>Cheques:</h3>
-                        <div th:if="${!terminal.transactions.empty}">
-                            <span th:text="${terminal.transactions[#lists.size(terminal.transactions) - 1].cheque}">terminal last transaction</span>
-                        </div>
+
+                    </p>
+                    <br>
+                    <h3>Cheques:</h3>
+                    <div th:if="${!terminal.transactions.empty}">
+                                <span hidden
+                                      th:text="${terminal.transactions[#lists.size(terminal.transactions) - 1].cheque}">terminal last transaction</span>
                     </div>
                 </div>
             </div>
+        </div>
     </section>
 
 </main>
@@ -159,6 +186,9 @@ $('#dataTable').dataTable( {
         }
     }
 } );
+
+
+
 
 
 
