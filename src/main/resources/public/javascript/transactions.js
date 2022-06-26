@@ -42,9 +42,12 @@ console.log(transaction);
     }
     var transactionResponsed = JSON.parse(this.responseText)
     if(transactionResponsed.status==false){
-    document.getElementById("transactionInfo").innerHTML = "Отказано" ;
+    document.getElementById("paymentBtn").innerHTML = "Отказано";
+     document.getElementById("paymentBtn").className = "btn btn-danger";
     } else{
-    document.getElementById("transactionInfo").innerHTML = "Одобрено" ;
+    document.getElementById("paymentBtn").innerHTML = "Одобрено" ;
+    document.getElementById("paymentBtn").className = "btn btn-success";
+
     }
 
         document.getElementById("totalPrice").textContent="";
@@ -56,6 +59,9 @@ console.log(transaction);
             products[i].textContent="";
             productsAmount[i].textContent="";
             }
+            document.getElementById("jumbotronChequeArea").className = "jumbotron";
+            document.getElementById("responseCheque").innerHTML = transactionResponsed.cheque;
+
     }
 
 

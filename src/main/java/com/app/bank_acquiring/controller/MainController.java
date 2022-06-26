@@ -56,11 +56,13 @@ public class MainController {
                                     @RequestParam(name = "quantity", required = false) List<Double> quantity,
                                     @PathVariable Long shopId,
                                     @AuthenticationPrincipal UserDetails currentUser) {
-        System.out.println(quantity.size());
         if (prods == null || quantity == null) {
             return "redirect:/main";
         }
         List<Double> quantitylist = quantity.stream().filter(b -> b != null).collect(Collectors.toList());
+        if (prods.length != quantitylist.size()) {
+            return "redirect:/main";
+        }
         shopService.getShop(shopId, currentUser); //just validation issue
         for (int i = 0; i < prods.length; i++) {
             productCart.addToCart(productService.getProduct(prods[i], currentUser), quantitylist.get(i));

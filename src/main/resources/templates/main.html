@@ -97,7 +97,7 @@
 
                     <div class="btn-toolbar mb-3" role="toolbar">
                         <div class="btn-group btn-lg btn-block my-2" role="group">
-                            <button onclick="makePayment()" class="btn btn-dark"
+                            <button id="paymentBtn" onclick="makePayment()" class="btn btn-dark"
                             >Оплата
                             </button>
                             <button onclick="makePayment()" class="btn btn-dark">
@@ -105,20 +105,20 @@
                             </button>
                         </div>
                     </div>
-                    <p id="transactionInfo"></p>
 
                 </div>
 
-                <div class="row">
 
-
-                    </p>
-                    <br>
-                    <h3>Cheques:</h3>
-                    <div th:if="${!terminal.transactions.empty}">
-                                <span hidden
-                                      th:text="${terminal.transactions[#lists.size(terminal.transactions) - 1].cheque}">terminal last transaction</span>
-                    </div>
+            </div>
+            <div class="col-md-auto" >
+                <div id="jumbotronChequeArea" style="'background-color: #F1F2F3'"  class="jumbotron d-none" ar>
+                    <table lass="table table-hover table-responsive table-sm">
+                        <tbody>
+                        <tr>
+                            <td style="white-space: pre-wrap;font-size:10px" id="responseCheque"></td>
+                        </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>

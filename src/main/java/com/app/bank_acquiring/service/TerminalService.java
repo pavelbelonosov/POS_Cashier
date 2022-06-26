@@ -112,7 +112,7 @@ public class TerminalService {
         return terminalRepository.findByTid(tid);
     }
 
-    private void validateIdAccess(Account account, Terminal terminal) {
+    public void validateIdAccess(Account account, Terminal terminal) {
         if (terminal == null || !account.getTerminals().contains(terminal)) {
             throw new RuntimeException("Current account doesn't have this terminal");
         }
