@@ -29,23 +29,23 @@ public class ProductService {
     private ShopService shopService;
 
     @Transactional
-    public Product getProduct(Long id, UserDetails currentUser) {
-        Account current = accountRepository.findByUsername(currentUser.getUsername());
+    public Product getProduct(Long id, String currentUser) {
+        Account current = accountRepository.findByUsername(currentUser);
         Product product = productRepository.getOne(id);
         validateProductIdAccess(product, current);
         return product;
     }
 
     @Transactional
-    public void deleteProduct(Long id, UserDetails currentUser) {
-        Account current = accountRepository.findByUsername(currentUser.getUsername());
+    public void deleteProduct(Long id, String currentUser) {
+        Account current = accountRepository.findByUsername(currentUser);
         Product product = productRepository.getOne(id);
         validateProductIdAccess(product, current);
         productRepository.delete(product);
     }
 
     @Transactional
-    public void copyProducts(long[] prodsIds, Long shopId, Long targetShopId, UserDetails currentUser) {
+    public void copyProducts(long[] prodsIds, Long shopId, Long targetShopId, String currentUser) {
         Shop shopFrom = shopService.getShop(shopId, currentUser); //just validation issue
         Shop shopTo = shopService.getShop(targetShopId, currentUser);
         for (int i = 0; i < prodsIds.length; i++) {

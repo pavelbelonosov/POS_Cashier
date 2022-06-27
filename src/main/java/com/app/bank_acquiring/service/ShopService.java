@@ -28,16 +28,16 @@ public class ShopService {
     private UposService uposService;
 
     @Transactional
-    public Shop getShop(Long id, UserDetails currentUser) {
-        Account current = accountRepository.findByUsername(currentUser.getUsername());
+    public Shop getShop(Long id, String currentUser) {
+        Account current = accountRepository.findByUsername(currentUser);
         Shop shop = shopRepository.getOne(id);
         validateShopIdAccess(shop, current);
         return shop;
     }
 
     @Transactional
-    public void createShop(Shop shop, UserDetails currentUser) {
-        Account owner = accountRepository.findByUsername(currentUser.getUsername());
+    public void createShop(Shop shop, String currentUser) {
+        Account owner = accountRepository.findByUsername(currentUser);
         List<Account> accounts = new ArrayList<>();
         accounts.add(owner);
         shop.setAccounts(accounts);
@@ -45,8 +45,8 @@ public class ShopService {
     }
 
     @Transactional
-    public void deleteAccountFromShop(Long shopId, Long accountId, UserDetails currentUser) {
-        Account owner = accountRepository.findByUsername(currentUser.getUsername());
+    public void deleteAccountFromShop(Long shopId, Long accountId, String currentUser) {
+        Account owner = accountRepository.findByUsername(currentUser);
         Shop shop = shopRepository.getOne(shopId);
         validateShopIdAccess(shop, owner);
         Account employee = accountRepository.getOne(accountId);
@@ -58,8 +58,8 @@ public class ShopService {
     }
 
     @Transactional
-    public void deleteShop(Long shopId, UserDetails currentUser) {
-        Account owner = accountRepository.findByUsername(currentUser.getUsername());
+    public void deleteShop(Long shopId, String currentUser) {
+        Account owner = accountRepository.findByUsername(currentUser);
         Shop shop = shopRepository.getOne(shopId);
         validateShopIdAccess(shop, owner);
         shop.getAccounts().removeIf(account -> {

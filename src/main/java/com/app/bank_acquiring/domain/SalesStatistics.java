@@ -2,7 +2,7 @@ package com.app.bank_acquiring.domain;
 
 import com.app.bank_acquiring.domain.product.Product;
 import com.app.bank_acquiring.domain.transaction.Transaction;
-import com.app.bank_acquiring.domain.transaction.TransactionDto;
+import com.app.bank_acquiring.domain.transaction.Type;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.context.annotation.Scope;
@@ -10,7 +10,6 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Component
@@ -28,25 +27,26 @@ public class SalesStatistics {
     private Transaction transaction;
     private Map<Product, Double> prodToQuantity = new HashMap<>();
 
-    public double addTransaction(Transaction transaction, Map<Product, Double> prodToQuantity, Terminal terminal) {
+    public double addTransaction(Transaction transaction, Map<Product, Double> prodToQuantity,
+                                 Terminal terminal, Type transactionType) {
         this.prodToQuantity = prodToQuantity;
         this.terminal = terminal;
         this.transaction = transaction;
         currentBalance += transaction.getAmount();
-        if (transaction.getAmount() < 0) {
+        if (transactionType==Type.REFUND) {
             refundsCounter++;
-            return refundsCounter += Math.abs(transaction.getAmount());
+            return refunds += transaction.getAmount();
         }
         salesCounter++;
         return sales += transaction.getAmount();
     }
 
-    public String getPaymentTransactionToString() {
+    public String getOperationTransactionToString(Type transactionType) {
         StringBuilder s = new StringBuilder();
         s.append(terminal.getShop().getName() + "\n" + terminal.getShop().getCity() + " " + terminal.getShop().getAddress() + "\n");
         s.append("Смена: №" + terminal.getShiftCounter() + ", Чек: №" + (salesCounter + refundsCounter) + "\n");
         s.append("Кассир " + transaction.getCashier() + "\n");
-        s.append("Приход " + transaction.getDateTime() + "\n");
+        s.append(transactionType==Type.PAYMENT?"Приход ":"Возврат прихода " + transaction.getDateTime() + "\n");
         s.append("ТОВАРНЫЙ ЧЕК\n");
         int i = 1;
         for (Product product : prodToQuantity.keySet()) {

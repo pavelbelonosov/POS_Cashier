@@ -1,9 +1,8 @@
 package com.app.bank_acquiring.service;
 
 import com.app.bank_acquiring.domain.Terminal;
-import com.app.bank_acquiring.repository.AccountRepository;
+import com.app.bank_acquiring.domain.transaction.Type;
 import org.apache.commons.io.FileUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -57,7 +56,6 @@ public class UposService {
         Process process;
         try {
             process = new ProcessBuilder(dir + "loadparm.exe", "47", "2").start();
-            //process = new ProcessBuilder(dir + "loadparm.exe", "1", (int)(amount * 100) + "").start();
             process.waitFor();
             return true;
         } catch (Exception e) {
@@ -65,12 +63,19 @@ public class UposService {
         }
     }
 
-    public boolean makePayment(Long accountId, Long shopId, String terminalTid, double amount) {
+    public boolean makeOperation(Long accountId, Long shopId, String terminalTid, double amount, Type transactionType) {
         String dir = "C:/temp/bank/" + accountId + "/" + shopId + "/" + terminalTid + "/";
         Process process;
         try {
-            process = new ProcessBuilder(dir + "loadparm.exe", "9", "1").start();
-            //process = new ProcessBuilder(dir + "loadparm.exe", "1", (int)(amount * 100) + "").start();
+            switch (transactionType){
+                case PAYMENT:process = new ProcessBuilder(dir + "loadparm.exe", "9", "1").start();
+                //case PAYMENT:process = new ProcessBuilder(dir + "loadparm.exe", "1", (int)(amount * 100) + "").start();
+                break;
+                case REFUND:process = new ProcessBuilder(dir + "loadparm.exe", "9", "2").start();
+                //case CANCEL:process = new ProcessBuilder(dir + "loadparm.exe", "3", (int)(amount * 100) + "").start();
+                break;
+                default:process = new ProcessBuilder(dir + "loadparm.exe", "47", "2").start();
+            }
             process.waitFor();
             return true;
         } catch (Exception e) {
@@ -85,7 +90,7 @@ public class UposService {
             fis.read(buffer, 0, fis.available());
             String content = new String(buffer, "cp866");
             //return Arrays.asList(content.split("\n"));
-            return content;
+            return content.replaceAll("=","");
         } catch (Exception e) {
             return "";
         }

@@ -51,16 +51,16 @@ public class ShopController {
     public String createShop(@Valid @ModelAttribute Shop shop, BindingResult bindingResult,
                              @AuthenticationPrincipal UserDetails currentUser, Model model) {
         if (bindingResult.hasErrors()) {
-           return getShops(model, currentUser);
+            return getShops(model, currentUser);
         }
-        shopService.createShop(shop,currentUser);
+        shopService.createShop(shop, currentUser.getUsername());
         return "redirect:/shops";
     }
 
     @DeleteMapping("/shops/{id}")
     public String deleteShop(@PathVariable Long id,
-                                @AuthenticationPrincipal UserDetails currentUser) {
-        shopService.deleteShop(id,currentUser);
+                             @AuthenticationPrincipal UserDetails currentUser) {
+        shopService.deleteShop(id, currentUser.getUsername());
         return "redirect:/shops";
     }
 
@@ -68,7 +68,7 @@ public class ShopController {
     @DeleteMapping("/shops/{shopId}/accounts/{accountId}")
     public String deleteAccount(@PathVariable Long shopId, @PathVariable Long accountId,
                                 @AuthenticationPrincipal UserDetails currentUser) {
-        shopService.deleteAccountFromShop(shopId,accountId,currentUser);
+        shopService.deleteAccountFromShop(shopId, accountId, currentUser.getUsername());
         return "redirect:/accounts";
     }
 }

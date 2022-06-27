@@ -2,6 +2,7 @@ package com.app.bank_acquiring.controller;
 
 
 import com.app.bank_acquiring.domain.transaction.TransactionDto;
+import com.app.bank_acquiring.domain.transaction.Type;
 import com.app.bank_acquiring.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -26,7 +27,13 @@ public class TransactionRestController {
     @PostMapping("/api/v1/transactions/pay")
     public TransactionDto makePayment(@RequestBody TransactionDto transactionDto,
                                       @AuthenticationPrincipal UserDetails currentUser) {
-       return transactionService.makePayment(currentUser,transactionDto);
+        return transactionService.makeTransactionOperation(currentUser.getUsername(), transactionDto, Type.PAYMENT);
+    }
+
+    @PostMapping("/api/v1/transactions/refund")
+    public TransactionDto makeRefund(@RequestBody TransactionDto transactionDto,
+                                     @AuthenticationPrincipal UserDetails currentUser) {
+        return transactionService.makeTransactionOperation(currentUser.getUsername(), transactionDto, Type.REFUND);
     }
 
 }

@@ -63,9 +63,9 @@ public class MainController {
         if (prods.length != quantitylist.size()) {
             return "redirect:/main";
         }
-        shopService.getShop(shopId, currentUser); //just validation issue
+        shopService.getShop(shopId, currentUser.getUsername()); //just validation issue
         for (int i = 0; i < prods.length; i++) {
-            productCart.addToCart(productService.getProduct(prods[i], currentUser), quantitylist.get(i));
+            productCart.addToCart(productService.getProduct(prods[i], currentUser.getUsername()), quantitylist.get(i));
         }
         return "redirect:/main";
     }
@@ -75,8 +75,8 @@ public class MainController {
                                         @PathVariable Double productAmount,
                                         @AuthenticationPrincipal UserDetails currentUser) {
 
-        shopService.getShop(shopId, currentUser); //just validation issue
-        Product product = productService.getProduct(productId, currentUser);
+        shopService.getShop(shopId, currentUser.getUsername()); //just validation issue
+        Product product = productService.getProduct(productId, currentUser.getUsername());
         if (product.getMeasurementUnit() == MeasurementUnit.LITER || product.getMeasurementUnit() == MeasurementUnit.KILOGRAM) {
             productCart.addToCart(product, -productAmount);
         } else {
@@ -88,7 +88,7 @@ public class MainController {
 
     @GetMapping("/shops/{shopId}/productcart/delete")
     public String clearCart(@PathVariable Long shopId, @AuthenticationPrincipal UserDetails currentUser) {
-        shopService.getShop(shopId, currentUser); //just validation issue
+        shopService.getShop(shopId, currentUser.getUsername()); //just validation issue
         productCart.getProducts().clear();
         return "redirect:/main";
     }

@@ -14,7 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.parameters.P;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -56,14 +55,14 @@ public class ProductController {
     @GetMapping("/products/{id}")
     public String getProductById(Model model, @PathVariable Long id,
                                  @AuthenticationPrincipal UserDetails currentUser) {
-        model.addAttribute("product", productService.getProduct(id, currentUser));
+        model.addAttribute("product", productService.getProduct(id, currentUser.getUsername()));
         return "product";
     }
 
     @GetMapping("/shops/{id}/products/file")
     public ResponseEntity<byte[]> getExcelFile(@PathVariable Long id, @AuthenticationPrincipal UserDetails currentUser) {
         Account user = accountService.findByUsername(currentUser.getUsername());
-        Shop shop = shopService.getShop(id, currentUser);
+        Shop shop = shopService.getShop(id, currentUser.getUsername());
         byte[] content = productService.createExcelFile(user.getId(), shop.getId(), shop.getProducts());
         final HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
@@ -89,7 +88,7 @@ public class ProductController {
         List<String> list = balances.stream().filter(b -> !b.isEmpty()).collect(Collectors.toList());
         if (prods.length == list.size()) {
             for (int i = 0; i < prods.length; i++) {
-                productService.getProduct(prods[i], currentUser).setBalance(Double.parseDouble(list.get(i)));
+                productService.getProduct(prods[i], currentUser.getUsername()).setBalance(Double.parseDouble(list.get(i)));
             }
         }
         return "redirect:/products";
@@ -103,7 +102,7 @@ public class ProductController {
         if (prods == null || targetShopId == null) {
             return "redirect:/products";
         }
-        productService.copyProducts(prods, shopId, targetShopId, currentUser);
+        productService.copyProducts(prods, shopId, targetShopId, currentUser.getUsername());
         return "redirect:/products";
     }
 
@@ -129,7 +128,7 @@ public class ProductController {
     @DeleteMapping("/products/{id}")
     public String deleteProductById(@PathVariable Long id,
                                     @AuthenticationPrincipal UserDetails currentUser) {
-        productService.deleteProduct(id, currentUser);
+        productService.deleteProduct(id, currentUser.getUsername());
         return "redirect:/products";
     }
 
@@ -137,7 +136,7 @@ public class ProductController {
     public String deleteMany(@RequestParam(required = false) long[] prods, @AuthenticationPrincipal UserDetails currentUser) {
         if (prods != null) {
             for (int i = 0; i < prods.length; i++) {
-                productService.deleteProduct(prods[i], currentUser);
+                productService.deleteProduct(prods[i], currentUser.getUsername());
             }
         }
         return "redirect:/products";

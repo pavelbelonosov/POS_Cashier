@@ -1,7 +1,7 @@
 package com.app.bank_acquiring.domain.transaction;
 
 public enum Type {
-    PAYMENT("Оплата"), CANCEL("Возврат"), CLOSE_DAY("Сверка итогов"), TEST("Тест");
+    PAYMENT("Оплата"), REFUND("Возврат"), CLOSE_DAY("Сверка итогов"), TEST("Тест");
     private String explanation;
 
     Type(String explanation) {
