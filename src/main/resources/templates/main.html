@@ -21,7 +21,6 @@
                     <button class="btn btn-dark" type="submit">Выбрать кассу</button>
                 </form>
             </div>
-            <!div class="jumbotron jumbotron-fluid">
         </div>
         <div class="row" th:if="${terminal!=null}">
             <div class="col-md-auto">
@@ -72,7 +71,7 @@
                         </tr>
                         </tbody>
                     </table>
-                    <button onclick="validateEmptyValuesAndSubmit" class="btn btn-outline-dark btn-lg btn-block my-2"
+                    <button type="submit" class="btn btn-outline-dark btn-lg btn-block my-2"
                             th:formaction="@{/shops/{shopId}/products/addtocart(shopId=${terminal.shop.id})}">Добавить в
                         чек
                     </button>
@@ -108,10 +107,43 @@
 
                 </div>
 
+                <button onclick="getTransactionsStat()" class="btn btn-outline-dark btn-lg btn-block my-2" data-toggle="modal" data-target="#cashReport">
+                    Отчеты
+                </button>
 
+                <!-- Modal -->
+                <div class="modal fade" id="cashReport" tabindex="-1" role="dialog" aria-labelledby="cashReportTitle" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="cashReportTitle" th:text="Отчеты">Modal title</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <h3 id="currentBalance"></h3>
+                                <h5 id="salesStat"></h5>
+                                <h5 id="refundsStat"></h5>
+                            </div>
+                            <div class="modal-footer">
+                                <div class="btn-toolbar mb-3" role="toolbar">
+                                    <div class="btn-group btn-lg btn-block" role="group">
+                                        <button id="xReportBtn" onclick="makeXreport()" class="btn btn-dark"
+                                        >Отчет без гашения
+                                        </button>
+                                        <button id="zReportBtn" onclick="closeDay()" class="btn btn-dark">
+                                            Закрытие смены
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="col-md-auto" >
-                <div id="jumbotronChequeArea" style="'background-color: #F1F2F3'"  class="jumbotron d-none" ar>
+                <div id="jumbotronChequeArea" style="'background-color: #F1F2F3'"  class="jumbotron d-none">
                     <table lass="table table-hover table-responsive table-sm">
                         <tbody>
                         <tr>
@@ -130,6 +162,8 @@
 <script type="text/javascript" language="javascript" src="https://code.jquery.com/jquery-3.5.1.js"></script>
 <script type="text/javascript" language="javascript"
         src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 <script>
 $(document).ready( function () {
 $('#dataTable').DataTable();
@@ -186,16 +220,6 @@ $('#dataTable').dataTable( {
         }
     }
 } );
-
-
-
-
-
-
-
-
-
-
 
 </script>
 <div th:replace="fragments/layout :: footer"></div>

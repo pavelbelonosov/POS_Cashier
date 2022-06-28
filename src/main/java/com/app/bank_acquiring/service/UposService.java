@@ -7,6 +7,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
+import java.util.Locale;
 
 @Service
 public class UposService {
@@ -67,20 +68,33 @@ public class UposService {
         String dir = "C:/temp/bank/" + accountId + "/" + shopId + "/" + terminalTid + "/";
         Process process;
         try {
-            switch (transactionType){
-                case PAYMENT:process = new ProcessBuilder(dir + "loadparm.exe", "9", "1").start();
-                //case PAYMENT:process = new ProcessBuilder(dir + "loadparm.exe", "1", (int)(amount * 100) + "").start();
-                break;
-                case REFUND:process = new ProcessBuilder(dir + "loadparm.exe", "9", "2").start();
-                //case CANCEL:process = new ProcessBuilder(dir + "loadparm.exe", "3", (int)(amount * 100) + "").start();
-                break;
-                default:process = new ProcessBuilder(dir + "loadparm.exe", "47", "2").start();
+            switch (transactionType) {
+                case PAYMENT:
+                    process = new ProcessBuilder(dir + "loadparm.exe", "9", "1").start();
+                    //case PAYMENT:process = new ProcessBuilder(dir + "loadparm.exe", "1", (int)(amount * 100) + "").start();
+                    break;
+                case REFUND:
+                    process = new ProcessBuilder(dir + "loadparm.exe", "9", "2").start();
+                    //case CANCEL:process = new ProcessBuilder(dir + "loadparm.exe", "3", (int)(amount * 100) + "").start();
+                    break;
+                case CLOSE_DAY:
+                    process = new ProcessBuilder(dir + "loadparm.exe", "7").start();
+                    break;
+                case XREPORT:
+                    process = new ProcessBuilder(dir + "loadparm.exe", "9", "1").start();
+                    break;
+                default:
+                    process = new ProcessBuilder(dir + "loadparm.exe", "47", "2").start();
             }
             process.waitFor();
             return true;
         } catch (Exception e) {
             return false;
         }
+    }
+
+    public boolean makeReportOperation(Long accountId, Long shopId, String terminalTid, Type transactionType) {
+        return makeOperation(accountId, shopId, terminalTid, 0, transactionType);
     }
 
     public String readCheque(Long accountId, Long shopId, String terminalTid) {
@@ -90,7 +104,7 @@ public class UposService {
             fis.read(buffer, 0, fis.available());
             String content = new String(buffer, "cp866");
             //return Arrays.asList(content.split("\n"));
-            return content.replaceAll("=","");
+            return content.replaceAll("=", "").stripTrailing();
         } catch (Exception e) {
             return "";
         }
@@ -107,9 +121,9 @@ public class UposService {
     }
 
     public boolean defineTransactionStatus(String cheque) {
-
-        if (cheque!=null&&(cheque.contains("одобрено") || cheque.contains("итоги совпали")
-                || cheque.contains("Процессинг:работает"))) {
+        cheque.toLowerCase();
+        if (cheque != null && (cheque.contains("одобрено") || cheque.contains("итоги совпали")
+                || cheque.contains("процессинг:работает") || cheque.contains("сводный чек"))) {
             return true;
         }
         return false;

@@ -16,6 +16,35 @@ http.send(JSON.stringify(createTransactionObject()));
 getResponseFromServerWithCheque("refundBtn");
 }
 
+function closeDay(){
+alert("Вы уверены, что хотите закрыть смену?");
+http.open("GET", url+"/closeday", true);
+http.send();
+getResponseFromServerWithCheque("zReportBtn");
+}
+
+function makeXreport(){
+http.open("GET", url+"/xreport", true);
+http.send();
+getResponseFromServerWithCheque("xReportBtn");
+}
+
+function getTransactionsStat() {
+http.open("GET", url+"/stat", true);
+http.send();
+http.onreadystatechange = function () {
+    if (this.readyState != 4 || this.status != 200) {
+        return
+    }
+
+    var stat = JSON.parse(this.responseText);
+    console.log(stat);
+    document.getElementById("currentBalance").innerHTML = stat[0];
+    document.getElementById("salesStat").innerHTML = stat[1];
+    document.getElementById("refundsStat").innerHTML = stat[2];
+}
+}
+
 function createTransactionObject(){
 var products = document.getElementsByName('prodName');
 var productsAmount = document.getElementsByName('prodAmount');
