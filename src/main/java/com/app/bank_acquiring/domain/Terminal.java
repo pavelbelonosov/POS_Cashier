@@ -34,8 +34,6 @@ public class Terminal extends AbstractPersistable<Long> {
     @Size(min = 3, max = 120, message = "Заголовок должен быть в формате: текст | текст")
     private String chequeHeader;
 
-    private int shiftCounter;
-
     @ManyToOne
     private Account account;
 

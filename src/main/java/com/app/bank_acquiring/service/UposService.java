@@ -52,18 +52,6 @@ public class UposService {
         }
     }
 
-    public boolean testPSDB(Long accountId, Long shopId, String terminalTid) {
-        String dir = "C:/temp/bank/" + accountId + "/" + shopId + "/" + terminalTid + "/";
-        Process process;
-        try {
-            process = new ProcessBuilder(dir + "loadparm.exe", "47", "2").start();
-            process.waitFor();
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
     public boolean makeOperation(Long accountId, Long shopId, String terminalTid, double amount, Type transactionType) {
         String dir = "C:/temp/bank/" + accountId + "/" + shopId + "/" + terminalTid + "/";
         Process process;
@@ -74,7 +62,7 @@ public class UposService {
                     //case PAYMENT:process = new ProcessBuilder(dir + "loadparm.exe", "1", (int)(amount * 100) + "").start();
                     break;
                 case REFUND:
-                    process = new ProcessBuilder(dir + "loadparm.exe", "9", "2").start();
+                    process = new ProcessBuilder(dir + "loadparm.exe", "9", "1").start();
                     //case CANCEL:process = new ProcessBuilder(dir + "loadparm.exe", "3", (int)(amount * 100) + "").start();
                     break;
                 case CLOSE_DAY:
@@ -82,6 +70,9 @@ public class UposService {
                     break;
                 case XREPORT:
                     process = new ProcessBuilder(dir + "loadparm.exe", "9", "1").start();
+                    break;
+                case TEST:
+                    process = new ProcessBuilder(dir + "loadparm.exe", "47", "2").start();
                     break;
                 default:
                     process = new ProcessBuilder(dir + "loadparm.exe", "47", "2").start();
@@ -96,6 +87,11 @@ public class UposService {
     public boolean makeReportOperation(Long accountId, Long shopId, String terminalTid, Type transactionType) {
         return makeOperation(accountId, shopId, terminalTid, 0, transactionType);
     }
+
+    public boolean testPSDB(Long accountId, Long shopId, String terminalTid) {
+        return makeOperation(accountId, shopId, terminalTid, 0, Type.TEST);
+    }
+
 
     public String readCheque(Long accountId, Long shopId, String terminalTid) {
         String dir = "C:/temp/bank/" + accountId + "/" + shopId + "/" + terminalTid + "/";

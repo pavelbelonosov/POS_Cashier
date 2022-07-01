@@ -1,6 +1,6 @@
 package com.app.bank_acquiring.service;
 
-import com.app.bank_acquiring.domain.SalesStatistics;
+import com.app.bank_acquiring.domain.SalesCounter;
 import com.app.bank_acquiring.domain.Terminal;
 import com.app.bank_acquiring.domain.account.Account;
 import com.app.bank_acquiring.domain.product.Product;
@@ -37,7 +37,7 @@ public class TransactionService {
     @Autowired
     private TransactionRepository transactionRepository;
     @Autowired
-    private SalesStatistics salesStatistics;
+    private SalesCounterService salesCounterService;
 
     public TransactionDto makeTransactionOperation(String currentUser, TransactionDto transactionDto, Type transactionType) {
         Account user = accountService.findByUsername(currentUser);
@@ -55,8 +55,9 @@ public class TransactionService {
         Map<Product, Double> prodToQuantity = getProductsWithChangedAmount(transactionDto.getProductsList(),
                 transactionDto.getProductsAmountList(), currentUser, transactionType);
 
-        salesStatistics.addTransaction(transaction, prodToQuantity, terminal, transactionType);
-        transaction.setCheque(salesStatistics.getOperationTransactionToString(transactionType) + cheque);//нужно будет убрать чек при неуспешной операции
+        salesCounterService.addTransaction(transaction, terminal.getTid());
+        transaction.setCheque(salesCounterService.getOperationTransactionToString(transaction, terminal, prodToQuantity)
+                + cheque);//нужно будет убрать чек при неуспешной операции
         productCart.getProducts().clear();
         return convertToDto(transactionRepository.save(transaction));
     }
@@ -76,10 +77,9 @@ public class TransactionService {
         transaction.setType(transactionType);
         transaction.setDateTime(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
         transaction.setTerminal(terminal);
-        transaction.setCheque(salesStatistics.getReportOperationToString(transactionType) + cheque);//нужно будет убрать чек при неуспешной операции
+        transaction.setCheque(salesCounterService.getReportOperationToString(transaction, terminal) + cheque);//нужно будет убрать чек при неуспешной операции
         if (transactionStatus && transactionType == Type.CLOSE_DAY) {
-            terminal.setShiftCounter(terminal.getShiftCounter() + 1);
-            salesStatistics.clear();
+            salesCounterService.closeDay(terminal.getTid());
         }
         return convertToDto(transactionRepository.save(transaction));
     }
@@ -106,17 +106,19 @@ public class TransactionService {
         return prodToQuantity;
     }
 
+
     public List<String> getSalesStatistics(String currentUser) {
         String userWorkingTid = accountService.findByUsername(currentUser).getWorkTerminalTid();
-        if (currentUser == null || salesStatistics.getTerminal() == null || userWorkingTid == null) {
+        if (currentUser == null || userWorkingTid == null) {
             return null;
         }
+        SalesCounter salesCounter = salesCounterService.getSalesStatistics(userWorkingTid);
         DecimalFormat df = new DecimalFormat("0.00");
-        if (salesStatistics.getTerminal().getTid().equals(userWorkingTid)) {
+        if (salesCounter != null && salesCounter.getTerminalTid().equals(userWorkingTid)) {
             List<String> list = new ArrayList<>();
-            list.add("В кассе: " + df.format(salesStatistics.getCurrentBalance()));
-            list.add("Продажи: " + df.format(salesStatistics.getSales()) + "(" + salesStatistics.getSalesCounter() + ")");
-            list.add("Возвраты: " + df.format(salesStatistics.getRefunds()) + "(" + salesStatistics.getRefundsCounter() + ")");
+            list.add("В кассе: " + df.format(salesCounter.getBalancePerDay()));
+            list.add("Продажи: " + df.format(salesCounter.getSalesPerDay()) + "(" + salesCounter.getSalesCounterPerDay() + ")");
+            list.add("Возвраты: " + df.format(salesCounter.getRefundsPerDay()) + "(" + salesCounter.getRefundsCounterPerDay() + ")");
             return list;
         }
         return null;
