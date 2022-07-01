@@ -116,7 +116,7 @@ public class TransactionService {
             List<String> list = new ArrayList<>();
             list.add("В кассе: " + df.format(salesStatistics.getCurrentBalance()));
             list.add("Продажи: " + df.format(salesStatistics.getSales()) + "(" + salesStatistics.getSalesCounter() + ")");
-            list.add("Возврат: " + df.format(salesStatistics.getRefunds()) + "(" + salesStatistics.getRefundsCounter() + ")");
+            list.add("Возвраты: " + df.format(salesStatistics.getRefunds()) + "(" + salesStatistics.getRefundsCounter() + ")");
             return list;
         }
         return null;

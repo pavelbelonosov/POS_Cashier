@@ -3,7 +3,6 @@ package com.app.bank_acquiring.domain;
 import com.app.bank_acquiring.domain.product.Product;
 import com.app.bank_acquiring.domain.transaction.Transaction;
 import com.app.bank_acquiring.domain.transaction.Type;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.context.annotation.Scope;

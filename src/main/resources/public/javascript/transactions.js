@@ -1,6 +1,7 @@
 var url = contextRoot + "api/v1/transactions";
 var http = new XMLHttpRequest();
 
+
 function makePayment() {
 http.open("POST", url+"/pay", true);
 http.setRequestHeader('Content-Type', 'application/json');
@@ -9,7 +10,9 @@ getResponseFromServerWithCheque("paymentBtn");
 }
 
 function makeRefund(){
-alert("Вы уверены, что хотите сделать возврат?");
+if (!confirm("Вы уверены, что хотите сделать возврат?")) {
+return;
+}
 http.open("POST", url+"/refund", true);
 http.setRequestHeader('Content-Type', 'application/json');
 http.send(JSON.stringify(createTransactionObject()));
@@ -17,7 +20,9 @@ getResponseFromServerWithCheque("refundBtn");
 }
 
 function closeDay(){
-alert("Вы уверены, что хотите закрыть смену?");
+if (!confirm("Вы уверены, что хотите закрыть смену?")) {
+return;
+}
 http.open("GET", url+"/closeday", true);
 http.send();
 getResponseFromServerWithCheque("zReportBtn");
@@ -84,7 +89,7 @@ function getResponseFromServerWithCheque(buttonId){
     clearProductsCart();
     document.getElementById("jumbotronChequeArea").className = "jumbotron";
     document.getElementById("responseCheque").innerHTML = transactionResponsed.cheque;
-
+    document.getElementById("responseCheque").addEventListener("click", printCheque);
     }
 }
 
@@ -98,6 +103,15 @@ var productsInCart = document.getElementsByName('productInCart');
         productsInCart.forEach(e=>e.remove());
         }
 document.getElementById("totalPrice").textContent="";
+}
+
+function printCheque() {
+var allElements = document.body.innerHTML;
+var cheque = document.getElementById("responseCheque").innerHTML;
+
+document.body.innerHTML = cheque.replaceAll("\n", "<br>");
+window.print();
+document.body.innerHTML = allElements;
 }
 
 function reloadPage(){
