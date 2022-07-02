@@ -23,10 +23,4 @@ public class DefaultController {
         return "login.html";
     }
 
-    /*@GetMapping("/main")
-    public String showIndexPage() {
-        return "main";
-    }*/
-
-
 }

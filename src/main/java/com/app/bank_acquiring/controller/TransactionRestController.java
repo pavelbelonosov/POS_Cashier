@@ -5,6 +5,7 @@ import com.app.bank_acquiring.domain.transaction.TransactionDto;
 import com.app.bank_acquiring.domain.transaction.Type;
 import com.app.bank_acquiring.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -32,21 +33,31 @@ public class TransactionRestController {
         return transactionService.makeTransactionOperation(currentUser.getUsername(), transactionDto, Type.REFUND);
     }
 
+    @PostMapping("/api/v1/transactions/mailcheque")
+    public ResponseEntity<String> sendChequeToEmail(@RequestBody List<String> emailWithCheque,
+                                                  @AuthenticationPrincipal UserDetails currentUser) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        return transactionService.sendEmail(currentUser.getUsername(), emailWithCheque) ?
+                new ResponseEntity<>("{\"msg\":\"success\"}",headers, HttpStatus.OK)
+                : new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+
     @GetMapping("/api/v1/transactions/closeday")
-    public TransactionDto closeDay(@AuthenticationPrincipal UserDetails currentUser){
-        return transactionService.makeReportOperation(currentUser.getUsername(),Type.CLOSE_DAY);
+    public TransactionDto closeDay(@AuthenticationPrincipal UserDetails currentUser) {
+        return transactionService.makeReportOperation(currentUser.getUsername(), Type.CLOSE_DAY);
     }
 
     @GetMapping("/api/v1/transactions/xreport")
-    public TransactionDto makeXreport(@AuthenticationPrincipal UserDetails currentUser){
-        return transactionService.makeReportOperation(currentUser.getUsername(),Type.XREPORT);
+    public TransactionDto makeXreport(@AuthenticationPrincipal UserDetails currentUser) {
+        return transactionService.makeReportOperation(currentUser.getUsername(), Type.XREPORT);
     }
 
     @GetMapping("/api/v1/transactions/stat")
-    public ResponseEntity<List<String>> getTransactionStatistics(@AuthenticationPrincipal UserDetails currentUser){
+    public ResponseEntity<List<String>> getTransactionStatistics(@AuthenticationPrincipal UserDetails currentUser) {
         List<String> stat = transactionService.getSalesStatistics(currentUser.getUsername());
-        return stat==null?new ResponseEntity<List<String>>(HttpStatus.NOT_FOUND):
-                new ResponseEntity<List<String>>(stat, HttpStatus.OK);
+        return stat == null ? new ResponseEntity<>(HttpStatus.NOT_FOUND) :
+                new ResponseEntity<>(stat, HttpStatus.OK);
     }
 
 }

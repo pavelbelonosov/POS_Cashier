@@ -38,6 +38,8 @@ public class TransactionService {
     private TransactionRepository transactionRepository;
     @Autowired
     private SalesCounterService salesCounterService;
+    @Autowired
+    private EmailService emailService;
 
     public TransactionDto makeTransactionOperation(String currentUser, TransactionDto transactionDto, Type transactionType) {
         Account user = accountService.findByUsername(currentUser);
@@ -77,6 +79,7 @@ public class TransactionService {
         transaction.setType(transactionType);
         transaction.setDateTime(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
         transaction.setTerminal(terminal);
+        transaction.setCashier(currentUser);
         transaction.setCheque(salesCounterService.getReportOperationToString(transaction, terminal) + cheque);//нужно будет убрать чек при неуспешной операции
         if (transactionStatus && transactionType == Type.CLOSE_DAY) {
             salesCounterService.closeDay(terminal.getTid());
@@ -122,6 +125,20 @@ public class TransactionService {
             return list;
         }
         return null;
+    }
+
+    public boolean sendEmail(String currentUser, List<String> emailToCheque){
+        if(accountService.findByUsername(currentUser)==null){
+            return false;
+        }
+        try{
+            emailService.sendMail(emailToCheque.get(0),emailToCheque.get(1));
+            return true;
+        } catch (Exception e){
+            System.out.println(e.getMessage());
+            return false;
+        }
+
     }
 
     private Transaction convertToTransaction(TransactionDto transactionDto, boolean status,

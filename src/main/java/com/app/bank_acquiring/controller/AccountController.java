@@ -73,15 +73,6 @@ public class AccountController {
         return "account";
     }
 
-    /*@PostMapping("/accounts/current/terminals/workingterminal")
-    public String setAccountWorkTerminal(@RequestParam Long terminalId,
-                                         @AuthenticationPrincipal UserDetails currentUser) {
-        Account acc = accountRepository.findByUsername(currentUser.getUsername());
-        acc.setWorkTerminalTid(terminalRepository.getOne(terminalId).getTid());
-        accountRepository.save(acc);
-        return "redirect:/accounts/current";
-    }*/
-
     @PostMapping("/accounts/registration")
     public String createAdminUser(@Valid @ModelAttribute Account account, BindingResult bindingResultAccount,
                                   @Valid @ModelAttribute AccountInfo accountInfo, BindingResult bindingResultAccountInfo,

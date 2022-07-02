@@ -15,9 +15,10 @@ import java.util.Map;
 @Service
 public class SalesCounterService {
 
+    private final DecimalFormat df = new DecimalFormat("0.00");
+
     @Autowired
     private SalesCounterRepository salesCounterRepository;
-    private final DecimalFormat df = new DecimalFormat("0.00");
 
     public void addTransaction(Transaction transaction, String terminalTid) {
         SalesCounter salesCounter = salesCounterRepository.findByTerminalTid(terminalTid);
@@ -86,7 +87,7 @@ public class SalesCounterService {
         s.append("ПРИХОД (БЕЗНАЛИЧНЫМИ) " + df.format(salesCounter != null ? salesCounter.getSalesPerDay() : 0) + "\n");
         s.append("ВОЗВРАТ ПРИХОДА (БЕЗНАЛИЧНЫМИ) " + df.format(salesCounter != null ? salesCounter.getRefundsPerDay() : 0) + "\n");
         s.append("ВЫРУЧКА  " + df.format(salesCounter != null ? salesCounter.getBalancePerDay() : 0) + "\n");
-        s.append("НЕОБНУЛЯЕМАЯ СУММА ПРИХОДА " + df.format(salesCounter != null ? salesCounter.getSalesAll() : 0));
+        s.append("НЕОБНУЛЯЕМАЯ СУММА ПРИХОДА " + df.format(salesCounter != null ? salesCounter.getSalesAll() : 0)+ "\n");
         s.append("\n");
         return s.toString();
     }

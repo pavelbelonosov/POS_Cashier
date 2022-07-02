@@ -1,6 +1,5 @@
 package com.app.bank_acquiring.controller;
 
-import com.app.bank_acquiring.domain.SalesStatistics;
 import com.app.bank_acquiring.domain.Terminal;
 import com.app.bank_acquiring.domain.account.Account;
 import com.app.bank_acquiring.domain.product.MeasurementUnit;
@@ -71,6 +70,7 @@ public class MainController {
         return "redirect:/main";
     }
 
+
     @GetMapping("/shops/{shopId}/productcart/{productId}/amount/{productAmount}")
     public String deleteProductFromCart(@PathVariable Long shopId, @PathVariable Long productId,
                                         @PathVariable Double productAmount,
@@ -83,9 +83,9 @@ public class MainController {
         } else {
             productCart.addToCart(product, -1);
         }
-
         return "redirect:/main";
     }
+
 
     @GetMapping("/shops/{shopId}/productcart/delete")
     public String clearCart(@PathVariable Long shopId, @AuthenticationPrincipal UserDetails currentUser) {

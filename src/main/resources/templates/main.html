@@ -99,7 +99,7 @@
                             <button id="paymentBtn" onclick="makePayment()" class="btn btn-dark"
                             >Оплата
                             </button>
-                            <button id="refundBtn" onclick="makeRefund()" class="btn btn-dark">
+                            <button th:if="${account.authority.explanation!='Кассир'}" id="refundBtn" onclick="makeRefund()" class="btn btn-dark">
                                 Возврат
                             </button>
                         </div>
@@ -151,6 +151,12 @@
                         </tr>
                         </tbody>
                     </table>
+                        <div class="input-group mb-2 mr-sm-2">
+                            <div class="input-group-prepend">
+                                <button onclick="sendChequeToClient()" class="btn btn-dark mb-2">@</button>
+                            </div>
+                            <input type="email" class="form-control" id="emailFormInputGroup" placeholder="эл.почта">
+                        </div>
                 </div>
             </div>
         </div>

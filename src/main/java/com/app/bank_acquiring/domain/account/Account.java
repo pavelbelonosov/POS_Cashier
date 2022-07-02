@@ -46,10 +46,4 @@ public class Account extends AbstractPersistable<Long> {
     @Pattern(regexp = "^[0-9]{8}$", message = "Неверный формат TID")
     private String workTerminalTid;
 
-    public Terminal getWorkingTerminal() {
-        return terminals.stream()
-                .filter(terminal -> terminal.getTid().equals(workTerminalTid))
-                .findFirst().orElse(null);
-    }
-
 }
