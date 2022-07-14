@@ -61,14 +61,16 @@ http.open("POST", url+"/mailcheque", true);
 http.setRequestHeader('Content-Type', 'application/json');
 http.send(JSON.stringify(emailWithChequeList));
 http.onreadystatechange = function () {
-    if (this.readyState != 4 || this.status != 200) {
-        alert("Ошибка");
+    if (this.status != 200) {
+        alert("Что-то пошло не так...");
         return;
     }
     var response = JSON.parse(this.responseText);
-    if(response.msg == "success"){
-    alert("Успешно");
-    }
+    if(response.error == "0"){
+    alert("Чек успешно отправлен");
+    return;
+    } else{
+    alert("Ошибка отправки чека")}
 }
 
 }

@@ -12,7 +12,7 @@ public class EmailService {
     @Autowired
     private JavaMailSender javaMailSender;
 
-    public void sendMail(String sendTo, String cheque ) throws MailException {
+    public void sendMail(String sendTo, String cheque) throws MailException {
 
         SimpleMailMessage mail = new SimpleMailMessage();
         mail.setTo(sendTo);

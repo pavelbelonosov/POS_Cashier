@@ -39,8 +39,8 @@ public class TransactionRestController {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
         return transactionService.sendEmail(currentUser.getUsername(), emailWithCheque) ?
-                new ResponseEntity<>("{\"msg\":\"success\"}",headers, HttpStatus.OK)
-                : new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                new ResponseEntity<>("{\"error\":\"0\"}",headers, HttpStatus.OK)
+                : new ResponseEntity<>("{\"error\":\"1\"}",headers, HttpStatus.OK);
     }
 
     @GetMapping("/api/v1/transactions/closeday")

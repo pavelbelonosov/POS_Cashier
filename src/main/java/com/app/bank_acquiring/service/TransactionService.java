@@ -127,15 +127,15 @@ public class TransactionService {
         return null;
     }
 
-    public boolean sendEmail(String currentUser, List<String> emailToCheque){
-        if(accountService.findByUsername(currentUser)==null){
+    public boolean sendEmail(String currentUser, List<String> emailToCheque) {
+        if (accountService.findByUsername(currentUser) == null) {
             return false;
         }
-        try{
-            emailService.sendMail(emailToCheque.get(0),emailToCheque.get(1));
+        try {
+            emailService.sendMail(emailToCheque.get(0), emailToCheque.get(1));
             return true;
-        } catch (Exception e){
-            System.out.println(e.getMessage());
+        } catch (Exception e) {
+
             return false;
         }
 

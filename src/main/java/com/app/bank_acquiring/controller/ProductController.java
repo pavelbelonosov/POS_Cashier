@@ -9,6 +9,7 @@ import com.app.bank_acquiring.service.AccountService;
 import com.app.bank_acquiring.service.ProductService;
 import com.app.bank_acquiring.service.ShopService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -79,6 +80,7 @@ public class ProductController {
 
     @Transactional
     @PostMapping("/products/updateBalance")
+    @CacheEvict(value = "products", allEntries = true)
     public String updateBalance(@RequestParam(name = "prods", required = false) long[] prods,
                                 @RequestParam(name = "balances", required = false) List<String> balances,
                                 @AuthenticationPrincipal UserDetails currentUser) {
@@ -107,6 +109,7 @@ public class ProductController {
     }
 
     @PostMapping("/products")
+    @CacheEvict(value = "products", allEntries = true)
     public String createProduct(@Valid @ModelAttribute Product product, BindingResult bindingResult, @RequestParam Shop shop,
                                 @AuthenticationPrincipal UserDetails currentUser, Model model) {
         if (shop == null) {
@@ -126,6 +129,7 @@ public class ProductController {
 
 
     @DeleteMapping("/products/{id}")
+    @CacheEvict(value = "products", key = "#id"+"#currentUser")
     public String deleteProductById(@PathVariable Long id,
                                     @AuthenticationPrincipal UserDetails currentUser) {
         productService.deleteProduct(id, currentUser.getUsername());
@@ -133,6 +137,7 @@ public class ProductController {
     }
 
     @PostMapping("/products/deleteMany")
+    @CacheEvict(value = "products", allEntries = true)
     public String deleteMany(@RequestParam(required = false) long[] prods, @AuthenticationPrincipal UserDetails currentUser) {
         if (prods != null) {
             for (int i = 0; i < prods.length; i++) {

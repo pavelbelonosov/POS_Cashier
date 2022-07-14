@@ -61,7 +61,7 @@ public class SalesCounterService {
             double amount = prodToQuantity.get(product);
             s.append(i + ". " + product.getName() + "(" + product.getMeasurementUnit().getShortExplanation() + ")\n"
                     + amount + "X" + product.getSellingPrice() + "..........."
-                    + (amount * product.getSellingPrice().doubleValue()) + "\n");
+                    + df.format(amount * product.getSellingPrice().doubleValue()) + "\n");
             i++;
         }
         s.append("ИТОГ: " + transaction.getAmount() + "\n");
