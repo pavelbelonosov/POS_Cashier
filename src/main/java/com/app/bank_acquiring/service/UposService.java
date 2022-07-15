@@ -3,6 +3,8 @@ package com.app.bank_acquiring.service;
 import com.app.bank_acquiring.domain.Terminal;
 import com.app.bank_acquiring.domain.transaction.Type;
 import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -11,6 +13,8 @@ import java.util.Locale;
 
 @Service
 public class UposService {
+
+    Logger logger = LoggerFactory.getLogger(UposService.class);
 
     private final String uposBase = "C:/temp/bank/upos";
 
@@ -32,6 +36,7 @@ public class UposService {
             }
             return true;
         } catch (IOException e) {
+            logger.error("Error while creating user UPOS: " + e.getMessage());
             return false;
         }
     }
@@ -48,6 +53,7 @@ public class UposService {
             pw.println("printerfile=cheque.txt");
             return true;
         } catch (FileNotFoundException e) {
+            logger.error("Error while updating pinpad settings: " + e.getMessage());
             return false;
         }
     }
@@ -80,6 +86,7 @@ public class UposService {
             process.waitFor();
             return true;
         } catch (Exception e) {
+            logger.error("Error while making acquiring transaction: " + e.getMessage());
             return false;
         }
     }
@@ -102,6 +109,7 @@ public class UposService {
             //return Arrays.asList(content.split("\n"));
             return content.replaceAll("=", "").stripTrailing();
         } catch (Exception e) {
+            logger.error("Error while parsing cheque: " + e.getMessage());
             return "";
         }
     }
@@ -112,6 +120,7 @@ public class UposService {
             FileUtils.deleteDirectory(userUpos);
             return true;
         } catch (IOException e) {
+            logger.error("Error while deleting UPOS: " + e.getMessage());
             return false;
         }
     }

@@ -9,6 +9,8 @@ import com.app.bank_acquiring.domain.transaction.Transaction;
 import com.app.bank_acquiring.domain.transaction.TransactionDto;
 import com.app.bank_acquiring.domain.transaction.Type;
 import com.app.bank_acquiring.repository.TransactionRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +25,8 @@ import java.util.Map;
 
 @Service
 public class TransactionService {
+
+    Logger logger = LoggerFactory.getLogger(TransactionService.class);
 
     @Autowired
     private AccountService accountService;
@@ -133,9 +137,10 @@ public class TransactionService {
         }
         try {
             emailService.sendMail(emailToCheque.get(0), emailToCheque.get(1));
+            logger.info("Cheque was sent to " + emailToCheque.get(0));
             return true;
         } catch (Exception e) {
-
+            logger.error("Cannot send cheque to email: " + e.getMessage());
             return false;
         }
 
