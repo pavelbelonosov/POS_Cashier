@@ -118,7 +118,7 @@ public class AccountController {
         if (bindingResultAccountInfo.hasErrors()) {
             return getAccount(model, id, currentUser);
         }
-        accountService.updateAccount(id, accountInfo, shop, authority);
+        accountService.updateEmployeeAccount(id, accountInfo, shop, authority);
         return "redirect:/accounts/" + id;
     }
 
@@ -175,7 +175,7 @@ public class AccountController {
         if (bindingResult.hasFieldErrors("password")) {
             return getAccount(model, id, currentUser);
         }
-        accountService.changeAccountPassword(id,newPassword);
+        accountService.changeEmployeePassword(id,newPassword);
         return "redirect:/accounts/" + id;
     }
 

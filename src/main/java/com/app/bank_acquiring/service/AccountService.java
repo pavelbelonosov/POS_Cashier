@@ -47,7 +47,7 @@ public class AccountService {
     }
 
     @Transactional
-    public void updateAccount(Long id, AccountInfo accountInfo, Shop shop, Authority authority) {
+    public void updateEmployeeAccount(Long id, AccountInfo accountInfo, Shop shop, Authority authority) {
         Account user = accountRepository.getOne(id);
         AccountInfo userInfo = user.getAccountInfo();
         Shop oldShop = user.getShops().get(0);
@@ -86,7 +86,7 @@ public class AccountService {
     }
 
     @Transactional
-    public void changeAccountPassword(Long id, String newPassword) {
+    public void changeEmployeePassword(Long id, String newPassword) {
         Account employee = accountRepository.getOne(id);
         employee.setPassword(passwordEncoder.encode(newPassword));
     }

@@ -4,7 +4,7 @@ import com.app.bank_acquiring.domain.Terminal;
 import com.app.bank_acquiring.domain.account.Account;
 import com.app.bank_acquiring.domain.product.MeasurementUnit;
 import com.app.bank_acquiring.domain.product.Product;
-import com.app.bank_acquiring.domain.product.ProductCartComponent;
+import com.app.bank_acquiring.service.ProductCartComponent;
 import com.app.bank_acquiring.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

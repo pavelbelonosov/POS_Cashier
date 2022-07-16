@@ -1,9 +1,10 @@
-package com.app.bank_acquiring.domain.product;
+package com.app.bank_acquiring.service;
 
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.app.bank_acquiring.domain.product.Product;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;

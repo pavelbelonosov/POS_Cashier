@@ -4,7 +4,6 @@ import com.app.bank_acquiring.domain.SalesCounter;
 import com.app.bank_acquiring.domain.Terminal;
 import com.app.bank_acquiring.domain.account.Account;
 import com.app.bank_acquiring.domain.product.Product;
-import com.app.bank_acquiring.domain.product.ProductCartComponent;
 import com.app.bank_acquiring.domain.transaction.Transaction;
 import com.app.bank_acquiring.domain.transaction.TransactionDto;
 import com.app.bank_acquiring.domain.transaction.Type;
@@ -43,7 +42,7 @@ public class TransactionService {
     @Autowired
     private SalesCounterService salesCounterService;
     @Autowired
-    private EmailService emailService;
+    private EmailServiceComponent emailService;
 
     public TransactionDto makeTransactionOperation(String currentUser, TransactionDto transactionDto, Type transactionType) {
         Account user = accountService.findByUsername(currentUser);
