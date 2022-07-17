@@ -9,6 +9,8 @@ import org.apache.commons.io.FileUtils;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -20,6 +22,7 @@ import java.util.List;
 
 @Service
 public class ProductService {
+    Logger logger = LoggerFactory.getLogger(ProductService.class);
 
     @Autowired
     private ProductRepository productRepository;
@@ -87,7 +90,7 @@ public class ProductService {
             workbook.close();
             return FileUtils.readFileToByteArray(excelFile);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Error while creating excel file: " + e.getMessage());
             return new byte[]{};
         }
 

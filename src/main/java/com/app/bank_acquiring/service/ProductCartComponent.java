@@ -42,12 +42,12 @@ public class ProductCartComponent implements Serializable {
 
     }
 
-    public Double getTotalPrice(){
+    public Double getTotalPrice() {
         Double totalPrice = 0D;
-        for(Product p:products.keySet()){
-            totalPrice+=p.getSellingPrice().doubleValue()*products.get(p);
+        for (Product p : products.keySet()) {
+            totalPrice += p.getSellingPrice().doubleValue() * products.get(p);
         }
-        return (int)(Math.round(totalPrice * 100))/100.0;
+        return (int) (Math.round(totalPrice * 100)) / 100.0;
     }
 
 

@@ -14,13 +14,17 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.TransactionSystemException;
 
+import javax.validation.ConstraintViolationException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 @ActiveProfiles("test")
 @RunWith(SpringRunner.class)
@@ -52,6 +56,14 @@ public class AccountServiceTest {
         assertFalse(acc.getPassword().equals(password));
     }
 
+    @Test(expected = TransactionSystemException.class)
+    public void givenAccountWithEmptyNameAndPwd_whenCreateAdmin_thenJpaTransactionRollbackOfValidationError(){
+        Account admin = new Account();
+        admin.setUsername("");
+        admin.setPassword("");
+        accountService.createAdminUser(admin, new AccountInfo());
+    }
+
     @Test
     public void whenCreateEmployee_thenCreatesUserWithoutAdminAuthority_andEncodesPwdInDB() {
         Account employee = createUser();
@@ -60,6 +72,7 @@ public class AccountServiceTest {
         assertFalse(acc.getAuthority() == Authority.ADMIN);
         assertFalse(acc.getPassword().equals(password));
     }
+
 
     @Test
     public void whenUpdateEmployeeAccount_thenChangesAccountInfo() {
@@ -126,8 +139,7 @@ public class AccountServiceTest {
         shop.setName(shopName);
         List<Account> accountList = new ArrayList<>();
         shop.setAccounts(accountList);
-        shopRepository.save(shop);
-        return shop;
+        return shopRepository.save(shop);
     }
 
 
