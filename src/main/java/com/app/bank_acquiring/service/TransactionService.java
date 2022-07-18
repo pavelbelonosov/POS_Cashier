@@ -63,7 +63,7 @@ public class TransactionService {
         salesCounterService.addTransaction(transaction, terminal.getTid());
         transaction.setCheque(salesCounterService.getOperationTransactionToString(transaction, terminal, prodToQuantity)
                 + cheque);//нужно будет убрать чек при неуспешной операции
-        productCart.getProducts().clear();
+        productCart.getProductsWithAmount().clear();
         return convertToDto(transactionRepository.save(transaction));
     }
 

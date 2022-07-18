@@ -9,11 +9,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.AbstractPersistable;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @Entity
 @Data
@@ -45,5 +43,6 @@ public class Account extends AbstractPersistable<Long> {
 
     @Pattern(regexp = "^[0-9]{8}$", message = "Неверный формат TID")
     private String workTerminalTid;
+
 
 }

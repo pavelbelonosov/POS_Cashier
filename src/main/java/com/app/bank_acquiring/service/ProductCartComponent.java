@@ -14,45 +14,45 @@ import org.springframework.stereotype.Component;
 @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class ProductCartComponent implements Serializable {
 
-    private Map<Product, Double> products = new HashMap<>();
+    private Map<Product, Double> productsWithAmount = new HashMap<>();
 
-    public Map<Product, Double> getProducts() {
-        return this.products;
+    public Map<Product, Double> getProductsWithAmount() {
+        return this.productsWithAmount;
     }
 
     public void addToCart(Product addedProduct, double amount) {
         Product existingProduct = getExistingProduct(addedProduct);
         if (existingProduct != null) {
-            if (products.get(existingProduct) + amount > existingProduct.getBalance()) {
-                products.put(existingProduct, existingProduct.getBalance() * 1.0);
+            if (productsWithAmount.get(existingProduct) + amount > existingProduct.getBalance()) {
+                productsWithAmount.put(existingProduct, existingProduct.getBalance() * 1.0);
                 return;
             }
-            if (products.get(existingProduct) + amount <= 0) {
-                products.remove(existingProduct);
+            if (productsWithAmount.get(existingProduct) + amount <= 0) {
+                productsWithAmount.remove(existingProduct);
                 return;
             }
-            products.put(existingProduct, products.get(existingProduct) + amount);
+            productsWithAmount.put(existingProduct, productsWithAmount.get(existingProduct) + amount);
         } else {
             if (amount > addedProduct.getBalance()) {
-                products.put(addedProduct, addedProduct.getBalance() * 1.0);
+                productsWithAmount.put(addedProduct, addedProduct.getBalance() * 1.0);
                 return;
             }
-            products.put(addedProduct, amount);
+            productsWithAmount.put(addedProduct, amount);
         }
 
     }
 
     public Double getTotalPrice() {
-        Double totalPrice = 0D;
-        for (Product p : products.keySet()) {
-            totalPrice += p.getSellingPrice().doubleValue() * products.get(p);
+        Double totalPrice = 0.0;
+        for (Product p : productsWithAmount.keySet()) {
+            totalPrice += p.getSellingPrice().doubleValue() * productsWithAmount.get(p);
         }
         return (int) (Math.round(totalPrice * 100)) / 100.0;
     }
 
 
     private Product getExistingProduct(Product product) {
-        return products.keySet().stream().filter(key -> key.getId().
+        return productsWithAmount.keySet().stream().filter(key -> key.getId().
                 equals(product.getId())).findFirst().orElse(null);
     }
 

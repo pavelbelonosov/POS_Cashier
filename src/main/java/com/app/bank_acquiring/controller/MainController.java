@@ -38,7 +38,7 @@ public class MainController {
         Terminal terminal = terminalService.getTerminalByTid(user.getWorkTerminalTid());
         List<Product> products = new ArrayList<>();
         List<Double> productAmounts = new ArrayList<>();
-        productCart.getProducts().forEach((k, v) -> {
+        productCart.getProductsWithAmount().forEach((k, v) -> {
             products.add(k);
             productAmounts.add(v);
         });
@@ -90,7 +90,7 @@ public class MainController {
     @GetMapping("/shops/{shopId}/productcart/delete")
     public String clearCart(@PathVariable Long shopId, @AuthenticationPrincipal UserDetails currentUser) {
         shopService.getShop(shopId, currentUser.getUsername()); //just validation issue
-        productCart.getProducts().clear();
+        productCart.getProductsWithAmount().clear();
         return "redirect:/main";
     }
 }
