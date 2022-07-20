@@ -33,16 +33,18 @@ public class TerminalService {
 
 
     @Transactional
-    public void addTerminalToAccount(Terminal terminal, UserDetails currentUser) throws IOException {
-        Account account = accountRepository.findByUsername(currentUser.getUsername());
+    public void addTerminalToAccount(Terminal terminal, String currentUser) {
+        Account account = accountRepository.findByUsername(currentUser);
         terminal.setAccount(account);
         terminalRepository.save(terminal);
         account.getTerminals().add(terminal);
-        uposService.createUserUpos(account.getId(), terminal);
+        if (!uposService.createUserUpos(account.getId(), terminal)) {
+            throw new RuntimeException("Error while creating UPOS for the account");
+        }
     }
 
     @Transactional
-    public void updateTerminal(Long id, UserDetails currentUser, String ip, String chequeHeader) {
+    public void updateTerminal(Long id, String currentUser, String ip, String chequeHeader) {
         Terminal terminal = getValidatedTerminal(id, currentUser);
         if (!ip.isEmpty()) {
             terminal.setIp(ip);
@@ -50,8 +52,7 @@ public class TerminalService {
         if (!chequeHeader.isEmpty()) {
             terminal.setChequeHeader(chequeHeader);
         }
-        //terminalRepository.save(terminal);
-        uposService.updateUposSettings(accountRepository.findByUsername(currentUser.getUsername()).getId(), terminal);
+        uposService.updateUposSettings(accountRepository.findByUsername(currentUser).getId(), terminal);
     }
 
     @Transactional
@@ -74,22 +75,22 @@ public class TerminalService {
     }
 
     @Transactional
-    public void deleteTerminal(Long id, UserDetails currentUser) {
+    public void deleteTerminal(Long id, String currentUser) {
         Terminal terminal = getValidatedTerminal(id, currentUser);
-        uposService.deleteUserUpos(accountRepository.findByUsername(currentUser.getUsername()).getId(),
+        uposService.deleteUserUpos(accountRepository.findByUsername(currentUser).getId(),
                 terminal.getShop().getId(), terminal.getTid());
-        getAccountsWithWorkTerminal(terminal,currentUser).forEach(account -> account.setWorkTerminalTid(null));
+        getAccountsWithWorkTerminal(terminal, currentUser).forEach(account -> account.setWorkTerminalTid(null));
         terminalRepository.delete(terminal);
     }
 
     @Transactional
-    public void setWorkTerminalToAccount(UserDetails currentUser, Long id) {
-        Account current = accountRepository.findByUsername(currentUser.getUsername());
+    public void setWorkTerminalToAccount(String currentUser, Long id) {
+        Account current = accountRepository.findByUsername(currentUser);
         current.setWorkTerminalTid(terminalRepository.getOne(id).getTid());
     }
 
-    public List<Account> getAccountsWithWorkTerminal(Terminal terminal, UserDetails currentUser) {
-        Account owner = accountRepository.findByUsername(currentUser.getUsername());
+    public List<Account> getAccountsWithWorkTerminal(Terminal terminal, String currentUser) {
+        Account owner = accountRepository.findByUsername(currentUser);
         List<List<Account>> listOfListsEmployees = owner.getShops().stream()
                 .map(shop -> shop.getAccounts()).collect(Collectors.toCollection(ArrayList::new));
         List<Account> employees = listOfListsEmployees.stream()
@@ -97,12 +98,12 @@ public class TerminalService {
                 .collect(Collectors.toList());
         return employees.stream().map(account -> account.getId()).distinct()
                 .map(id -> accountRepository.getOne(id))
-                .filter(account -> account.getWorkTerminalTid()!=null&&account.getWorkTerminalTid().equals(terminal.getTid()))
+                .filter(account -> account.getWorkTerminalTid() != null && account.getWorkTerminalTid().equals(terminal.getTid()))
                 .collect(Collectors.toList());
     }
 
-    public Terminal getValidatedTerminal(Long id, UserDetails currentUser) {
-        Account user = accountRepository.findByUsername(currentUser.getUsername());
+    public Terminal getValidatedTerminal(Long id, String currentUser) {
+        Account user = accountRepository.findByUsername(currentUser);
         Terminal terminal = terminalRepository.getOne(id);
         validateIdAccess(user, terminal);
         return terminal;

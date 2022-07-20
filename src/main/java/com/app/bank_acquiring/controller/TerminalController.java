@@ -44,17 +44,17 @@ public class TerminalController {
     @GetMapping("/terminals/{id}")
     public String getTerminalById(Model model, @PathVariable Long id,
                                   @AuthenticationPrincipal UserDetails currentUser) {
-        Terminal terminal = terminalService.getValidatedTerminal(id, currentUser);
+        Terminal terminal = terminalService.getValidatedTerminal(id, currentUser.getUsername());
         Collections.reverse(terminal.getTransactions());
-        model.addAttribute("terminal",terminal);
-        model.addAttribute("workAccounts", terminalService.getAccountsWithWorkTerminal(terminal,currentUser));
+        model.addAttribute("terminal", terminal);
+        model.addAttribute("workAccounts", terminalService.getAccountsWithWorkTerminal(terminal, currentUser.getUsername()));
         return "terminal";
     }
 
     @GetMapping("/terminals/{id}/test")
     public String testTerminalConnection(@PathVariable Long id,
-                                  @AuthenticationPrincipal UserDetails currentUser) {
-        terminalService.testConnection(id,currentUser);
+                                         @AuthenticationPrincipal UserDetails currentUser) {
+        terminalService.testConnection(id, currentUser);
         return "redirect:/terminals/{id}";
     }
 
@@ -65,9 +65,9 @@ public class TerminalController {
             return getTerminals(model, currentUser);
         }
         try {
-            terminalService.addTerminalToAccount(terminal, currentUser);
+            terminalService.addTerminalToAccount(terminal, currentUser.getUsername());
             return "redirect:/terminals";
-        } catch (IOException e) {
+        } catch (RuntimeException e) {
             bindingResult.addError(new FieldError("terminal", "tid", "Не удалось добавить терминал. Ошибка файловой ситсемы"));
             return getTerminals(model, currentUser);
         }
@@ -76,7 +76,7 @@ public class TerminalController {
     @PostMapping("/accounts/current/terminals/workingterminal")
     public String setWorkTerminalToAccount(@RequestParam Long terminalId,
                                            @AuthenticationPrincipal UserDetails currentUser) {
-        terminalService.setWorkTerminalToAccount(currentUser, terminalId);
+        terminalService.setWorkTerminalToAccount(currentUser.getUsername(), terminalId);
         return "redirect:/main";
     }
 
@@ -84,13 +84,13 @@ public class TerminalController {
     @PostMapping("/terminals/{id}")
     public String updateTerminal(@RequestParam String ip, @RequestParam String chequeHeader,
                                  @PathVariable Long id, @AuthenticationPrincipal UserDetails currentUser) throws FileNotFoundException {
-        terminalService.updateTerminal(id, currentUser, ip, chequeHeader);
+        terminalService.updateTerminal(id, currentUser.getUsername(), ip, chequeHeader);
         return "redirect:/terminals/" + id;
     }
 
     @DeleteMapping("/terminals/{id}")
     public String deleteTerminal(@PathVariable Long id, @AuthenticationPrincipal UserDetails currentUser) {
-        terminalService.deleteTerminal(id, currentUser);
+        terminalService.deleteTerminal(id, currentUser.getUsername());
         return "redirect:/terminals";
     }
 }
