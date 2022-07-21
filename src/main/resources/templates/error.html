@@ -1,0 +1,18 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<div th:replace="fragments/layout :: head(text='POS-кассир | Ошибка')"></div>
+<main>
+    <div class="d-flex align-items-center justify-content-center" th:style="'height:100vh'">
+        <div class="col-md-auto">
+        <h2>Никогда такого не было, и вот - опять</h2>
+        <img th:src="@{../images/error.gif}"></img>
+        <p>Ресурс, который вы запрашиваете недоступен: (<span th:text="${path}"></span>).</p>
+        <p th:text="${'Details: ' + message}"></p>
+    </div>
+    </div>
+
+</main>
+<body>
+
+</body>
+</html>

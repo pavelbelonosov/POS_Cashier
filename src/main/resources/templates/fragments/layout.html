@@ -17,7 +17,7 @@
             <li class="nav-item" th:if="${#authorization.expression('hasAuthority(''ADMIN'')')}">
                 <a class="nav-link" th:href="@{/shops}">Магазины</a>
             </li>
-            <li class="nav-item" th:if="${#authorization.expression('hasAuthority(''ADMIN'')')}">
+            <li class="nav-item" th:if="${#authorization.expression('hasAnyAuthority(''ADMIN'',''HEAD_CASHIER'')')}">
                 <a class="nav-link" th:href="@{/products}">Товары</a>
             </li>
             <li class="nav-item" th:if="${#authorization.expression('hasAuthority(''ADMIN'')')}">
