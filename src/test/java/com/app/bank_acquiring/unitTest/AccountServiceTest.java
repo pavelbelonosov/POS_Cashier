@@ -1,4 +1,4 @@
-package com.app.bank_acquiring;
+package com.app.bank_acquiring.unitTest;
 
 import com.app.bank_acquiring.domain.Shop;
 import com.app.bank_acquiring.domain.account.Account;
@@ -113,7 +113,7 @@ public class AccountServiceTest {
     }
 
     @Test
-    public void whenChangEmployeePassword_thenPwdChanged(){
+    public void whenChangeEmployeePassword_thenPwdChanged(){
         Account employee = createUser();
         String newPassword = "newPassword";
         accountService.createEmployee(employee,new AccountInfo(),createShop("shop"));

@@ -1,4 +1,4 @@
-package com.app.bank_acquiring;
+package com.app.bank_acquiring.unitTest;
 
 import com.app.bank_acquiring.domain.Shop;
 import com.app.bank_acquiring.domain.account.Account;
@@ -113,8 +113,7 @@ public class ShopServiceTest {
         AccountInfo accountInfo = new AccountInfo();
         accountInfo.setAccount(user);
         accountInfoRepository.save(accountInfo);
-        accountRepository.save(user);
-        return user;
+        return accountRepository.save(user);
     }
 
     private Shop createShop() {

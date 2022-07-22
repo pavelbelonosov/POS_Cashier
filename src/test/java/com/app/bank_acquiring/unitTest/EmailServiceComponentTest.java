@@ -1,4 +1,4 @@
-package com.app.bank_acquiring;
+package com.app.bank_acquiring.unitTest;
 
 import com.app.bank_acquiring.service.EmailServiceComponent;
 import org.junit.Test;

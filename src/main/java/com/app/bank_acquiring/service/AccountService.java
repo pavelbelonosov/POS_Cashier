@@ -65,16 +65,16 @@ public class AccountService {
     @Transactional
     public void updateCurrentAccount(Account current, AccountInfo newAccountInfo) {
         AccountInfo userInfo = current.getAccountInfo();
-        if (!newAccountInfo.getFirstName().isEmpty()){
+        if (!newAccountInfo.getFirstName().isEmpty()) {
             userInfo.setFirstName(newAccountInfo.getFirstName());
         }
-        if (!newAccountInfo.getLastName().isEmpty()){
+        if (!newAccountInfo.getLastName().isEmpty()) {
             userInfo.setLastName(newAccountInfo.getLastName());
         }
-        if (!newAccountInfo.getTelephoneNumber().isEmpty()){
+        if (!newAccountInfo.getTelephoneNumber().isEmpty()) {
             userInfo.setTelephoneNumber(newAccountInfo.getTelephoneNumber());
         }
-        if (!newAccountInfo.getEmail().isEmpty()){
+        if (!newAccountInfo.getEmail().isEmpty()) {
             userInfo.setEmail(newAccountInfo.getEmail());
         }
         accountInfoRepository.save(userInfo);
@@ -109,8 +109,14 @@ public class AccountService {
     }
 
     public void validateIdAccess(Long id, Account owner) {
+        if (id == null || owner == null) {
+            throw new RuntimeException("Invalid user id or current account");
+        }
         Account employee = accountRepository.getOne(id);
-        if (!getEmployees(owner).contains(employee)) {
+        if (id.equals(owner.getId())) {
+            return;
+        }
+        if (owner.getAuthority() != Authority.ADMIN || !getEmployees(owner).contains(employee)) {
             throw new RuntimeException("Current account doesn't have access to this user");
         }
     }

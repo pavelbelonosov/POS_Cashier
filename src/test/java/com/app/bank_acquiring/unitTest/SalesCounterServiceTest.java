@@ -1,4 +1,4 @@
-package com.app.bank_acquiring;
+package com.app.bank_acquiring.unitTest;
 
 import com.app.bank_acquiring.domain.SalesCounter;
 import com.app.bank_acquiring.domain.Terminal;

@@ -58,11 +58,6 @@ public class AccountController {
         return "account";
     }
 
-    @GetMapping("/accounts/registration")
-    public String getRegistrationForm() {
-        return "registration";
-    }
-
     @GetMapping("/accounts/current")
     public String getCurrentAccount(Model model, @AuthenticationPrincipal UserDetails currentUser) {
         Account user = accountService.findByUsername(currentUser.getUsername());
@@ -73,10 +68,15 @@ public class AccountController {
         return "account";
     }
 
+    @GetMapping("/accounts/registration")
+    public String getRegistrationForm() {
+        return "registration";
+    }
+
     @PostMapping("/accounts/registration")
     public String createAdminUser(@Valid @ModelAttribute Account account, BindingResult bindingResultAccount,
                                   @Valid @ModelAttribute AccountInfo accountInfo, BindingResult bindingResultAccountInfo,
-                                  @RequestParam String repeatPWD, Model model) {
+                                  @RequestParam String repeatPWD) {
 
         if (accountService.findByUsername(account.getUsername()) != null) {
             FieldError fieldError = new FieldError("account", "username", "Логин занят");
