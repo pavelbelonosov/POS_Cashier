@@ -65,47 +65,62 @@ public class AccountService {
     @Transactional
     public void updateCurrentAccount(Account current, AccountInfo newAccountInfo) {
         AccountInfo userInfo = current.getAccountInfo();
-        if (!newAccountInfo.getFirstName().isEmpty()) {
+        if (newAccountInfo.getFirstName() != null && !newAccountInfo.getFirstName().isEmpty()) {
             userInfo.setFirstName(newAccountInfo.getFirstName());
         }
-        if (!newAccountInfo.getLastName().isEmpty()) {
+        if (newAccountInfo.getLastName() != null && !newAccountInfo.getLastName().isEmpty()) {
             userInfo.setLastName(newAccountInfo.getLastName());
         }
-        if (!newAccountInfo.getTelephoneNumber().isEmpty()) {
+        if (newAccountInfo.getTelephoneNumber() != null && !newAccountInfo.getTelephoneNumber().isEmpty()) {
             userInfo.setTelephoneNumber(newAccountInfo.getTelephoneNumber());
         }
-        if (!newAccountInfo.getEmail().isEmpty()) {
+        if (newAccountInfo.getEmail() != null && !newAccountInfo.getEmail().isEmpty()) {
             userInfo.setEmail(newAccountInfo.getEmail());
         }
         accountInfoRepository.save(userInfo);
     }
 
     public void changeCurrentAccountPassword(Account account, String newPassword) {
-        account.setPassword(passwordEncoder.encode(newPassword));
-        accountRepository.save(account);
+        if (account != null && newPassword != null && !newPassword.isEmpty()) {
+            account.setPassword(passwordEncoder.encode(newPassword));
+            accountRepository.save(account);
+        }
     }
 
     @Transactional
     public void changeEmployeePassword(Long id, String newPassword) {
-        Account employee = accountRepository.getOne(id);
-        employee.setPassword(passwordEncoder.encode(newPassword));
+        if (id != null && newPassword != null && !newPassword.isEmpty()) {
+            Account employee = accountRepository.getOne(id);
+            if (employee != null) {
+                employee.setPassword(passwordEncoder.encode(newPassword));
+            }
+        }
     }
 
     public Account findByUsername(String username) {
-        return accountRepository.findByUsername(username);
+        if (username != null && !username.isEmpty()) {
+            return accountRepository.findByUsername(username);
+        }
+        return null;
     }
 
     public Account getAccountById(Long id) {
-        return accountRepository.getOne(id);
+        if (id != null) {
+            return accountRepository.getOne(id);
+        }
+        return null;
     }
 
     public List<Account> getEmployees(Account owner) {
-        List<List<Account>> listOfListsEmployees = owner.getShops().stream()
-                .map(shop -> shop.getAccounts()).collect(Collectors.toCollection(ArrayList::new));
-        List<Account> employees = listOfListsEmployees.stream()
-                .flatMap(List::stream).filter(acc -> !acc.equals(owner))
-                .collect(Collectors.toList());
-        return employees;
+        if (owner != null) {
+            List<List<Account>> listOfListsEmployees = owner.getShops().stream()
+                    .map(shop -> shop.getAccounts()).collect(Collectors.toCollection(ArrayList::new));
+            List<Account> employees = listOfListsEmployees.stream()
+                    .flatMap(List::stream).filter(acc -> !acc.equals(owner))
+                    .collect(Collectors.toList());
+            return employees;
+        }
+        return new ArrayList<>();
     }
 
     public void validateIdAccess(Long id, Account owner) {
