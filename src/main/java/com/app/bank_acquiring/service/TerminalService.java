@@ -103,6 +103,9 @@ public class TerminalService {
     }
 
     public Terminal getValidatedTerminal(Long id, String currentUser) {
+        if (id == null || currentUser == null) {
+            return null;
+        }
         Account user = accountRepository.findByUsername(currentUser);
         Terminal terminal = terminalRepository.getOne(id);
         validateIdAccess(user, terminal);
@@ -110,7 +113,10 @@ public class TerminalService {
     }
 
     public Terminal getTerminalByTid(String tid) {
-        return terminalRepository.findByTid(tid);
+        if (tid != null && tid.length() == 8) {
+            return terminalRepository.findByTid(tid);
+        }
+        return null;
     }
 
     public void validateIdAccess(Account account, Terminal terminal) {

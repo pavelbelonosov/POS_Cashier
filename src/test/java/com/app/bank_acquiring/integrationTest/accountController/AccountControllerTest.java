@@ -82,7 +82,8 @@ public class AccountControllerTest {
         mockMvc.perform(get("/accounts")
                         .with(user(admin.getUsername()).password(admin.getPassword())
                                 .authorities(getAuthorities(admin))))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(view().name("accounts"));
     }
 
     @Test
@@ -104,7 +105,7 @@ public class AccountControllerTest {
     }
 
     @Test
-    public void givenAnonymous_whenGetAccounts_thenResponsesStatusForbidden() throws Exception {
+    public void givenAnonymous_whenGetAccounts_thenResponsesStatusRedirection() throws Exception {
         mockMvc.perform(get("/accounts")
                         .with(anonymous()))
                 .andExpect(status().is3xxRedirection());
@@ -119,6 +120,7 @@ public class AccountControllerTest {
         MvcResult res = mockMvc.perform(get("/accounts")
                         .with(user(admin.getUsername()).password(admin.getPassword())
                                 .authorities(getAuthorities(admin))))
+                .andExpect(view().name("accounts"))
                 .andReturn();
 
         String content = res.getResponse().getContentAsString();
@@ -134,7 +136,9 @@ public class AccountControllerTest {
         MvcResult res = mockMvc.perform(get("/accounts/" + employee.getId())
                         .with(user(admin.getUsername()).password(admin.getPassword())
                                 .authorities(getAuthorities(admin))))
-                .andExpect(status().isOk()).andReturn();
+                .andExpect(status().isOk())
+                .andExpect(view().name("account"))
+                .andReturn();
         String content = res.getResponse().getContentAsString();
         assertTrue(content.contains(employee.getUsername()));
     }
@@ -156,7 +160,9 @@ public class AccountControllerTest {
         MvcResult res = mockMvc.perform(get("/accounts/current")
                         .with(user(admin.getUsername()).password(admin.getPassword())
                                 .authorities(getAuthorities(admin))))
-                .andExpect(status().isOk()).andReturn();
+                .andExpect(status().isOk())
+                .andExpect(view().name("account"))
+                .andReturn();
         String content = res.getResponse().getContentAsString();
         assertTrue(content.contains(admin.getUsername()));
     }
@@ -169,14 +175,18 @@ public class AccountControllerTest {
         MvcResult res = mockMvc.perform(get("/accounts/current")
                         .with(user(cashier.getUsername()).password(cashier.getPassword())
                                 .authorities(getAuthorities(cashier))))
-                .andExpect(status().isOk()).andReturn();
+                .andExpect(status().isOk())
+                .andExpect(view().name("account"))
+                .andReturn();
         String content = res.getResponse().getContentAsString();
         assertTrue(content.contains(cashier.getUsername()));
 
         res = mockMvc.perform(get("/accounts/current")
                         .with(user(headCashier.getUsername()).password(headCashier.getPassword())
                                 .authorities(getAuthorities(headCashier))))
-                .andExpect(status().isOk()).andReturn();
+                .andExpect(status().isOk())
+                .andExpect(view().name("account"))
+                .andReturn();
         content = res.getResponse().getContentAsString();
         assertTrue(content.contains(headCashier.getUsername()));
     }
@@ -355,7 +365,7 @@ public class AccountControllerTest {
         Account admin = createUserInRepository(Authority.ADMIN);
         Shop shop = createShopForAdmin(admin);
         Account employee = createDetachedUser(Authority.CASHIER);
-        accountService.createEmployee(employee,new AccountInfo(),shop);
+        accountService.createEmployee(employee, new AccountInfo(), shop);
         mockMvc.perform(post("/accounts/" + employee.getId() + "/newpwd")
                         .with(user(admin.getUsername()).password(admin.getPassword())
                                 .authorities(getAuthorities(admin)))
@@ -374,7 +384,7 @@ public class AccountControllerTest {
         Account admin = createUserInRepository(Authority.ADMIN);
         Shop shop = createShopForAdmin(admin);
         Account employee = createDetachedUser(Authority.CASHIER);
-        accountService.createEmployee(employee,new AccountInfo(),shop);
+        accountService.createEmployee(employee, new AccountInfo(), shop);
         mockMvc.perform(post("/accounts/" + employee.getId() + "/newpwd")
                         .with(user(admin.getUsername()).password(admin.getPassword())
                                 .authorities(getAuthorities(admin)))
@@ -395,7 +405,7 @@ public class AccountControllerTest {
         Account admin = createUserInRepository(Authority.ADMIN);
         Shop shop = createShopForAdmin(admin);
         Account employee = createDetachedUser(Authority.CASHIER);
-        accountService.createEmployee(employee,new AccountInfo(),shop);
+        accountService.createEmployee(employee, new AccountInfo(), shop);
         mockMvc.perform(post("/accounts/" + employee.getId() + "/newpwd")
                         .with(user(admin.getUsername()).password(admin.getPassword())
                                 .authorities(getAuthorities(admin)))
