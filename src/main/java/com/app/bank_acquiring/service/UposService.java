@@ -13,8 +13,7 @@ import java.io.*;
 @Service
 public class UposService {
 
-    Logger logger = LoggerFactory.getLogger(UposService.class);
-
+    private final Logger logger = LoggerFactory.getLogger(UposService.class);
     private final String uposBase = "C:/temp/bank/upos";
 
     @Async

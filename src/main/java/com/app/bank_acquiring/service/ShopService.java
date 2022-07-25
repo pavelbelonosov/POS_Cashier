@@ -6,7 +6,7 @@ import com.app.bank_acquiring.domain.account.AccountInfo;
 import com.app.bank_acquiring.repository.AccountInfoRepository;
 import com.app.bank_acquiring.repository.AccountRepository;
 import com.app.bank_acquiring.repository.ShopRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,15 +14,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@AllArgsConstructor
 public class ShopService {
 
-    @Autowired
     private AccountRepository accountRepository;
-    @Autowired
     private AccountInfoRepository accountInfoRepository;
-    @Autowired
     private ShopRepository shopRepository;
-    @Autowired
     private UposService uposService;
 
     @Transactional

@@ -7,6 +7,7 @@ import com.app.bank_acquiring.domain.transaction.Type;
 import com.app.bank_acquiring.repository.AccountRepository;
 import com.app.bank_acquiring.repository.TerminalRepository;
 import com.app.bank_acquiring.repository.TransactionRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -20,15 +21,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@AllArgsConstructor
 public class TerminalService {
 
-    @Autowired
     private TerminalRepository terminalRepository;
-    @Autowired
     private AccountRepository accountRepository;
-    @Autowired
     private TransactionRepository transactionRepository;
-    @Autowired
     private UposService uposService;
 
 

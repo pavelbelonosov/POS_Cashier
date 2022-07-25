@@ -5,6 +5,7 @@ import com.app.bank_acquiring.domain.account.Account;
 import com.app.bank_acquiring.domain.product.Product;
 import com.app.bank_acquiring.repository.AccountRepository;
 import com.app.bank_acquiring.repository.ProductRepository;
+import lombok.AllArgsConstructor;
 import org.apache.commons.io.FileUtils;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFFont;
@@ -21,14 +22,12 @@ import java.io.FileOutputStream;
 import java.util.List;
 
 @Service
+@AllArgsConstructor
 public class ProductService {
-    Logger logger = LoggerFactory.getLogger(ProductService.class);
+    private final Logger logger = LoggerFactory.getLogger(ProductService.class);
 
-    @Autowired
     private ProductRepository productRepository;
-    @Autowired
     private AccountRepository accountRepository;
-    @Autowired
     private ShopService shopService;
 
     @Transactional

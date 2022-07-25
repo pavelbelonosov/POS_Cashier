@@ -4,6 +4,7 @@ import com.app.bank_acquiring.domain.account.Account;
 import com.app.bank_acquiring.domain.Terminal;
 import com.app.bank_acquiring.service.AccountService;
 import com.app.bank_acquiring.service.TerminalService;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,13 +22,11 @@ import java.util.Collections;
 import java.util.Comparator;
 
 @Controller
+@AllArgsConstructor
 public class TerminalController {
 
-    @Autowired
     private AccountService accountService;
-    @Autowired
     private TerminalService terminalService;
-
 
     @ModelAttribute
     private Terminal getTerminal() {

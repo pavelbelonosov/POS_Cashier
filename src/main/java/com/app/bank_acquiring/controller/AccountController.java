@@ -5,6 +5,7 @@ import com.app.bank_acquiring.domain.account.Account;
 import com.app.bank_acquiring.domain.account.AccountInfo;
 import com.app.bank_acquiring.domain.account.Authority;
 import com.app.bank_acquiring.service.AccountService;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,11 +20,10 @@ import javax.validation.Valid;
 import java.util.Arrays;
 
 @Controller
+@AllArgsConstructor
 public class AccountController {
 
-    @Autowired
     private PasswordEncoder passwordEncoder;
-    @Autowired
     private AccountService accountService;
 
     @ModelAttribute

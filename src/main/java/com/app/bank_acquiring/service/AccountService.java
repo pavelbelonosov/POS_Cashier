@@ -7,6 +7,7 @@ import com.app.bank_acquiring.domain.account.Authority;
 import com.app.bank_acquiring.repository.AccountInfoRepository;
 import com.app.bank_acquiring.repository.AccountRepository;
 import com.app.bank_acquiring.repository.ShopRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -17,15 +18,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@AllArgsConstructor
 public class AccountService {
 
-    @Autowired
     private AccountRepository accountRepository;
-    @Autowired
     private PasswordEncoder passwordEncoder;
-    @Autowired
     private AccountInfoRepository accountInfoRepository;
-    @Autowired
     private ShopRepository shopRepository;
 
     @Transactional

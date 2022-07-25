@@ -6,6 +6,7 @@ import com.app.bank_acquiring.domain.product.Product;
 import com.app.bank_acquiring.domain.transaction.Transaction;
 import com.app.bank_acquiring.domain.transaction.Type;
 import com.app.bank_acquiring.repository.SalesCounterRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,11 +14,11 @@ import java.text.DecimalFormat;
 import java.util.Map;
 
 @Service
+@AllArgsConstructor
 public class SalesCounterService {
 
     private final DecimalFormat df = new DecimalFormat("0.00");
 
-    @Autowired
     private SalesCounterRepository salesCounterRepository;
 
     public void addTransaction(Transaction transaction, String terminalTid) {

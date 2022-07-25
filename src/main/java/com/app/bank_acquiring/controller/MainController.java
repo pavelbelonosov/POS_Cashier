@@ -6,6 +6,7 @@ import com.app.bank_acquiring.domain.product.MeasurementUnit;
 import com.app.bank_acquiring.domain.product.Product;
 import com.app.bank_acquiring.service.ProductCartComponent;
 import com.app.bank_acquiring.service.*;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,16 +20,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Controller
+@AllArgsConstructor
 public class MainController {
-    @Autowired
+
     private AccountService accountService;
-    @Autowired
     private ShopService shopService;
-    @Autowired
     private ProductService productService;
-    @Autowired
     private TerminalService terminalService;
-    @Autowired
     private ProductCartComponent productCart;
 
 

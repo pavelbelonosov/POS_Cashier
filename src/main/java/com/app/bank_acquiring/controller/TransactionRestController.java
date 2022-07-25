@@ -4,6 +4,7 @@ package com.app.bank_acquiring.controller;
 import com.app.bank_acquiring.domain.transaction.TransactionDto;
 import com.app.bank_acquiring.domain.transaction.Type;
 import com.app.bank_acquiring.service.TransactionService;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -16,9 +17,9 @@ import java.util.List;
 
 
 @RestController
+@AllArgsConstructor
 public class TransactionRestController {
 
-    @Autowired
     private TransactionService transactionService;
 
     @PostMapping("/api/v1/transactions/pay")

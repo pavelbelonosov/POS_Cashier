@@ -8,6 +8,7 @@ import com.app.bank_acquiring.domain.transaction.Transaction;
 import com.app.bank_acquiring.domain.transaction.TransactionDto;
 import com.app.bank_acquiring.domain.transaction.Type;
 import com.app.bank_acquiring.repository.TransactionRepository;
+import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,25 +24,17 @@ import java.util.List;
 import java.util.Map;
 
 @Service
+@AllArgsConstructor
 public class TransactionService {
 
-    Logger logger = LoggerFactory.getLogger(TransactionService.class);
-
-    @Autowired
+    private final Logger logger=LoggerFactory.getLogger(ProductService.class);
     private AccountService accountService;
-    @Autowired
     private TerminalService terminalService;
-    @Autowired
     private UposService uposService;
-    @Autowired
     private ProductService productService;
-    @Autowired
     private ProductCartComponent productCart;
-    @Autowired
     private TransactionRepository transactionRepository;
-    @Autowired
     private SalesCounterService salesCounterService;
-    @Autowired
     private EmailServiceComponent emailService;
 
     public TransactionDto makeTransactionOperation(String currentUser, TransactionDto transactionDto, Type transactionType) {

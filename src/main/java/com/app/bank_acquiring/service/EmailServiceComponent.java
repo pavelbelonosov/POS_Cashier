@@ -9,8 +9,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class EmailServiceComponent {
 
-    @Autowired
     private JavaMailSender javaMailSender;
+
+    public EmailServiceComponent(JavaMailSender javaMailSender){
+        this.javaMailSender=javaMailSender;
+    }
 
     public void sendMail(String sendTo, String cheque) throws MailException {
 

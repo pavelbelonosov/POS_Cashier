@@ -10,6 +10,7 @@ import com.app.bank_acquiring.repository.ShopRepository;
 import com.app.bank_acquiring.repository.TerminalRepository;
 import com.app.bank_acquiring.service.AccountService;
 import com.app.bank_acquiring.service.ShopService;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -28,11 +29,10 @@ import java.util.List;
 import java.util.ListIterator;
 
 @Controller
+@AllArgsConstructor
 public class ShopController {
 
-    @Autowired
     private AccountService accountService;
-    @Autowired
     private ShopService shopService;
 
     @ModelAttribute

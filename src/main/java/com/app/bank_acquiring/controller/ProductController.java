@@ -8,6 +8,7 @@ import com.app.bank_acquiring.domain.product.Type;
 import com.app.bank_acquiring.service.AccountService;
 import com.app.bank_acquiring.service.ProductService;
 import com.app.bank_acquiring.service.ShopService;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.http.HttpHeaders;
@@ -29,13 +30,11 @@ import java.util.stream.Collectors;
 
 
 @Controller
+@AllArgsConstructor
 public class ProductController {
 
-    @Autowired
     private AccountService accountService;
-    @Autowired
     private ShopService shopService;
-    @Autowired
     private ProductService productService;
 
     @ModelAttribute
