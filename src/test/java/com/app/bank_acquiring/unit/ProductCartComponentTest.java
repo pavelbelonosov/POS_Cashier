@@ -1,6 +1,5 @@
-package com.app.bank_acquiring.unitTest;
+package com.app.bank_acquiring.unit;
 
-import com.app.bank_acquiring.domain.Shop;
 import com.app.bank_acquiring.domain.product.Product;
 import com.app.bank_acquiring.repository.ProductRepository;
 import com.app.bank_acquiring.service.ProductCartComponent;

@@ -5,16 +5,16 @@ import javax.validation.constraints.*;
 
 import com.app.bank_acquiring.domain.Shop;
 import com.app.bank_acquiring.domain.Terminal;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.jpa.domain.AbstractPersistable;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Data
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Account extends AbstractPersistable<Long> {
@@ -22,11 +22,13 @@ public class Account extends AbstractPersistable<Long> {
     @NotNull(message = "Логин не может быть пустым")
     @NotBlank(message = "Логин не может быть пустым")
     @Size(min = 8, max = 40, message = "Логин от 8 до 40 символов")
+    @EqualsAndHashCode.Include
     private String username;
 
     @NotNull(message = "Пароль не может быть пустым")
     @NotBlank(message = "Пароль не может быть пустым")
     @Size(min = 8, message = "Слишком короткий пароль")
+    @EqualsAndHashCode.Include
     private String password;
 
     @ManyToMany(mappedBy = "accounts")
@@ -44,5 +46,11 @@ public class Account extends AbstractPersistable<Long> {
     @Pattern(regexp = "^[0-9]{8}$", message = "Неверный формат TID")
     private String workTerminalTid;
 
-
+    @EqualsAndHashCode.Include
+    private Long getAccountId() {
+        if (getId() != null) {
+            return getId();
+        }
+        return 0L;
+    }
 }

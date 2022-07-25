@@ -1,4 +1,4 @@
-package com.app.bank_acquiring.unitTest;
+package com.app.bank_acquiring.unit;
 
 import com.app.bank_acquiring.domain.Shop;
 import com.app.bank_acquiring.domain.account.Account;
@@ -104,6 +104,25 @@ public class ShopServiceTest {
 
         Shop wrongShop = createShop();
         shopService.deleteShop(wrongShop.getId(), account.getUsername());
+    }
+
+    @Test
+    public void equality(){
+        Account account1 = createUserWithAccountInfo();
+        System.out.println(account1.getId());
+        Account account2 = accountRepository.findByUsername(account1.getUsername());
+        System.out.println(account2.getId());
+        assertTrue(account1.equals(account2));
+
+        Account user1 = new Account();
+        user1.setUsername("username" + new Random().nextInt(Integer.MAX_VALUE));
+        user1.setPassword("password");
+
+        Account user2  = new Account();
+        user2 .setUsername(user1.getUsername());
+        user2 .setPassword("password");
+
+        assertTrue(user1.equals(user2));
     }
 
     private Account createUserWithAccountInfo() {
