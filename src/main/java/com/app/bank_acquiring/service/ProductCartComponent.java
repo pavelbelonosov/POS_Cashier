@@ -52,8 +52,8 @@ public class ProductCartComponent implements Serializable {
 
 
     private Product getExistingProduct(Product product) {
-        return productsWithAmount.keySet().stream().filter(key -> key.getId().
-                equals(product.getId())).findFirst().orElse(null);
+        return productsWithAmount.keySet().stream().filter(productInMap -> productInMap.
+                equals(product)).findFirst().orElse(null);
     }
 
 }

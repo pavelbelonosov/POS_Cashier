@@ -46,11 +46,14 @@ public class Account extends AbstractPersistable<Long> {
     @Pattern(regexp = "^[0-9]{8}$", message = "Неверный формат TID")
     private String workTerminalTid;
 
+    @Override
+    public void setId(Long id) {
+        if (id != null) super.setId(id);
+    }
+
+    @Override
     @EqualsAndHashCode.Include
-    private Long getAccountId() {
-        if (getId() != null) {
-            return getId();
-        }
-        return 0L;
+    public Long getId() {
+        return super.getId();
     }
 }

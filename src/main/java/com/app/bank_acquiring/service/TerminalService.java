@@ -104,6 +104,7 @@ public class TerminalService {
         if (id == null || currentUser == null) {
             return null;
         }
+        System.out.println("kkk");
         Account user = accountRepository.findByUsername(currentUser);
         Terminal terminal = terminalRepository.getOne(id);
         validateIdAccess(user, terminal);

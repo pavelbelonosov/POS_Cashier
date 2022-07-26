@@ -7,6 +7,7 @@ import com.app.bank_acquiring.repository.AccountInfoRepository;
 import com.app.bank_acquiring.repository.AccountRepository;
 import com.app.bank_acquiring.repository.ShopRepository;
 import lombok.AllArgsConstructor;
+import lombok.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,7 +24,7 @@ public class ShopService {
     private UposService uposService;
 
     @Transactional
-    public Shop getShop(Long id, String currentUser) {
+    public Shop getShop(@NonNull Long id, @NonNull String currentUser) {
         Account current = accountRepository.findByUsername(currentUser);
         Shop shop = shopRepository.getOne(id);
         validateShopIdAccess(shop, current);
@@ -31,7 +32,7 @@ public class ShopService {
     }
 
     @Transactional
-    public void createShop(Shop shop, String currentUser) {
+    public void createShop(@NonNull Shop shop, @NonNull String currentUser) {
         Account owner = accountRepository.findByUsername(currentUser);
         List<Account> accounts = new ArrayList<>();
         accounts.add(owner);
@@ -40,7 +41,7 @@ public class ShopService {
     }
 
     @Transactional
-    public void deleteAccountFromShop(Long shopId, Long accountId, String currentUser) {
+    public void deleteAccountFromShop(@NonNull Long shopId, @NonNull Long accountId, @NonNull String currentUser) {
         Account owner = accountRepository.findByUsername(currentUser);
         Shop shop = shopRepository.getOne(shopId);
         validateShopIdAccess(shop, owner);
@@ -53,7 +54,7 @@ public class ShopService {
     }
 
     @Transactional
-    public void deleteShop(Long shopId, String currentUser) {
+    public void deleteShop(@NonNull Long shopId, @NonNull String currentUser) {
         Account owner = accountRepository.findByUsername(currentUser);
         Shop shop = shopRepository.getOne(shopId);
         validateShopIdAccess(shop, owner);
@@ -70,7 +71,7 @@ public class ShopService {
 
     private void validateShopIdAccess(Shop shop, Account owner) {
         if (shop != null) {
-            if (!owner.getShops().contains(shop)) {
+            if (owner == null || owner.getShops() == null || !owner.getShops().contains(shop)) {
                 throw new RuntimeException("Current account doesn't have access to this shop");
             }
         }
@@ -78,7 +79,7 @@ public class ShopService {
 
     private void validateEmployeeIdAccess(Shop shop, Account employee) {
         if (shop != null && employee != null) {
-            if (!shop.getAccounts().contains(employee)) {
+            if (shop.getAccounts() == null || !shop.getAccounts().contains(employee)) {
                 throw new RuntimeException("Current shop doesn't have access to this employee");
             }
         }

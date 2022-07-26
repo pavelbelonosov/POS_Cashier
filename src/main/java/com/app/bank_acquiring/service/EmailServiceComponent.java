@@ -11,8 +11,8 @@ public class EmailServiceComponent {
 
     private JavaMailSender javaMailSender;
 
-    public EmailServiceComponent(JavaMailSender javaMailSender){
-        this.javaMailSender=javaMailSender;
+    public EmailServiceComponent(JavaMailSender javaMailSender) {
+        this.javaMailSender = javaMailSender;
     }
 
     public void sendMail(String sendTo, String cheque) throws MailException {

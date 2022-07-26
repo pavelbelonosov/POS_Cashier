@@ -6,6 +6,7 @@ import com.app.bank_acquiring.domain.product.Product;
 import com.app.bank_acquiring.repository.AccountRepository;
 import com.app.bank_acquiring.repository.ProductRepository;
 import lombok.AllArgsConstructor;
+import lombok.NonNull;
 import org.apache.commons.io.FileUtils;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFFont;
@@ -32,7 +33,7 @@ public class ProductService {
 
     @Transactional
     @Cacheable("products")
-    public Product getProduct(Long id, String currentUser) {
+    public Product getProduct(@NonNull Long id, @NonNull String currentUser) {
         Account current = accountRepository.findByUsername(currentUser);
         Product product = productRepository.getOne(id);
         validateProductIdAccess(product, current);
@@ -40,7 +41,7 @@ public class ProductService {
     }
 
     @Transactional
-    public void deleteProduct(Long id, String currentUser) {
+    public void deleteProduct(@NonNull Long id, @NonNull String currentUser) {
         Account current = accountRepository.findByUsername(currentUser);
         Product product = productRepository.getOne(id);
         validateProductIdAccess(product, current);
@@ -51,28 +52,33 @@ public class ProductService {
     public void copyProducts(long[] prodsIds, Long shopId, Long targetShopId, String currentUser) {
         Shop shopFrom = shopService.getShop(shopId, currentUser); //just validation issue
         Shop shopTo = shopService.getShop(targetShopId, currentUser);
-        for (int i = 0; i < prodsIds.length; i++) {
-            Product oldProduct = getProduct(prodsIds[i], currentUser);
-            Product newProduct = new Product();
-            newProduct.setName(oldProduct.getName());
-            newProduct.setType(oldProduct.getType());
-            newProduct.setPurchasePrice(oldProduct.getPurchasePrice());
-            newProduct.setSellingPrice(oldProduct.getSellingPrice());
-            newProduct.setBarCode(oldProduct.getBarCode());
-            newProduct.setVendorCode(oldProduct.getVendorCode());
-            newProduct.setMeasurementUnit(oldProduct.getMeasurementUnit());
-            newProduct.setShop(shopTo);
-            saveProduct(newProduct);
+
+        if (prodsIds != null) {
+            for (int i = 0; i < prodsIds.length; i++) {
+                Product oldProduct = getProduct(prodsIds[i], currentUser);
+                Product newProduct = new Product();
+                newProduct.setName(oldProduct.getName());
+                newProduct.setType(oldProduct.getType());
+                newProduct.setPurchasePrice(oldProduct.getPurchasePrice());
+                newProduct.setSellingPrice(oldProduct.getSellingPrice());
+                newProduct.setBarCode(oldProduct.getBarCode());
+                newProduct.setVendorCode(oldProduct.getVendorCode());
+                newProduct.setMeasurementUnit(oldProduct.getMeasurementUnit());
+                newProduct.setShop(shopTo);
+                System.out.println(newProduct.getId());
+                saveProduct(newProduct);
+            }
         }
+
     }
 
     public void saveProduct(Product product) {
-        productRepository.save(product);
+        if (product != null) productRepository.save(product);
     }
 
     private void validateProductIdAccess(Product product, Account account) {
         if (product != null) {
-            if (!account.getShops().contains(product.getShop())) {
+            if (account == null || account.getShops() == null || !account.getShops().contains(product.getShop())) {
                 throw new RuntimeException("Current user doesn't have access to this product");
             }
         }
@@ -80,13 +86,17 @@ public class ProductService {
 
 
     public byte[] createExcelFile(Long accountId, Long shopId, List<Product> products) {
-        Workbook workbook = generateExcel(products);
-        File excelFile = new File("C:/temp/bank/" + accountId + "/" + shopId + "/products.xlsx");
         try {
+            if (accountId == null || shopId == null || products == null) throw new IllegalArgumentException();
+
+            Workbook workbook = generateExcel(products);
+            File excelFile = new File("C:/temp/bank/" + accountId + "/" + shopId + "/products.xlsx");
             FileUtils.createParentDirectories(excelFile);
             FileOutputStream outputStream = new FileOutputStream(excelFile.getAbsolutePath());
             workbook.write(outputStream);
             workbook.close();
+
+            logger.info("ProductsExcel file successfully created at: " + excelFile.getAbsolutePath());
             return FileUtils.readFileToByteArray(excelFile);
         } catch (Exception e) {
             logger.error("Error while creating excel file: " + e.getMessage());

@@ -119,9 +119,8 @@ public class AccountServiceTest {
         user.setUsername("username" + new Random().nextInt(Integer.MAX_VALUE));
         user.setPassword(password);
         user.setAccountInfo(new AccountInfo());
+        user.setId(new Random().nextLong());
 
-        Long id = new Random().nextLong();
-        Mockito.when(user.getId()).thenReturn(id);
         Mockito.when(accountRepository.findByUsername(user.getUsername()))
                 .thenReturn(user);
         Mockito.when(accountRepository.getOne(user.getId()))
@@ -130,13 +129,12 @@ public class AccountServiceTest {
     }
 
     private Shop createMockedShopInRepository(String shopName) {
-        Shop shop = Mockito.spy(Shop.class);
+        Shop shop = new Shop();
         shop.setName(shopName);
         List<Account> accountList = new ArrayList<>();
         shop.setAccounts(accountList);
+        shop.setId(new Random().nextLong());
 
-        Long id = new Random().nextLong();
-        Mockito.when(shop.getId()).thenReturn(id);
         Mockito.when(shopRepository.getOne(shop.getId()))
                 .thenReturn(shop);
         return shop;

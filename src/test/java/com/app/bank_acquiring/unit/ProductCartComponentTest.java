@@ -1,29 +1,20 @@
 package com.app.bank_acquiring.unit;
 
 import com.app.bank_acquiring.domain.product.Product;
-import com.app.bank_acquiring.repository.ProductRepository;
 import com.app.bank_acquiring.service.ProductCartComponent;
 import org.junit.After;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.math.BigDecimal;
+import java.util.Random;
 
 import static org.junit.Assert.*;
 
 @ActiveProfiles("test")
-@RunWith(SpringRunner.class)
-@SpringBootTest
 public class ProductCartComponentTest {
 
-    @Autowired
-    private ProductCartComponent productCartComponent;
-    @Autowired
-    private ProductRepository productRepository;
+    private ProductCartComponent productCartComponent = new ProductCartComponent();
 
     @After
     public void tearDown() {
@@ -38,7 +29,7 @@ public class ProductCartComponentTest {
     }
 
     @Test
-    public void givenNewProductWithExcessiveAmount_whenAddToCart_thenAddProductWithMaxAmount() {
+    public void givenNewProductWithExcessiveAmount_whenAddToCart_thenAddProductMaxAmount() {
         Product product = createProductWithBalance();
         productCartComponent.addToCart(product, product.getBalance() + 1);
         assertTrue(productCartComponent.getProductsWithAmount().get(product).equals(product.getBalance()));
@@ -74,9 +65,10 @@ public class ProductCartComponentTest {
     private Product createProductWithBalance() {
         Product product = new Product();
         product.setName("product");
-        product.setSellingPrice( new BigDecimal("123.45"));
+        product.setSellingPrice(new BigDecimal("123.45"));
         product.setBalance(10.5);
-        return productRepository.save(product);
+        product.setId(new Random().nextLong());
+        return product;
     }
 
     private void putProductHalfAmountInCart(Product product) {

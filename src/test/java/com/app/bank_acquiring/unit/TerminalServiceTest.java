@@ -103,7 +103,7 @@ public class TerminalServiceTest {
         Account account = createUser();
         Terminal terminal = createTerminal();
         terminalService.addTerminalToAccount(terminal, account.getUsername());
-        assertNotNull(terminalService.getValidatedTerminal(terminal.getId(),account.getUsername()));
+        assertNotNull(terminalService.getValidatedTerminal(terminal.getId(), account.getUsername()));
     }
 
     @Test(expected = RuntimeException.class)
@@ -111,8 +111,10 @@ public class TerminalServiceTest {
     public void givenIncorrectTerminal_whenGetValidatedTerminal_thenThrowsRuntimeException() {
         Account account = createUser();
         Terminal terminal = createTerminal();
+
         terminalService.addTerminalToAccount(terminal, account.getUsername());
-        terminalService.getValidatedTerminal(createTerminal().getId(),account.getUsername());
+
+        terminalService.getValidatedTerminal(terminal.getId() + 1, account.getUsername());
     }
 
     private Account createUser() {
