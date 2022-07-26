@@ -18,11 +18,14 @@ import java.time.LocalDateTime;
 public class Transaction extends AbstractPersistable<Long> {
 
     @NotNull
+    @EqualsAndHashCode.Include
     private Boolean status;
 
+    @EqualsAndHashCode.Include
     private LocalDateTime dateTime;
 
     @Enumerated(EnumType.STRING)
+    @EqualsAndHashCode.Include
     private Type type;
 
     private double amount;
