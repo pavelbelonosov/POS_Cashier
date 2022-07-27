@@ -97,14 +97,19 @@ return transaction;
 }
 
 function getResponseFromServerWithCheque(buttonId){
+
+document.getElementById("jumbotronChequeArea").className = "jumbotron";
+document.getElementById("responseCheque").innerHTML = "Выполняется операция..";
+
  http.onreadystatechange = function () {
+
     if (this.readyState != 4) {
         return;
     }
     var transactionResponsed = JSON.parse(this.responseText);
     if(transactionResponsed.status==false){
     document.getElementById(buttonId).innerHTML = "Отказано";
-     document.getElementById(buttonId).className = "btn btn-danger";
+    document.getElementById(buttonId).className = "btn btn-danger";
     } else {
     document.getElementById(buttonId).innerHTML = "Одобрено" ;
     document.getElementById(buttonId).className = "btn btn-success";
@@ -112,7 +117,6 @@ function getResponseFromServerWithCheque(buttonId){
     }
 
     clearProductsCart();
-    document.getElementById("jumbotronChequeArea").className = "jumbotron";
     document.getElementById("responseCheque").innerHTML = transactionResponsed.cheque;
     document.getElementById("responseCheque").addEventListener("click", printCheque);
     }

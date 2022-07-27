@@ -7,7 +7,6 @@ import com.app.bank_acquiring.domain.transaction.Transaction;
 import com.app.bank_acquiring.domain.transaction.Type;
 import com.app.bank_acquiring.repository.SalesCounterRepository;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.text.DecimalFormat;
@@ -22,7 +21,7 @@ public class SalesCounterService {
     private SalesCounterRepository salesCounterRepository;
 
     public void addTransaction(Transaction transaction, String terminalTid) {
-        SalesCounter salesCounter = salesCounterRepository.findByTerminalTid(terminalTid);
+        SalesCounter salesCounter = getSalesCounter(terminalTid);
         if (salesCounter == null) {
             salesCounter = new SalesCounter();
             salesCounter.setTerminalTid(terminalTid);
@@ -39,7 +38,7 @@ public class SalesCounterService {
                 salesCounter.setBalancePerDay(salesCounter.getBalancePerDay() - transaction.getAmount());
                 break;
         }
-        salesCounterRepository.save(salesCounter);
+        saveSalesCounter(salesCounter);
     }
 
     public String getOperationTransactionToString(Transaction transaction, Terminal terminal,
@@ -48,7 +47,7 @@ public class SalesCounterService {
             return "";
         }
         StringBuilder s = new StringBuilder();
-        SalesCounter salesCounter = salesCounterRepository.findByTerminalTid(terminal.getTid());
+        SalesCounter salesCounter = getSalesCounter(terminal.getTid());
 
         s.append(terminal.getShop().getName() + "\n" + terminal.getShop().getCity() + " " + terminal.getShop().getAddress() + "\n");
         s.append("Смена: №" + (salesCounter != null ? salesCounter.getShift() : "")
@@ -73,11 +72,11 @@ public class SalesCounterService {
     }
 
     public String getReportOperationToString(Transaction transaction, Terminal terminal) {
-        if (transaction == null || terminal == null) {
+        if (transaction == null || terminal == null || terminal.getShop() == null) {
             return "";
         }
         StringBuilder s = new StringBuilder();
-        SalesCounter salesCounter = salesCounterRepository.findByTerminalTid(terminal.getTid());
+        SalesCounter salesCounter = getSalesCounter(terminal.getTid());
         s.append(transaction.getType() == Type.CLOSE_DAY ? "ОТЧЕТ О ЗАКРЫТИИ СМЕНЫ\n" : "ПРОМЕЖУТОЧНЫЙ ОТЧЕТ\n");
         s.append("МЕСТО РАСЧЕТОВ " + terminal.getShop().getName() + "\n" + terminal.getShop().getCity()
                 + " " + terminal.getShop().getAddress() + "\n");
@@ -88,13 +87,13 @@ public class SalesCounterService {
         s.append("ПРИХОД (БЕЗНАЛИЧНЫМИ) " + df.format(salesCounter != null ? salesCounter.getSalesPerDay() : 0) + "\n");
         s.append("ВОЗВРАТ ПРИХОДА (БЕЗНАЛИЧНЫМИ) " + df.format(salesCounter != null ? salesCounter.getRefundsPerDay() : 0) + "\n");
         s.append("ВЫРУЧКА  " + df.format(salesCounter != null ? salesCounter.getBalancePerDay() : 0) + "\n");
-        s.append("НЕОБНУЛЯЕМАЯ СУММА ПРИХОДА " + df.format(salesCounter != null ? salesCounter.getSalesAll() : 0)+ "\n");
+        s.append("НЕОБНУЛЯЕМАЯ СУММА ПРИХОДА " + df.format(salesCounter != null ? salesCounter.getSalesAll() : 0) + "\n");
         s.append("\n");
         return s.toString();
     }
 
     public void closeDay(String terminalTid) {
-        SalesCounter salesCounter = salesCounterRepository.findByTerminalTid(terminalTid);
+        SalesCounter salesCounter = getSalesCounter(terminalTid);
         salesCounter.setSalesCounterPerDay(0);
         salesCounter.setRefundsCounterPerDay(0);
         salesCounter.setRefundsPerDay(0);
@@ -103,11 +102,15 @@ public class SalesCounterService {
         salesCounter.setShift(salesCounter.getShift() + 1);
         salesCounter.setSalesAll(salesCounter.getSalesAll() + salesCounter.getSalesPerDay());
         salesCounter.setSalesPerDay(0);
-        salesCounterRepository.save(salesCounter);
+        saveSalesCounter(salesCounter);
     }
 
-    public SalesCounter getSalesStatistics(String terminalTid) {
-        return salesCounterRepository.findByTerminalTid(terminalTid);
+    public SalesCounter getSalesCounter(String terminalTid) {
+        return terminalTid != null ? salesCounterRepository.findByTerminalTid(terminalTid) : null;
+    }
+
+    public SalesCounter saveSalesCounter(SalesCounter salesCounter) {
+        return salesCounter != null ? salesCounterRepository.save(salesCounter) : new SalesCounter();
     }
 
 }

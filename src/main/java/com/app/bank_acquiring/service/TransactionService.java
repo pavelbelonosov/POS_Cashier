@@ -11,7 +11,6 @@ import com.app.bank_acquiring.repository.TransactionRepository;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -111,7 +110,7 @@ public class TransactionService {
         if (currentUser == null || userWorkingTid == null) {
             return null;
         }
-        SalesCounter salesCounter = salesCounterService.getSalesStatistics(userWorkingTid);
+        SalesCounter salesCounter = salesCounterService.getSalesCounter(userWorkingTid);
         DecimalFormat df = new DecimalFormat("0.00");
         if (salesCounter != null && salesCounter.getTerminalTid().equals(userWorkingTid)) {
             List<String> list = new ArrayList<>();
