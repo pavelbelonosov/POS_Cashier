@@ -2,31 +2,18 @@ package com.app.bank_acquiring.controller;
 
 import com.app.bank_acquiring.domain.Shop;
 import com.app.bank_acquiring.domain.account.Account;
-import com.app.bank_acquiring.domain.account.AccountInfo;
-import com.app.bank_acquiring.repository.AccountInfoRepository;
-import com.app.bank_acquiring.repository.AccountRepository;
 
-import com.app.bank_acquiring.repository.ShopRepository;
-import com.app.bank_acquiring.repository.TerminalRepository;
 import com.app.bank_acquiring.service.AccountService;
 import com.app.bank_acquiring.service.ShopService;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ListIterator;
 
 @Controller
 @AllArgsConstructor
@@ -53,7 +40,7 @@ public class ShopController {
         if (bindingResult.hasErrors()) {
             return getShops(model, currentUser);
         }
-        shopService.createShop(shop, currentUser.getUsername());
+        shopService.bundleShopWithAccount(shop, currentUser.getUsername());
         return "redirect:/shops";
     }
 

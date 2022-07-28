@@ -65,7 +65,6 @@ public class ProductService {
                 newProduct.setVendorCode(oldProduct.getVendorCode());
                 newProduct.setMeasurementUnit(oldProduct.getMeasurementUnit());
                 newProduct.setShop(shopTo);
-                System.out.println(newProduct.getId());
                 saveProduct(newProduct);
             }
         }

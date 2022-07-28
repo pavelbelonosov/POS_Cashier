@@ -40,12 +40,11 @@ public class ProductServiceTest {
     }
 
     @Test
-    public void whenGetProduct_thenReturnProductBelongToAccount() {
+    public void whenGetProduct_thenReturnProductBelongingToAccount() {
         Account account = createMockedUserInRepository();
         Shop shop = createMockedShopForAccountInRepository(account);
         Product product = createMockedProductForShopInRepository(shop);
         mockUserWithShop(account, shop);
-
         assertNotNull(productService.getProduct(product.getId(), account.getUsername()));
     }
 
@@ -58,8 +57,8 @@ public class ProductServiceTest {
         Shop shop = createMockedShopForAccountInRepository(account);
         Product product = createMockedProductForShopInRepository(shop);
         mockUserWithShop(account, shop);
-
         Account accountWithNoProducts = createMockedUserInRepository();
+        //must throw RuntimeException because of ids' validation
         productService.getProduct(product.getId(), accountWithNoProducts.getUsername());
     }
 
@@ -83,8 +82,8 @@ public class ProductServiceTest {
         Shop shop = createMockedShopForAccountInRepository(account);
         Product product = createMockedProductForShopInRepository(shop);
         mockUserWithShop(account, shop);
-
         Account accountWithoutProducts = createMockedUserInRepository();
+        //must throw RuntimeException because of ids' validation
         productService.deleteProduct(product.getId(), accountWithoutProducts.getUsername());
     }
 
@@ -101,8 +100,9 @@ public class ProductServiceTest {
                 targetShop.getId(), account.getUsername());
 
         Mockito.verify(productRepository, times(1)).save(valueCapture.capture());
-        assertTrue(valueCapture.getValue().getId() == null);
-        assertTrue(valueCapture.getValue().getName().equals(product.getName()));
+        Product newProduct = valueCapture.getValue();
+        assertTrue(newProduct.getId() == null);
+        assertTrue(newProduct.getName().equals(product.getName()));
     }
 
     @Test
@@ -114,8 +114,8 @@ public class ProductServiceTest {
         Shop shop = createMockedShopForAccountInRepository(account);
         Product product = createMockedProductForShopInRepository(shop);
         mockUserWithShop(account, shop);
-
         Long wrongShopId = shop.getId() + 1;
+        //must throw RuntimeException because of ids' validation
         productService.copyProducts(new long[]{product.getId()}, product.getShop().getId(),
                 wrongShopId, account.getUsername());
     }
@@ -157,7 +157,7 @@ public class ProductServiceTest {
         Account user = Mockito.spy(Account.class);
         user.setUsername("username" + new Random().nextInt(Integer.MAX_VALUE));
         user.setPassword("password");
-        user.setId(new Random().nextLong());
+        user.setId(Math.abs(new Random().nextLong()));
 
         Mockito.when(accountRepository.save(user)).thenReturn(user);
         Mockito.when(accountRepository.findByUsername(user.getUsername())).thenReturn(user);
@@ -173,16 +173,17 @@ public class ProductServiceTest {
         Mockito.when(productRepository.getOne(product.getId())).thenReturn(product);
         Mockito.when(productRepository.getOne(-1L)).thenReturn(null);
         doAnswer(invocationOnMock -> {
-            product.setId(-1L);
+            Product p = invocationOnMock.getArgument(0);
+            p.setId(-1L);
             return null;
-        }).when(productRepository).delete(product);
+        }).when(productRepository).delete(any(Product.class));
 
         return product;
     }
 
     private Shop createMockedShopForAccountInRepository(Account account) {
         Shop shop = new Shop();
-        shop.setId(new Random().nextLong());
+        shop.setId(Math.abs(new Random().nextLong()));
         shop.setName("shopName");
         shop.setAccounts(List.of(account));
 
@@ -193,6 +194,7 @@ public class ProductServiceTest {
         return shop;
     }
 
+    //to mock @ManyToMany relation between Accounts and Shops
     private void mockUserWithShop(Account account, Shop shop) {
         Mockito.when(account.getShops()).thenReturn(List.of(shop));
     }

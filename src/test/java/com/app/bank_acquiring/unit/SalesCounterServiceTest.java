@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.Random;
 
 import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.spy;
@@ -40,7 +41,6 @@ public class SalesCounterServiceTest {
         String terminalTid = terminal.getTid();
         Transaction transaction = createTransactionForTerminal(Type.PAYMENT, terminal);
         Mockito.when(salesCounterRepository.findByTerminalTid(terminalTid)).thenReturn(null);
-
         salesCounterService.addTransaction(transaction, terminalTid);
 
         ArgumentCaptor<SalesCounter> valueCapture = ArgumentCaptor.forClass(SalesCounter.class);
@@ -56,105 +56,86 @@ public class SalesCounterServiceTest {
 
     @Test
     public void givenTwoConsecutivePaymentTransactions_whenAddTransaction_thenSalesCounterCountsStatisticsRight() {
-        ArgumentCaptor<SalesCounter> valueCapture = ArgumentCaptor.forClass(SalesCounter.class);
         //adding first transaction
         Terminal terminal = createTerminal();
         String terminalTid = terminal.getTid();
         Transaction firstTransaction = createTransactionForTerminal(Type.PAYMENT, terminal);
-
         Mockito.when(salesCounterRepository.findByTerminalTid(terminalTid)).thenReturn(null);
         salesCounterService.addTransaction(firstTransaction, terminalTid);
 
+        ArgumentCaptor<SalesCounter> valueCapture = ArgumentCaptor.forClass(SalesCounter.class);
         Mockito.verify(salesCounterRepository).save(valueCapture.capture());
-        SalesCounter firstTransactionSalesCounter = valueCapture.getValue();
+        SalesCounter salesCounter = valueCapture.getValue();
 
-        assertTrue(firstTransactionSalesCounter.getSalesPerDay() == firstTransaction.getAmount()
-                && firstTransactionSalesCounter.getSalesCounterPerDay() == 1
-                && firstTransactionSalesCounter.getBalancePerDay() == firstTransaction.getAmount());
+        assertTrue(salesCounter.getSalesPerDay() == firstTransaction.getAmount());
+        assertTrue(salesCounter.getSalesCounterPerDay() == 1);
+        assertTrue(salesCounter.getBalancePerDay() == firstTransaction.getAmount());
 
         //second transaction
         Transaction secondTransaction = createTransactionForTerminal(Type.PAYMENT, terminal);
-        SalesCounter sc = copySalesCounter(firstTransactionSalesCounter);
-
-        Mockito.when(salesCounterRepository.findByTerminalTid(terminalTid)).thenReturn(sc);
+        Mockito.when(salesCounterRepository.findByTerminalTid(terminalTid)).thenReturn(salesCounter);
         salesCounterService.addTransaction(secondTransaction, terminalTid);
+        assertTrue(salesCounter.getSalesPerDay() == firstTransaction.getAmount() + secondTransaction.getAmount());
+        assertTrue(salesCounter.getSalesPerDay() == 2);
+        assertTrue(salesCounter.getBalancePerDay() == firstTransaction.getAmount() + secondTransaction.getAmount());
 
-        Mockito.verify(salesCounterRepository, Mockito.times(2)).save(valueCapture.capture());
-        SalesCounter secondTransactionSalesCounter = valueCapture.getValue();
-
-        assertTrue(secondTransactionSalesCounter.getSalesPerDay() == (firstTransaction.getAmount() + secondTransaction.getAmount())
-                && secondTransactionSalesCounter.getSalesCounterPerDay() == 2
-                && secondTransactionSalesCounter.getBalancePerDay() == (firstTransaction.getAmount() + secondTransaction.getAmount()));
     }
 
 
     @Test
     public void givenTwoRefundTransactions_whenAddTransaction_thenSalesCounterCountsStatisticsRight() {
-        ArgumentCaptor<SalesCounter> valueCapture = ArgumentCaptor.forClass(SalesCounter.class);
         //adding first transaction
         Terminal terminal = createTerminal();
         String terminalTid = terminal.getTid();
         Transaction firstTransaction = createTransactionForTerminal(Type.REFUND, terminal);
-
         Mockito.when(salesCounterRepository.findByTerminalTid(terminalTid)).thenReturn(null);
         salesCounterService.addTransaction(firstTransaction, terminalTid);
 
+        ArgumentCaptor<SalesCounter> valueCapture = ArgumentCaptor.forClass(SalesCounter.class);
         Mockito.verify(salesCounterRepository).save(valueCapture.capture());
-        SalesCounter firstTransactionSalesCounter = valueCapture.getValue();
+        SalesCounter salesCounter = valueCapture.getValue();
 
-        assertTrue(firstTransactionSalesCounter.getRefundsPerDay() == firstTransaction.getAmount()
-                && firstTransactionSalesCounter.getRefundsCounterPerDay() == 1
-                && firstTransactionSalesCounter.getBalancePerDay() == -firstTransaction.getAmount());
+        assertTrue(salesCounter.getRefundsPerDay() == firstTransaction.getAmount());
+        assertTrue(salesCounter.getRefundsCounterPerDay() == 1);
+        assertTrue(salesCounter.getBalancePerDay() == -firstTransaction.getAmount());
 
         //second transaction
         Transaction secondTransaction = createTransactionForTerminal(Type.REFUND, terminal);
-        SalesCounter sc = copySalesCounter(firstTransactionSalesCounter);
-
-        Mockito.when(salesCounterRepository.findByTerminalTid(terminalTid)).thenReturn(sc);
+        Mockito.when(salesCounterRepository.findByTerminalTid(terminalTid)).thenReturn(salesCounter);
         salesCounterService.addTransaction(secondTransaction, terminalTid);
 
-        Mockito.verify(salesCounterRepository, Mockito.times(2)).save(valueCapture.capture());
-        SalesCounter secondTransactionSalesCounter = valueCapture.getValue();
-
-        assertTrue(secondTransactionSalesCounter.getRefundsPerDay() == (firstTransaction.getAmount() + secondTransaction.getAmount())
-                && secondTransactionSalesCounter.getRefundsCounterPerDay() == 2
-                && secondTransactionSalesCounter.getBalancePerDay() == -(firstTransaction.getAmount() + secondTransaction.getAmount()));
+        assertTrue(salesCounter.getRefundsPerDay() == (firstTransaction.getAmount() + secondTransaction.getAmount()));
+        assertTrue(salesCounter.getRefundsCounterPerDay() == 2);
+        assertTrue(salesCounter.getBalancePerDay() == -(firstTransaction.getAmount() + secondTransaction.getAmount()));
     }
 
     @Test
     public void givenOnePaymentAndOneRefundTransactions_whenAddTransaction_thenSalesCounterCountsStatisticsRight() {
-        ArgumentCaptor<SalesCounter> valueCapture = ArgumentCaptor.forClass(SalesCounter.class);
         //adding first transaction
         Terminal terminal = createTerminal();
         String terminalTid = terminal.getTid();
         Transaction paymentTransaction = createTransactionForTerminal(Type.PAYMENT, terminal);
-
         Mockito.when(salesCounterRepository.findByTerminalTid(terminalTid)).thenReturn(null);
         salesCounterService.addTransaction(paymentTransaction, terminalTid);
 
+        ArgumentCaptor<SalesCounter> valueCapture = ArgumentCaptor.forClass(SalesCounter.class);
         Mockito.verify(salesCounterRepository).save(valueCapture.capture());
-        SalesCounter firstTransactionSalesCounter = valueCapture.getValue();
+        SalesCounter salesCounter = valueCapture.getValue();
 
-        assertTrue(firstTransactionSalesCounter.getSalesPerDay() == paymentTransaction.getAmount()
-                && firstTransactionSalesCounter.getSalesCounterPerDay() == 1
-                && firstTransactionSalesCounter.getBalancePerDay() == paymentTransaction.getAmount());
+        assertTrue(salesCounter.getSalesPerDay() == paymentTransaction.getAmount());
+        assertTrue(salesCounter.getSalesCounterPerDay() == 1);
+        assertTrue(salesCounter.getBalancePerDay() == paymentTransaction.getAmount());
 
         //second transaction
         Transaction refundTransaction = createTransactionForTerminal(Type.REFUND, terminal);
-        SalesCounter sc = copySalesCounter(firstTransactionSalesCounter);
-
-        Mockito.when(salesCounterRepository.findByTerminalTid(terminalTid)).thenReturn(sc);
+        Mockito.when(salesCounterRepository.findByTerminalTid(terminalTid)).thenReturn(salesCounter);
         salesCounterService.addTransaction(refundTransaction, terminalTid);
 
-        Mockito.verify(salesCounterRepository, Mockito.times(2)).save(valueCapture.capture());
-        SalesCounter secondTransactionSalesCounter = valueCapture.getValue();
-
-        assertTrue(secondTransactionSalesCounter.getRefundsPerDay() == refundTransaction.getAmount()
-                && secondTransactionSalesCounter.getRefundsCounterPerDay() == 1
-                && secondTransactionSalesCounter.getSalesPerDay() == paymentTransaction.getAmount()
-                && secondTransactionSalesCounter.getSalesCounterPerDay() == 1
-                && secondTransactionSalesCounter.getBalancePerDay() == (paymentTransaction.getAmount() - refundTransaction.getAmount()))
-        ;
+        assertTrue(salesCounter.getRefundsPerDay() == refundTransaction.getAmount());
+        assertTrue(salesCounter.getRefundsCounterPerDay() == 1);
+        assertTrue(salesCounter.getSalesPerDay() == paymentTransaction.getAmount());
+        assertTrue(salesCounter.getSalesCounterPerDay() == 1);
+        assertTrue(salesCounter.getBalancePerDay() == (paymentTransaction.getAmount() - refundTransaction.getAmount()));
     }
 
     @Test
@@ -173,25 +154,35 @@ public class SalesCounterServiceTest {
     }
 
     @Test
-    public void givenNonNullArg_whenGetReportOperation_thenReturnNotEmptyString(){
+    public void givenNonNullArg_whenGetReportOperation_thenReturnNotEmptyString() {
         Terminal terminal = createTerminal();
-        Transaction transaction = createTransactionForTerminal(Type.CLOSE_DAY, terminal);
+        Transaction closeDay = createTransactionForTerminal(Type.CLOSE_DAY, terminal);
         Mockito.when(salesCounterRepository.findByTerminalTid(terminal.getTid())).thenReturn(this.salesCounter);
         Mockito.when(terminal.getShop()).thenReturn(new Shop());
-        String cheque = salesCounterService.getReportOperationToString(transaction,terminal);
-        assertFalse(salesCounterService.getReportOperationToString(transaction,terminal).isEmpty());
-        assertTrue(cheque.contains("ОТЧЕТ О ЗАКРЫТИИ СМЕНЫ"));
+        String zCheque = salesCounterService.getReportOperationToString(closeDay, terminal);
+        assertFalse(zCheque.isEmpty());
+        assertTrue(zCheque.contains("ОТЧЕТ О ЗАКРЫТИИ СМЕНЫ"));
+
+        Transaction xReport = createTransactionForTerminal(Type.XREPORT, terminal);
+        String xCheque = salesCounterService.getReportOperationToString(xReport, terminal);
+        assertFalse(xCheque.isEmpty());
+        assertTrue(xCheque.contains("ПРОМЕЖУТОЧНЫЙ ОТЧЕТ"));
     }
 
     @Test
-    public void givenNonNullArgs_whenGetOperationTransaction_thenReturnNotEmptyString(){
+    public void givenNonNullArgs_whenGetOperationTransaction_thenReturnNotEmptyString() {
         Terminal terminal = createTerminal();
-        Transaction transaction = createTransactionForTerminal(Type.PAYMENT, terminal);
+        Transaction payment = createTransactionForTerminal(Type.PAYMENT, terminal);
         Mockito.when(salesCounterRepository.findByTerminalTid(terminal.getTid())).thenReturn(this.salesCounter);
         Mockito.when(terminal.getShop()).thenReturn(new Shop());
-        String cheque = salesCounterService.getOperationTransactionToString(transaction,terminal, new HashMap<>());
-        assertFalse(cheque.isEmpty());
-        assertTrue(cheque.contains("Приход"));
+        String paymentCheque = salesCounterService.getOperationTransactionToString(payment, terminal, new HashMap<>());
+        assertFalse(paymentCheque.isEmpty());
+        assertTrue(paymentCheque.contains("Приход"));
+
+        Transaction refund = createTransactionForTerminal(Type.REFUND, terminal);
+        String refundCheque = salesCounterService.getOperationTransactionToString(refund, terminal, new HashMap<>());
+        assertFalse(refundCheque.isEmpty());
+        assertTrue(refundCheque.contains("Возврат прихода"));
     }
 
     private Transaction createTransactionForTerminal(Type transactionType, Terminal terminal) {
@@ -210,20 +201,4 @@ public class SalesCounterServiceTest {
         return terminal;
     }
 
-
-    private SalesCounter copySalesCounter(SalesCounter other) {
-        SalesCounter sc = new SalesCounter();
-        sc.setTerminalTid(other.getTerminalTid());
-        sc.setSalesAll(other.getSalesAll());
-        sc.setBalancePerDay(other.getBalancePerDay());
-        sc.setShift(other.getShift());
-
-        sc.setSalesPerDay(other.getSalesPerDay());
-        sc.setSalesCounterPerDay(other.getSalesCounterPerDay());
-
-        sc.setRefundsPerDay(other.getRefundsPerDay());
-        sc.setRefundsCounterPerDay(other.getRefundsCounterPerDay());
-
-        return sc;
-    }
 }

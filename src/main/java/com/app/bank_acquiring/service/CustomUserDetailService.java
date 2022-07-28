@@ -1,4 +1,5 @@
 package com.app.bank_acquiring.service;
+
 import java.util.Arrays;
 
 import com.app.bank_acquiring.domain.account.Account;
@@ -15,8 +16,8 @@ public class CustomUserDetailService implements UserDetailsService {
 
     private AccountRepository accountRepository;
 
-    public CustomUserDetailService(AccountRepository accountRepository){
-        this.accountRepository=accountRepository;
+    public CustomUserDetailService(AccountRepository accountRepository) {
+        this.accountRepository = accountRepository;
     }
 
     @Override

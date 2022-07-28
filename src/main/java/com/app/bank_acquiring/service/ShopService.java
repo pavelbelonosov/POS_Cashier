@@ -32,10 +32,10 @@ public class ShopService {
     }
 
     @Transactional
-    public void createShop(@NonNull Shop shop, @NonNull String currentUser) {
-        Account owner = accountRepository.findByUsername(currentUser);
+    public void bundleShopWithAccount(@NonNull Shop shop, @NonNull String accName) {
+        Account account = accountRepository.findByUsername(accName);
         List<Account> accounts = new ArrayList<>();
-        accounts.add(owner);
+        accounts.add(account);
         shop.setAccounts(accounts);
         shopRepository.save(shop);
     }

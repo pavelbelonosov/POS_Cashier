@@ -75,10 +75,11 @@ public class AccountServiceTest {
         accountService.updateEmployeeAccount(employee.getId(), newEmployeeInfo,
                 createMockedShopInRepository("otherShop"), newEmployeeAuthority);
         Account acc = accountRepository.findByUsername(employee.getUsername());
-        assertTrue(acc.getAccountInfo().getEmail().equals(newEmployeeInfo.getEmail())
-                && acc.getAccountInfo().getTelephoneNumber().equals(newEmployeeInfo.getTelephoneNumber())
-                && acc.getAccountInfo().getLastName().equals(newEmployeeInfo.getLastName())
-                && acc.getAccountInfo().getFirstName().equals(newEmployeeInfo.getFirstName()));
+
+        assertTrue(acc.getAccountInfo().getEmail().equals(newEmployeeInfo.getEmail()));
+        assertTrue(acc.getAccountInfo().getTelephoneNumber().equals(newEmployeeInfo.getTelephoneNumber()));
+        assertTrue(acc.getAccountInfo().getLastName().equals(newEmployeeInfo.getLastName()));
+        assertTrue(acc.getAccountInfo().getFirstName().equals(newEmployeeInfo.getFirstName()));
         assertTrue(acc.getAuthority() == newEmployeeAuthority);
     }
 
@@ -89,10 +90,11 @@ public class AccountServiceTest {
         accountService.createAdminUser(current, new AccountInfo());
         Account acc = accountRepository.findByUsername(current.getUsername());
         accountService.updateCurrentAccount(acc, newAccInfo);
-        assertTrue(acc.getAccountInfo().getEmail().equals(newAccInfo.getEmail())
-                && acc.getAccountInfo().getTelephoneNumber().equals(newAccInfo.getTelephoneNumber())
-                && acc.getAccountInfo().getLastName().equals(newAccInfo.getLastName())
-                && acc.getAccountInfo().getFirstName().equals(newAccInfo.getFirstName()));
+
+        assertTrue(acc.getAccountInfo().getEmail().equals(newAccInfo.getEmail()));
+        assertTrue(acc.getAccountInfo().getTelephoneNumber().equals(newAccInfo.getTelephoneNumber()));
+        assertTrue(acc.getAccountInfo().getLastName().equals(newAccInfo.getLastName()));
+        assertTrue(acc.getAccountInfo().getFirstName().equals(newAccInfo.getFirstName()));
     }
 
     @Test
@@ -119,7 +121,7 @@ public class AccountServiceTest {
         user.setUsername("username" + new Random().nextInt(Integer.MAX_VALUE));
         user.setPassword(password);
         user.setAccountInfo(new AccountInfo());
-        user.setId(new Random().nextLong());
+        user.setId(Math.abs(new Random().nextLong()));
 
         Mockito.when(accountRepository.findByUsername(user.getUsername()))
                 .thenReturn(user);
@@ -133,8 +135,7 @@ public class AccountServiceTest {
         shop.setName(shopName);
         List<Account> accountList = new ArrayList<>();
         shop.setAccounts(accountList);
-        shop.setId(new Random().nextLong());
-
+        shop.setId(Math.abs(new Random().nextLong()));
         Mockito.when(shopRepository.getOne(shop.getId()))
                 .thenReturn(shop);
         return shop;
@@ -145,6 +146,7 @@ public class AccountServiceTest {
                 "9012345678", null);
     }
 
+    //to mock @ManyToMany relation between Accounts and Shops
     private void mockUserWithShop(Account account, Shop shop) {
         Mockito.when(account.getShops()).thenReturn(Arrays.asList(new Shop[]{shop}));
     }
