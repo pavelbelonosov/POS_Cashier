@@ -3,43 +3,46 @@ package com.app.bank_acquiring.unit;
 import com.app.bank_acquiring.domain.Shop;
 import com.app.bank_acquiring.domain.Terminal;
 import com.app.bank_acquiring.domain.account.Account;
+import com.app.bank_acquiring.domain.transaction.Transaction;
 import com.app.bank_acquiring.repository.AccountRepository;
-import com.app.bank_acquiring.repository.ShopRepository;
 import com.app.bank_acquiring.repository.TerminalRepository;
+import com.app.bank_acquiring.repository.TransactionRepository;
 import com.app.bank_acquiring.service.TerminalService;
-import org.junit.After;
+import com.app.bank_acquiring.service.UposService;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.rules.ExpectedException;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mockito;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.spy;
 
 
 @ActiveProfiles("test")
-@RunWith(SpringRunner.class)
-@SpringBootTest
 public class TerminalServiceTest {
 
-    @Autowired
-    private TerminalService terminalService;
-    @Autowired
-    private TerminalRepository terminalRepository;
-    @Autowired
-    private AccountRepository accountRepository;
-    @Autowired
-    private ShopRepository shopRepository;
 
-    @After
-    public void tearDown() {
-        terminalRepository.deleteAll();
-        accountRepository.deleteAll();
-        shopRepository.deleteAll();
+    private TerminalService terminalService;
+    private TerminalRepository terminalRepository = Mockito.mock(TerminalRepository.class);
+    private AccountRepository accountRepository = Mockito.mock(AccountRepository.class);
+    private TransactionRepository transactionRepository = Mockito.mock(TransactionRepository.class);
+    private UposService uposService = Mockito.mock(UposService.class);
+
+    @Rule
+    public ExpectedException exceptionRule = ExpectedException.none();
+
+    @Before
+    public void setUp() {
+        mockUposServiceMethods();
+        terminalService = new TerminalService(terminalRepository, accountRepository, transactionRepository, uposService);
     }
 
     @Test
@@ -47,81 +50,157 @@ public class TerminalServiceTest {
         Account account = createUser();
         Terminal terminal = createTerminal();
         terminalService.addTerminalToAccount(terminal, account.getUsername());
-        assertNotNull(terminalRepository.findByTid(terminal.getTid()));
-        assertTrue(terminalRepository.findByTid(terminal.getTid()).getAccount().getId().equals(account.getId()));
+        Mockito.verify(terminalRepository).save(terminal);
+        assertTrue(account.getTerminals().contains(terminal));
+        assertTrue(terminal.getAccount().equals(account));
     }
 
     @Test
     public void whenUpdateTerminal_thenUpdatedTerminalIsSavedInRepository() {
         Account account = createUser();
         Terminal terminal = createTerminal();
+        assertTrue(terminal.getIp().equals("1.1.1.1"));
+        assertTrue(terminal.getChequeHeader() == null);
         terminalService.addTerminalToAccount(terminal, account.getUsername());
-        assertTrue(terminalRepository.findByTid(terminal.getTid()).getIp().equals("1.1.1.1"));
-
         terminalService.updateTerminal(terminal.getId(), account.getUsername(), "1.2.3.4", "header");
-        assertTrue(terminalRepository.findByTid(terminal.getTid()).getIp().equals("1.2.3.4"));
+        Mockito.verify(terminalRepository).save(terminal);
+        assertTrue(terminal.getIp().equals("1.2.3.4"));
+        assertTrue(terminal.getChequeHeader().equals("header"));
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void givenIncorrectTerminal_whenUpdateTerminal_thenThrowsRuntimeException() {
+        exceptionRule.expect(RuntimeException.class);
+        exceptionRule.expectMessage("Current account doesn't have this terminal");
+
+        Account account1 = createUser();
+        Terminal terminal1 = createTerminal();
+        terminalService.addTerminalToAccount(terminal1, account1.getUsername());
+        Account account2 = createUser();
+        Terminal terminal2 = createTerminal();
+        terminalService.addTerminalToAccount(terminal2, account2.getUsername());
+        //must throw RuntimeException due to ids' validation
+        terminalService.updateTerminal(terminal1.getId(), account2.getUsername(), " ", " ");
+    }
+
+    @Test
+    public void givenBlankIpAndHeader_whenUpdateTerminal_thenChangesNotUpdated() {
         Account account = createUser();
         Terminal terminal = createTerminal();
+        assertTrue(terminal.getIp().equals("1.1.1.1"));
+        assertTrue(terminal.getChequeHeader() == null);
         terminalService.addTerminalToAccount(terminal, account.getUsername());
+        terminalService.updateTerminal(terminal.getId(), account.getUsername(), " ", " ");
+        assertTrue(terminal.getIp().equals("1.1.1.1"));
+        assertTrue(terminal.getChequeHeader() == null);
+    }
 
-        terminalService.updateTerminal(createTerminal().getId(), account.getUsername(), "1.2.3.4", "newHeader");
+    @Test
+    public void whenTestConnection_thenNewTransactionIsSavedInRepository() {
+        Account account = createUser();
+        Terminal terminal = createTerminal();
+        ArgumentCaptor<Transaction> valueCapture = ArgumentCaptor.forClass(Transaction.class);
+        terminalService.addTerminalToAccount(terminal, account.getUsername());
+        terminalService.testConnection(terminal.getId(), account.getUsername());
+
+        Mockito.verify(transactionRepository).save(valueCapture.capture());
+        Transaction test = valueCapture.getValue();
+        assertTrue(test.getTerminal().equals(terminal));
+
+    }
+
+    @Test
+    public void givenIncorrectIdAndUsername_whenTestConnection_thenThrowRuntimeException() {
+        exceptionRule.expect(RuntimeException.class);
+        exceptionRule.expectMessage("Current account doesn't have this terminal");
+
+        Account account1 = createUser();
+        Terminal terminal1 = createTerminal();
+        terminalService.addTerminalToAccount(terminal1, account1.getUsername());
+        Account account2 = createUser();
+        Terminal terminal2 = createTerminal();
+        terminalService.addTerminalToAccount(terminal2, account2.getUsername());
+        //must throw RuntimeException due to ids' validation
+        terminalService.testConnection(terminal1.getId(), account2.getUsername());
+    }
+
+    @Test
+    public void givenNullIdAndUsername_whenTestConnection_thenThrowRuntimeException() {
+        assertFalse(terminalService.testConnection(null, null));
     }
 
     @Test
     public void whenDeleteTerminal_thenTerminalIsDeletedFromRepository() {
         Account account = createUser();
         Terminal terminal = createTerminal();
+        mockUserWithEmptyShopList(account);
+        assertTrue(terminal.getId() > 0);
         terminalService.addTerminalToAccount(terminal, account.getUsername());
         terminalService.deleteTerminal(terminal.getId(), account.getUsername());
-        assertTrue(terminalRepository.findById(terminal.getId()).isEmpty());
-    }
-
-    @Test(expected = RuntimeException.class)
-    public void givenIncorrectTerminal_whenDeleteTerminal_thenThrowsRuntimeException() {
-        Account account = createUser();
-        Terminal terminal = createTerminal();
-        terminalService.addTerminalToAccount(terminal, account.getUsername());
-        terminalService.deleteTerminal(createTerminal().getId(), account.getUsername());
+        Mockito.verify(terminalRepository).delete(terminal);
+        assertTrue(terminal.getId() == -1L);
     }
 
     @Test
-    public void whenSetWorkTerminalToAccount_thenTerminalIsUpdatedInRepository() {
+    public void givenIncorrectTerminal_whenDeleteTerminal_thenThrowsRuntimeException() {
+        exceptionRule.expect(RuntimeException.class);
+        exceptionRule.expectMessage("Current account doesn't have this terminal");
+
+        Account account1 = createUser();
+        Terminal terminal1 = createTerminal();
+        terminalService.addTerminalToAccount(terminal1, account1.getUsername());
+        Account account2 = createUser();
+        Terminal terminal2 = createTerminal();
+        terminalService.addTerminalToAccount(terminal2, account2.getUsername());
+        //must throw RuntimeException due to ids' validation
+        terminalService.deleteTerminal(terminal1.getId(), account2.getUsername());
+    }
+
+    @Test
+    public void whenSetWorkTerminalToAccount_thenTerminalIsUpdated() {
         Account account = createUser();
         Terminal terminal = createTerminal();
+        assertTrue(account.getWorkTerminalTid() == null);
         terminalService.addTerminalToAccount(terminal, account.getUsername());
         terminalService.setWorkTerminalToAccount(account.getUsername(), terminal.getId());
-        assertTrue(accountRepository.findByUsername(account.getUsername()).getWorkTerminalTid().equals(terminal.getTid()));
+        assertTrue(account.getWorkTerminalTid().equals(terminal.getTid()));
     }
 
     @Test
-    @Transactional
     public void whenGetValidatedTerminal_thenTerminalIsReturnedFromRepository() {
         Account account = createUser();
         Terminal terminal = createTerminal();
         terminalService.addTerminalToAccount(terminal, account.getUsername());
-        assertNotNull(terminalService.getValidatedTerminal(terminal.getId(), account.getUsername()));
+        assertEquals(terminal, terminalService.getValidatedTerminal(terminal.getId(), account.getUsername()));
     }
+    @Test
+    public void givenIncorrectTerminalIdAndUsername_whenGetValidatedTerminal_thenThrowsRuntimeException() {
+        exceptionRule.expect(RuntimeException.class);
+        exceptionRule.expectMessage("Current account doesn't have this terminal");
 
-    @Test(expected = RuntimeException.class)
-    @Transactional
-    public void givenIncorrectTerminal_whenGetValidatedTerminal_thenThrowsRuntimeException() {
-        Account account = createUser();
-        Terminal terminal = createTerminal();
-
-        terminalService.addTerminalToAccount(terminal, account.getUsername());
-
-        terminalService.getValidatedTerminal(terminal.getId() + 1, account.getUsername());
+        Account account1 = createUser();
+        Terminal terminal1 = createTerminal();
+        terminalService.addTerminalToAccount(terminal1, account1.getUsername());
+        Account account2 = createUser();
+        Terminal terminal2 = createTerminal();
+        terminalService.addTerminalToAccount(terminal2, account2.getUsername());
+        //must throw RuntimeException due to ids' validation
+        terminalService.getValidatedTerminal(terminal1.getId(), account2.getUsername());
     }
 
     private Account createUser() {
-        Account user = new Account();
+        Account user = spy(Account.class);
         user.setUsername("username" + new Random().nextInt(Integer.MAX_VALUE));
         user.setPassword("password");
-        return accountRepository.save(user);
+        user.setId(Math.abs(new Random().nextLong()));
+        Mockito.when(accountRepository.findByUsername(user.getUsername())).thenReturn(user);
+        Mockito.when(accountRepository.getOne(user.getId())).thenReturn(user);
+        doAnswer(invocationOnMock -> {
+            Account arg = invocationOnMock.getArgument(0);
+            arg.setId(-1L);
+            return null;
+        }).when(accountRepository).delete(any(Account.class));
+        return user;
     }
 
     private Terminal createTerminal() {
@@ -130,12 +209,36 @@ public class TerminalServiceTest {
         terminal.setIp("1.1.1.1");
         terminal.setMid("123456789000");
         terminal.setShop(createShop());
+        terminal.setId(Math.abs(new Random().nextLong()));
+        Mockito.when(terminalRepository.findByTid(terminal.getTid())).thenReturn(terminal);
+        Mockito.when(terminalRepository.getOne(terminal.getId())).thenReturn(terminal);
+        doAnswer(invocationOnMock -> {
+            Terminal arg = invocationOnMock.getArgument(0);
+            arg.setId(-1L);
+            return null;
+        }).when(terminalRepository).delete(any(Terminal.class));
         return terminal;
     }
 
     private Shop createShop() {
         Shop shop = new Shop();
         shop.setName("shop");
-        return shopRepository.save(shop);
+        shop.setId(Math.abs(new Random().nextLong()));
+        return shop;
     }
+
+    private void mockUposServiceMethods() {
+        Mockito.when(uposService.createUserUpos(anyLong(), any(Terminal.class))).thenReturn(true);
+        Mockito.when(uposService.updateUposSettings(anyLong(), any(Terminal.class))).thenReturn(true);
+        Mockito.when(uposService.deleteUserUpos(anyLong(), anyLong(), anyString())).thenReturn(true);
+        Mockito.when(uposService.readCheque(anyLong(), anyLong(), anyString())).thenReturn(" ");
+        Mockito.when(uposService.defineTransactionStatus(anyString())).thenReturn(true);
+        Mockito.when(uposService.testPSDB(anyLong(), anyLong(), anyString())).thenReturn(true);
+    }
+
+    //to mock @ManyToMany relation between Accounts and Shops
+    private void mockUserWithEmptyShopList(Account account) {
+        Mockito.when(account.getShops()).thenReturn(new ArrayList<>());
+    }
+
 }

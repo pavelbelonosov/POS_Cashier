@@ -5,7 +5,6 @@ import com.app.bank_acquiring.domain.Terminal;
 import com.app.bank_acquiring.service.AccountService;
 import com.app.bank_acquiring.service.TerminalService;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -16,10 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 
 @Controller
 @AllArgsConstructor
@@ -46,14 +42,15 @@ public class TerminalController {
         Terminal terminal = terminalService.getValidatedTerminal(id, currentUser.getUsername());
         Collections.reverse(terminal.getTransactions());
         model.addAttribute("terminal", terminal);
-        model.addAttribute("workAccounts", terminalService.getAccountsWithWorkTerminal(terminal, currentUser.getUsername()));
+        model.addAttribute("workAccounts",
+                terminalService.getEmployeesWithThisWorkTerminal(terminal.getTid(), currentUser.getUsername()));
         return "terminal";
     }
 
     @GetMapping("/terminals/{id}/test")
     public String testTerminalConnection(@PathVariable Long id,
                                          @AuthenticationPrincipal UserDetails currentUser) {
-        terminalService.testConnection(id, currentUser);
+        terminalService.testConnection(id, currentUser.getUsername());
         return "redirect:/terminals/{id}";
     }
 

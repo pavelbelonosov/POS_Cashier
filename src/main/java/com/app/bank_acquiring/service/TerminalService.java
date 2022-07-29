@@ -8,12 +8,11 @@ import com.app.bank_acquiring.repository.AccountRepository;
 import com.app.bank_acquiring.repository.TerminalRepository;
 import com.app.bank_acquiring.repository.TransactionRepository;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.NonNull;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -31,7 +30,7 @@ public class TerminalService {
 
 
     @Transactional
-    public void addTerminalToAccount(Terminal terminal, String currentUser) {
+    public void addTerminalToAccount(@NonNull Terminal terminal, @NonNull String currentUser) {
         Account account = accountRepository.findByUsername(currentUser);
         terminal.setAccount(account);
         terminalRepository.save(terminal);
@@ -42,20 +41,23 @@ public class TerminalService {
     }
 
     @Transactional
-    public void updateTerminal(Long id, String currentUser, String ip, String chequeHeader) {
+    public void updateTerminal(Long id, String currentUser, @NonNull String ip, @NonNull String chequeHeader) {
         Terminal terminal = getValidatedTerminal(id, currentUser);
-        if (!ip.isEmpty()) {
+        if (!ip.isBlank()) {
             terminal.setIp(ip);
         }
-        if (!chequeHeader.isEmpty()) {
+        if (!chequeHeader.isBlank()) {
             terminal.setChequeHeader(chequeHeader);
         }
         uposService.updateUposSettings(accountRepository.findByUsername(currentUser).getId(), terminal);
     }
 
     @Transactional
-    public boolean testConnection(Long terminalId, UserDetails currentUser) {
-        Account current = accountRepository.findByUsername(currentUser.getUsername());
+    public boolean testConnection(Long terminalId, String currentUser) {
+        if (terminalId == null || currentUser == null || currentUser.isBlank()) {
+            return false;
+        }
+        Account current = accountRepository.findByUsername(currentUser);
         Terminal terminal = terminalRepository.getOne(terminalId);
         validateIdAccess(current, terminal);
         if (uposService.testPSDB(terminal.getAccount().getId(), terminal.getShop().getId(), terminal.getTid())) {
@@ -73,38 +75,39 @@ public class TerminalService {
     }
 
     @Transactional
-    public void deleteTerminal(Long id, String currentUser) {
+    public void deleteTerminal(@NonNull Long id, @NonNull String currentUser) {
         Terminal terminal = getValidatedTerminal(id, currentUser);
         uposService.deleteUserUpos(accountRepository.findByUsername(currentUser).getId(),
                 terminal.getShop().getId(), terminal.getTid());
-        getAccountsWithWorkTerminal(terminal, currentUser).forEach(account -> account.setWorkTerminalTid(null));
+        getEmployeesWithThisWorkTerminal(terminal.getTid(), currentUser).forEach(account -> account.setWorkTerminalTid(null));
         terminalRepository.delete(terminal);
     }
 
     @Transactional
-    public void setWorkTerminalToAccount(String currentUser, Long id) {
+    public void setWorkTerminalToAccount(@NonNull String currentUser, @NonNull Long id) {
         Account current = accountRepository.findByUsername(currentUser);
         current.setWorkTerminalTid(terminalRepository.getOne(id).getTid());
     }
 
-    public List<Account> getAccountsWithWorkTerminal(Terminal terminal, String currentUser) {
+    public List<Account> getEmployeesWithThisWorkTerminal(@NonNull String terminalTid, @NonNull String currentUser) {
         Account owner = accountRepository.findByUsername(currentUser);
+        //getting all employees, belonging to owner/admin via his shops
         List<List<Account>> listOfListsEmployees = owner.getShops().stream()
                 .map(shop -> shop.getAccounts()).collect(Collectors.toCollection(ArrayList::new));
         List<Account> employees = listOfListsEmployees.stream()
                 .flatMap(List::stream)
                 .collect(Collectors.toList());
+        //filtering employees by having given terminal in work
         return employees.stream().map(account -> account.getId()).distinct()
                 .map(id -> accountRepository.getOne(id))
-                .filter(account -> account.getWorkTerminalTid() != null && account.getWorkTerminalTid().equals(terminal.getTid()))
+                .filter(account -> account.getWorkTerminalTid() != null && account.getWorkTerminalTid().equals(terminalTid))
                 .collect(Collectors.toList());
     }
 
     public Terminal getValidatedTerminal(Long id, String currentUser) {
-        if (id == null || currentUser == null) {
+        if (id == null || currentUser == null || currentUser.isBlank()) {
             return null;
         }
-
         Account user = accountRepository.findByUsername(currentUser);
         Terminal terminal = terminalRepository.getOne(id);
         validateIdAccess(user, terminal);
@@ -112,14 +115,14 @@ public class TerminalService {
     }
 
     public Terminal getTerminalByTid(String tid) {
-        if (tid != null && tid.length() == 8) {
+        if (tid != null && !tid.isBlank() && tid.length() == 8) {
             return terminalRepository.findByTid(tid);
         }
         return null;
     }
 
     public void validateIdAccess(Account account, Terminal terminal) {
-        if (terminal == null || !account.getTerminals().contains(terminal)) {
+        if (terminal == null || account.getTerminals() == null || !account.getTerminals().contains(terminal)) {
             throw new RuntimeException("Current account doesn't have this terminal");
         }
     }
