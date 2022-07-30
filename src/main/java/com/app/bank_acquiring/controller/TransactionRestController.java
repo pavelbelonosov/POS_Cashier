@@ -5,7 +5,6 @@ import com.app.bank_acquiring.domain.transaction.TransactionDto;
 import com.app.bank_acquiring.domain.transaction.Type;
 import com.app.bank_acquiring.service.TransactionService;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,12 +35,12 @@ public class TransactionRestController {
 
     @PostMapping("/api/v1/transactions/mailcheque")
     public ResponseEntity<String> sendChequeToEmail(@RequestBody List<String> emailWithCheque,
-                                                  @AuthenticationPrincipal UserDetails currentUser) {
+                                                    @AuthenticationPrincipal UserDetails currentUser) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
         return transactionService.sendEmail(currentUser.getUsername(), emailWithCheque) ?
-                new ResponseEntity<>("{\"error\":\"0\"}",headers, HttpStatus.OK)
-                : new ResponseEntity<>("{\"error\":\"1\"}",headers, HttpStatus.OK);
+                new ResponseEntity<>("{\"error\":\"0\"}", headers, HttpStatus.OK)
+                : new ResponseEntity<>("{\"error\":\"1\"}", headers, HttpStatus.OK);
     }
 
     @GetMapping("/api/v1/transactions/closeday")

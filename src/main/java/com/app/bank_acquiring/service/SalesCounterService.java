@@ -94,15 +94,17 @@ public class SalesCounterService {
 
     public void closeDay(String terminalTid) {
         SalesCounter salesCounter = getSalesCounter(terminalTid);
-        salesCounter.setSalesCounterPerDay(0);
-        salesCounter.setRefundsCounterPerDay(0);
-        salesCounter.setRefundsPerDay(0);
-        salesCounter.setBalancePerDay(0);
+        if (salesCounter != null) {
+            salesCounter.setSalesCounterPerDay(0);
+            salesCounter.setRefundsCounterPerDay(0);
+            salesCounter.setRefundsPerDay(0);
+            salesCounter.setBalancePerDay(0);
 
-        salesCounter.setShift(salesCounter.getShift() + 1);
-        salesCounter.setSalesAll(salesCounter.getSalesAll() + salesCounter.getSalesPerDay());
-        salesCounter.setSalesPerDay(0);
-        saveSalesCounter(salesCounter);
+            salesCounter.setShift(salesCounter.getShift() + 1);
+            salesCounter.setSalesAll(salesCounter.getSalesAll() + salesCounter.getSalesPerDay());
+            salesCounter.setSalesPerDay(0);
+            saveSalesCounter(salesCounter);
+        }
     }
 
     public SalesCounter getSalesCounter(String terminalTid) {
