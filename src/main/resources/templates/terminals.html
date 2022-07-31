@@ -1,6 +1,6 @@
 <!DOCTYPE HTML>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
-<div th:replace="fragments/layout :: head(text='Мои терминалы')"></div>
+<div th:replace="fragments/layout :: head(text='POS-кассир | Терминалы')"></div>
 <body>
 <div th:replace="fragments/layout :: header"></div>
 <main>
@@ -55,7 +55,7 @@
                     </div>
                 </form>
             </div>
-            <div class="col-md-auto">
+            <div class="col-*-*">
                 <h3>Мои терминалы:</h3>
                 <div th:if="${!account.shops.empty}">
                     <ul class="list-group">
@@ -109,6 +109,6 @@
     </section>
     <div th:replace="fragments/layout :: footer"></div>
 </main>
-
 </body>
+<div th:replace="fragments/layout :: forToggleScript"></div>
 </html>

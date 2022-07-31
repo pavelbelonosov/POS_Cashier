@@ -23,7 +23,7 @@
             </div>
         </div>
         <div class="row" th:if="${terminal!=null}">
-            <div class="col-md-auto">
+            <div class="col-*-*">
 
                 <form class="form-group" id="formForAddingProductsInCart" th:method="POST">
                     <h5 align="center">Отсканируйте товар или добавьте из каталога</h5>
@@ -142,7 +142,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-auto" >
+            <div class="col-*-*" >
                 <div id="jumbotronChequeArea" style="'background-color: #F1F2F3'"  class="jumbotron d-none">
                     <table class="table table-hover table-responsive table-sm">
                         <tbody>
@@ -163,13 +163,11 @@
     </section>
 
 </main>
+<div th:replace="fragments/layout :: forToggleScript"></div>
 <script th:inline="javascript"> var contextRoot = /*[[@{/}]]*/ '';</script>
 <script th:src="@{/javascript/transactions.js}" defer></script>
-<script type="text/javascript" language="javascript" src="https://code.jquery.com/jquery-3.5.1.js"></script>
 <script type="text/javascript" language="javascript"
         src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 <script>
 $(document).ready( function () {
 $('#dataTable').DataTable();
@@ -226,7 +224,6 @@ $('#dataTable').dataTable( {
         }
     }
 } );
-
 </script>
 <div th:replace="fragments/layout :: footer"></div>
 </body>

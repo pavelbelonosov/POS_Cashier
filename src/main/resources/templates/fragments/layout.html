@@ -1,41 +1,39 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head th:fragment="head(text)">
-    <meta charset="UTF-8" />
+    <meta charset="UTF-8"/>
     <title th:text="${text}">Title</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"/>
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css">
 </head>
 <body>
-<header th:fragment="header" >
-    <nav class="navbar navbar-expand-sm bg-light navbar-light">
-        <ul class="navbar-nav">
-            <li class="nav-item">
-                <a class="nav-link" th:href="@{/main}">Касса</a>
-            </li>
-            <li class="nav-item" th:if="${#authorization.expression('hasAuthority(''ADMIN'')')}">
-                <a class="nav-link" th:href="@{/shops}">Магазины</a>
-            </li>
-            <li class="nav-item" th:if="${#authorization.expression('hasAnyAuthority(''ADMIN'',''HEAD_CASHIER'')')}">
-                <a class="nav-link" th:href="@{/products}">Товары</a>
-            </li>
-            <li class="nav-item" th:if="${#authorization.expression('hasAuthority(''ADMIN'')')}">
-                <a class="nav-link" th:href="@{/accounts}">Сотрудники</a>
-            </li>
-            <li class="nav-item" th:if="${#authorization.expression('hasAuthority(''ADMIN'')')}">
-                <a class="nav-link" th:href="@{/terminals}">Терминалы</a>
-            </li>
-        </ul>
-        <ul class="navbar-nav ml-auto navbar-right">
-            <li class="nav-item active">
-                <a class="nav-link" th:href="@{/accounts/current}" th:text ="${#authentication.principal.username}"></a>
-            </li>
-            <li class="nav-item " th:if="${#authorization.expression('isAuthenticated()')}">
-                <a class="nav-link" th:href="@{/logout}" onclick="$('#form').submit();">Выйти</a>
-                <form style="visibility: hidden" id="form" method="post" th:action="@{/logout}"></form>
-            </li>
-        </ul>
+<header th:fragment="header">
+    <nav class="navbar navbar-expand-md navbar-light bg-light">
+        <a th:href="@{/main}" class="navbar-brand">SberPOS Cashier</a>
+        <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
+            <div class="navbar-nav">
+                <a th:if="${#authorization.expression('hasAuthority(''ADMIN'')')}" th:href="@{/shops}"
+                   class="nav-item nav-link">Магазины</a>
+                <a class="nav-item nav-link"
+                   th:if="${#authorization.expression('hasAnyAuthority(''ADMIN'',''HEAD_CASHIER'')')}"
+                   th:href="@{/products}">Товары</a>
+                <a class="nav-item nav-link" th:if="${#authorization.expression('hasAuthority(''ADMIN'')')}"
+                   th:href="@{/accounts}">Сотрудники</a>
+                <a class="nav-item nav-link" th:if="${#authorization.expression('hasAuthority(''ADMIN'')')}"
+                   th:href="@{/terminals}">Терминалы</a>
+            </div>
+            <div class="navbar-nav">
+                <a class="nav-item nav-link" th:href="@{/accounts/current}"
+                   th:text="${#authentication.principal.username}"></a>
+                <a th:if="${#authorization.expression('isAuthenticated()')}" th:href="@{/logout}"
+                   onclick="$('#form').submit();" class="nav-item nav-link">Выйти</a>
+            </div>
+        </div>
     </nav>
 </header>
 
@@ -48,6 +46,10 @@
         </div>
     </footer>
 </div>
-
+<div th:fragment="forToggleScript">
+    <script type="text/javascript" language="javascript" src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+</div>
 </body>
 </html>
