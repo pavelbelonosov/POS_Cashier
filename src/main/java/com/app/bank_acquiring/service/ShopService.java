@@ -34,9 +34,13 @@ public class ShopService {
     @Transactional
     public void bundleShopWithAccount(@NonNull Shop shop, @NonNull String accName) {
         Account account = accountRepository.findByUsername(accName);
-        List<Account> accounts = new ArrayList<>();
-        accounts.add(account);
-        shop.setAccounts(accounts);
+        if (shop.getAccounts() == null) {
+            List<Account> accounts = new ArrayList<>();
+            accounts.add(account);
+            shop.setAccounts(accounts);
+        } else {
+            shop.getAccounts().add(account);
+        }
         shopRepository.save(shop);
     }
 

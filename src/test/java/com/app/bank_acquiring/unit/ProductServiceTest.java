@@ -11,6 +11,7 @@ import org.junit.rules.ExpectedException;
 import org.mockito.AdditionalMatchers;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.ActiveProfiles;
 import org.junit.*;
 
@@ -30,6 +31,7 @@ public class ProductServiceTest {
     private ProductRepository productRepository = Mockito.mock(ProductRepository.class);
     private AccountRepository accountRepository = Mockito.mock(AccountRepository.class);
     private ShopService shopService = Mockito.mock(ShopService.class);
+
 
     @Rule
     public ExpectedException exceptionRule = ExpectedException.none();

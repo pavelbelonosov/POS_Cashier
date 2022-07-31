@@ -29,9 +29,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/", "/images/**", "/accounts/registration").permitAll()
                 .antMatchers("/h2-console", "/h2-console/**").permitAll()
                 //.antMatchers("/h2-console","/h2-console/**").hasAuthority("ADMIN")
-                .antMatchers("/shops", "/shop/**", "/accounts", "/terminals").hasAuthority("ADMIN")
+                .antMatchers("/shops", "/shop/**", "/accounts", "/terminals", "/terminals/**").hasAuthority("ADMIN")
                 .antMatchers("/main").hasAnyAuthority(Authority.CASHIER.toString(),
                         Authority.HEAD_CASHIER.toString(), Authority.ADMIN.toString())
+                .antMatchers("/products", "/products/**").hasAnyAuthority(Authority.HEAD_CASHIER.toString(),
+                        Authority.ADMIN.toString())
                 .anyRequest().authenticated();
 
         http

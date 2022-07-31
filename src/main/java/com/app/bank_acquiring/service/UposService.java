@@ -56,6 +56,16 @@ public class UposService {
         }
     }
 
+    /**
+     * The method performs acquiring operation with POS-terminal. In case of any process exception or
+     * terminal's disconnection state, current operation is reckoned failed and method returns false.
+     * @param accountId account repository ID
+     * @param shopId ID of shop, belonging to given account
+     * @param terminalTid TID of terminal in use
+     * @param amount payment/refund amount
+     * @param transactionType type of transaction
+     * @return operation state
+     */
     public boolean makeOperation(Long accountId, Long shopId, String terminalTid, double amount, Type transactionType) {
         String dir = "C:/temp/bank/" + accountId + "/" + shopId + "/" + terminalTid + "/";
         Process process;

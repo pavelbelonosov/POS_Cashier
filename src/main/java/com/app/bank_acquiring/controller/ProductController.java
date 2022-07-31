@@ -52,12 +52,12 @@ public class ProductController {
         return "products";
     }
 
-    @GetMapping("/products/{id}")
+   /* @GetMapping("/products/{id}")
     public String getProductById(Model model, @PathVariable Long id,
                                  @AuthenticationPrincipal UserDetails currentUser) {
         model.addAttribute("product", productService.getProduct(id, currentUser.getUsername()));
         return "product";
-    }
+    }*/
 
     @GetMapping("/shops/{id}/products/file")
     public ResponseEntity<byte[]> getExcelFile(@PathVariable Long id, @AuthenticationPrincipal UserDetails currentUser) {
@@ -70,12 +70,12 @@ public class ProductController {
         return new ResponseEntity<>(content, headers, HttpStatus.CREATED);
     }
 
-    @GetMapping("/products/refresh")
+    /*@GetMapping("/products/refresh")
     public String refreshProducts(Model model, @AuthenticationPrincipal UserDetails currentUser) {
         Account user = accountService.findByUsername(currentUser.getUsername());
         model.addAttribute("account", user);
         return "products::#prodTable";
-    }
+    }*/
 
     @Transactional
     @PostMapping("/products/updateBalance")
