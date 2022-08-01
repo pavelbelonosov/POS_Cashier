@@ -11,14 +11,18 @@ import org.junit.rules.ExpectedException;
 import org.mockito.AdditionalMatchers;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.CacheManager;
 import org.springframework.test.context.ActiveProfiles;
 import org.junit.*;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 
+import static java.util.Optional.ofNullable;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -40,6 +44,7 @@ public class ProductServiceTest {
     public void setUp() {
         productService = new ProductService(productRepository, accountRepository, shopService);
     }
+
 
     @Test
     public void whenGetProduct_thenReturnProductBelongingToAccount() {
@@ -134,7 +139,6 @@ public class ProductServiceTest {
                 Arrays.asList(new Product[]{product}));
         assertTrue(byteArr.length > 0);
     }
-
 
     @Test
     public void whenSaveProduct_thenInvokeSavingInRepository() {

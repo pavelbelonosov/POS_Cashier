@@ -22,19 +22,20 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cache.CacheManager;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
+import java.util.stream.Collectors;
 
+import static java.util.Optional.ofNullable;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
@@ -65,6 +66,9 @@ public class ProductControllerTest {
     private AccountService accountService;
     @Autowired
     private ShopService shopService;
+    @Autowired
+    CacheManager cacheManager;
+
 
     @Before
     public void setup() {
@@ -81,6 +85,17 @@ public class ProductControllerTest {
         accountInfoRepository.deleteAll();
         productRepository.deleteAll();
     }
+
+    @Test
+    public void testCashing() {
+
+    }
+
+    private Optional<Product> getCachedProduct(Long id) {
+
+        return ofNullable(cacheManager.getCache("products")).map(c -> c.get(id, Product.class));
+    }
+
 
     @Test
     public void givenAdminAccount_whenGetProducts_thenResponsesStatusOk() throws Exception {
@@ -146,6 +161,251 @@ public class ProductControllerTest {
                 .andExpect(header().string("Content-Disposition", "attachment; filename=products_" + shop.getId() + ".xlsx"));
     }
 
+
+    @Test
+    public void givenAdminUser_whenUpdateBalance_thenProductBalanceIsUpdatedInRepository() throws Exception {
+        //creating shop owner and products for the shop
+        Account admin = createUserInRepository(Authority.ADMIN);
+        Shop shop = createShopForAdminInRepository(admin);
+        Product product1 = createProductForShopInRepository(shop);
+        Product product2 = createProductForShopInRepository(shop);
+
+        assertTrue(product1.getBalance() == 0);
+        assertTrue(product2.getBalance() == 0);
+        mockMvc.perform(post("/products/updateBalance")
+                        .with(user(admin.getUsername()).password(admin.getPassword())
+                                .authorities(getAuthorities(admin)))
+                        //sending products ids that we want to update
+                        .param("prods", new String[]{product1.getId() + "", product2.getId() + ""})
+                        //sending new balance values
+                        .param("balances", new String[]{"10", "20"}))
+                .andExpect(redirectedUrl("/products"));
+
+        assertTrue(productRepository.findById(product1.getId()).get().getBalance() == 10);
+        assertTrue(productRepository.findById(product2.getId()).get().getBalance() == 20);
+    }
+
+    @Test
+    public void givenHeadCashierUser_whenUpdateBalance_thenProductBalanceIsUpdatedInRepository() throws Exception {
+        //creating shop owner and products for the shop
+        Account hCashier = createUserInRepository(Authority.HEAD_CASHIER);
+        Shop shop = createShopForAdminInRepository(hCashier);
+        Product product1 = createProductForShopInRepository(shop);
+        Product product2 = createProductForShopInRepository(shop);
+
+        assertTrue(product1.getBalance() == 0);
+        assertTrue(product2.getBalance() == 0);
+        mockMvc.perform(post("/products/updateBalance")
+                        .with(user(hCashier.getUsername()).password(hCashier.getPassword())
+                                .authorities(getAuthorities(hCashier)))
+                        //sending products ids that we want to update
+                        .param("prods", new String[]{product1.getId() + "", product2.getId() + ""})
+                        //sending new balance values
+                        .param("balances", new String[]{"10", "20"}))
+                .andExpect(redirectedUrl("/products"));
+
+        assertTrue(productRepository.findById(product1.getId()).get().getBalance() == 10);
+        assertTrue(productRepository.findById(product2.getId()).get().getBalance() == 20);
+    }
+
+    @Test
+    public void givenCashierUser_whenUpdateBalance_thenStatusIsForbidden() throws Exception {
+        //creating shop owner and products for the shop
+        Account cashier = createUserInRepository(Authority.CASHIER);
+        Shop shop = createShopForAdminInRepository(cashier);
+        Product product1 = createProductForShopInRepository(shop);
+        mockMvc.perform(post("/products/updateBalance")
+                        .with(user(cashier.getUsername()).password(cashier.getPassword())
+                                .authorities(getAuthorities(cashier)))
+                        //sending products ids that we want to update
+                        .param("prods", new String[]{product1.getId() + ""})
+                        //sending new balance values
+                        .param("balances", new String[]{"10"}))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void givenNotEqualAmountsOfIdsAndBalanceVAlues_whenUpdateBalance_thenNotUpdateInRepository() throws Exception {
+        //creating shop owner and products for the shop
+        Account admin = createUserInRepository(Authority.ADMIN);
+        Shop shop = createShopForAdminInRepository(admin);
+        Product product1 = createProductForShopInRepository(shop);
+        Product product2 = createProductForShopInRepository(shop);
+
+        assertTrue(product1.getBalance() == 0);
+        assertTrue(product2.getBalance() == 0);
+        mockMvc.perform(post("/products/updateBalance")
+                        .with(user(admin.getUsername()).password(admin.getPassword())
+                                .authorities(getAuthorities(admin)))
+                        //sending products ids that we want to update
+                        .param("prods", new String[]{product1.getId() + "", product2.getId() + ""})
+                        //sending new balance values
+                        .param("balances", new String[]{"10"}))
+                .andExpect(redirectedUrl("/products"));
+
+        assertTrue(productRepository.findById(product1.getId()).get().getBalance() == 0);
+        assertTrue(productRepository.findById(product2.getId()).get().getBalance() == 0);
+    }
+
+    @Test
+    public void whenCopyProducts_thenNewProductsSavedInRepository() throws Exception {
+        //creating shop owner and products for the shop
+        Account admin = createUserInRepository(Authority.ADMIN);
+        Shop shop1 = createShopForAdminInRepository(admin);
+        Shop shop2 = createShopForAdminInRepository(admin);
+        Product product1 = createProductForShopInRepository(shop1);
+        Product product2 = createProductForShopInRepository(shop1);
+        //confirming that there are only two products in repo as it should be
+        assertTrue(productRepository.findAll().size() == 2);
+        mockMvc.perform(post("/shops/" + shop1.getId() + "/products/copy")
+                        .with(user(admin.getUsername()).password(admin.getPassword())
+                                .authorities(getAuthorities(admin)))
+                        //sending products ids that we want to copy to other shop
+                        .param("prods", new String[]{product1.getId() + "", product2.getId() + ""})
+                        //sending shop id to where we copy products
+                        .param("targetShopId", shop2.getId() + ""))
+                .andExpect(redirectedUrl("/products"));
+
+        List<Product> products = productRepository.findAll();
+        assertTrue(products.size() == 4);
+        assertTrue(products.stream().filter(product -> product.getShop().equals(shop2)).count() == 2);
+    }
+
+    @Test
+    public void whenCreateProduct_thenNewProductIsSavedInRepository() throws Exception {
+        //creating shop owner
+        Account admin = createUserInRepository(Authority.ADMIN);
+        Shop shop = createShopForAdminInRepository(admin);
+        //creating product not persisted yet
+        Product detachedProduct = createDetachedProduct(Type.ITEM);
+        //confirming that there aren't products in repo as it should be
+        assertTrue(productRepository.findAll().size() == 0);
+
+        mockMvc.perform(post("/products")
+                        .with(user(admin.getUsername()).password(admin.getPassword())
+                                .authorities(getAuthorities(admin)))
+                        //sending product to be persisted
+                        .flashAttr("product", detachedProduct)
+                        //sending shop id to which product should be belonged
+                        .param("shop", shop.getId() + ""))
+                .andExpect(redirectedUrl("/products"));
+
+        List<Product> products = productRepository.findAll();
+        assertTrue(products.size() == 1);
+        assertTrue(products.get(0).getShop().equals(shop));
+    }
+
+    @Test
+    public void givenNullShop_whenCreateProduct_thenReturnProductsPageWithBindingError() throws Exception {
+        //creating admin user
+        Account admin = createUserInRepository(Authority.ADMIN);
+        //creating product not persisted yet
+        Product detachedProduct = createDetachedProduct(Type.ITEM);
+        //confirming that there aren't products in repo as it should be
+        assertTrue(productRepository.findAll().size() == 0);
+
+        mockMvc.perform(post("/products")
+                        .with(user(admin.getUsername()).password(admin.getPassword())
+                                .authorities(getAuthorities(admin)))
+                        //sending product to be persisted
+                        .flashAttr("product", detachedProduct)
+                        //sending shop id to which product should be belonged
+                        .param("shop", ""))
+                .andExpect(model().hasErrors())
+                .andExpect(model().attributeHasFieldErrors("product", "shop"))
+                .andExpect(view().name("products"));
+        assertTrue(productRepository.findAll().size() == 0);
+    }
+
+    @Test
+    public void givenProductWithoutName_whenCreateProduct_thenReturnProductsPageWithBindingError() throws Exception {
+        //creating admin user with shop
+        Account admin = createUserInRepository(Authority.ADMIN);
+        Shop shop = createShopForAdminInRepository(admin);
+        //creating product not persisted yet
+        Product detachedProduct = createDetachedProduct(Type.ITEM);
+        detachedProduct.setName(" ");
+        //confirming that there aren't products in repo as it should be
+        assertTrue(productRepository.findAll().size() == 0);
+
+        mockMvc.perform(post("/products")
+                        .with(user(admin.getUsername()).password(admin.getPassword())
+                                .authorities(getAuthorities(admin)))
+                        //sending product to be persisted
+                        .flashAttr("product", detachedProduct)
+                        //sending shop id to which product should be belonged
+                        .param("shop", shop.getId() + ""))
+                .andExpect(model().hasErrors())
+                .andExpect(model().attributeHasFieldErrors("product", "name"))
+                .andExpect(view().name("products"));
+        assertTrue(productRepository.findAll().size() == 0);
+    }
+
+    @Test
+    public void givenProductWithTypeService_whenCreateProduct_thenNewProdIsSavedInRepository() throws Exception {
+        //creating admin user with shop
+        Account admin = createUserInRepository(Authority.ADMIN);
+        Shop shop = createShopForAdminInRepository(admin);
+        //creating product not persisted yet
+        Product detachedProduct = createDetachedProduct(Type.SERVICE);
+        detachedProduct.setMeasurementUnit(null);
+        //confirming that there aren't products in repo as it should be
+        assertTrue(productRepository.findAll().size() == 0);
+
+        mockMvc.perform(post("/products")
+                        .with(user(admin.getUsername()).password(admin.getPassword())
+                                .authorities(getAuthorities(admin)))
+                        //sending product to be persisted
+                        .flashAttr("product", detachedProduct)
+                        //sending shop id to which product should be belonged
+                        .param("shop", shop.getId() + ""))
+                .andExpect(redirectedUrl("/products"));
+
+        List<Product> products = productRepository.findAll();
+        assertTrue(products.size() == 1);
+        Product persistedProduct = products.get(0);
+        assertTrue(persistedProduct.getShop().equals(shop));
+        assertTrue(persistedProduct.getBalance() == Integer.MAX_VALUE);
+        assertTrue(persistedProduct.getMeasurementUnit() == MeasurementUnit.UNIT);
+    }
+
+    @Test
+    public void whenDeleteProductById_thenProductDeletedFromRepository() throws Exception {
+        //creating shop owner and products for the shop
+        Account admin = createUserInRepository(Authority.ADMIN);
+        Shop shop = createShopForAdminInRepository(admin);
+        Product product = createProductForShopInRepository(shop);
+        //confirming that there is one product in repo as it should be
+        assertTrue(productRepository.findAll().size() == 1);
+
+        mockMvc.perform(delete("/products/" + product.getId())
+                        .with(user(admin.getUsername()).password(admin.getPassword())
+                                .authorities(getAuthorities(admin))))
+                .andExpect(redirectedUrl("/products"));
+
+        assertTrue(productRepository.findAll().size() == 0);
+    }
+
+    @Test
+    public void whenDeleteMany_thenProductsDeletedFromRepository() throws Exception {
+        //creating shop owner and products for the shop
+        Account admin = createUserInRepository(Authority.ADMIN);
+        Shop shop = createShopForAdminInRepository(admin);
+        Product product1 = createProductForShopInRepository(shop);
+        Product product2 = createProductForShopInRepository(shop);
+        //confirming that there are two products in repo as it should be
+        assertTrue(productRepository.findAll().size() == 2);
+
+        mockMvc.perform(post("/products/deleteMany")
+                        .with(user(admin.getUsername()).password(admin.getPassword())
+                                .authorities(getAuthorities(admin)))
+                        .param("prods", new String[]{product1.getId() + "", product2.getId() + ""}))
+                .andExpect(redirectedUrl("/products"));
+
+        assertTrue(productRepository.findAll().size() == 0);
+    }
+
+
     private Account createUserInRepository(Authority authority) {
         Account user = new Account();
         user.setUsername("username" + new Random().nextInt(Integer.MAX_VALUE));
@@ -181,6 +441,14 @@ public class ProductControllerTest {
         product.setType(Type.ITEM);
         product.setMeasurementUnit(MeasurementUnit.UNIT);
         return productRepository.save(product);
+    }
+
+    private Product createDetachedProduct(Type type) {
+        Product product = new Product();
+        product.setName("product");
+        product.setType(type);
+        product.setMeasurementUnit(MeasurementUnit.UNIT);
+        return product;
     }
 
     private List<SimpleGrantedAuthority> getAuthorities(Account account) {

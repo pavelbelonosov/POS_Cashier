@@ -83,12 +83,16 @@ public class ProductController {
     public String updateBalance(@RequestParam(name = "prods", required = false) long[] prods,
                                 @RequestParam(name = "balances", required = false) List<String> balances,
                                 @AuthenticationPrincipal UserDetails currentUser) {
+        //prods[] - stores ids from checkbox, list balances - values of corresponding balances
         if (prods == null || balances == null) {
             return "redirect:/products";
         }
+        //empty balance means that user doesn't put new value in corresponding input element
         List<String> list = balances.stream().filter(b -> !b.isEmpty()).collect(Collectors.toList());
+        //ids amount should be equal with balances amount
         if (prods.length == list.size()) {
             for (int i = 0; i < prods.length; i++) {
+                //updating new balance
                 productService.getProduct(prods[i], currentUser.getUsername()).setBalance(Double.parseDouble(list.get(i)));
             }
         }
@@ -108,7 +112,6 @@ public class ProductController {
     }
 
     @PostMapping("/products")
-    @CacheEvict(value = "products", allEntries = true)
     public String createProduct(@Valid @ModelAttribute Product product, BindingResult bindingResult, @RequestParam Shop shop,
                                 @AuthenticationPrincipal UserDetails currentUser, Model model) {
         if (shop == null) {
@@ -117,6 +120,7 @@ public class ProductController {
         if (bindingResult.hasErrors()) {
             return getProducts(model, currentUser);
         }
+        //Balance of product with Type.Service ("Услуга") should never end...
         if (product.getType() == Type.SERVICE) {
             product.setBalance(Integer.MAX_VALUE);
             product.setMeasurementUnit(MeasurementUnit.UNIT);
@@ -128,7 +132,6 @@ public class ProductController {
 
 
     @DeleteMapping("/products/{id}")
-    @CacheEvict(value = "products", key = "#id"+"#currentUser")
     public String deleteProductById(@PathVariable Long id,
                                     @AuthenticationPrincipal UserDetails currentUser) {
         productService.deleteProduct(id, currentUser.getUsername());
@@ -136,7 +139,6 @@ public class ProductController {
     }
 
     @PostMapping("/products/deleteMany")
-    @CacheEvict(value = "products", allEntries = true)
     public String deleteMany(@RequestParam(required = false) long[] prods, @AuthenticationPrincipal UserDetails currentUser) {
         if (prods != null) {
             for (int i = 0; i < prods.length; i++) {

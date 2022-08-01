@@ -15,6 +15,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,7 +35,7 @@ public class ProductService {
     private ShopService shopService;
 
     @Transactional
-    @Cacheable("products")
+    //@Cacheable(value = "products", key = "#id")
     public Product getProduct(@NonNull Long id, @NonNull String currentUser) {
         Account current = accountRepository.findByUsername(currentUser);
         Product product = productRepository.getOne(id);
@@ -42,6 +44,7 @@ public class ProductService {
     }
 
     @Transactional
+    //@CacheEvict(value = "products", key = "#id")
     public void deleteProduct(@NonNull Long id, @NonNull String currentUser) {
         Account current = accountRepository.findByUsername(currentUser);
         Product product = productRepository.getOne(id);
@@ -51,7 +54,7 @@ public class ProductService {
 
     @Transactional
     public void copyProducts(long[] prodsIds, Long shopId, Long targetShopId, String currentUser) {
-        Shop shopFrom = shopService.getShop(shopId, currentUser); //just validation issue
+        Shop shopFrom = shopService.getShop(shopId, currentUser); //validation issue
         Shop shopTo = shopService.getShop(targetShopId, currentUser);
 
         if (prodsIds != null) {
@@ -71,9 +74,9 @@ public class ProductService {
         }
 
     }
-
-    public void saveProduct(Product product) {
-        if (product != null) productRepository.save(product);
+    //@CachePut(value = "products", key = "#product.id")
+    public Product saveProduct(Product product) {
+        return product != null ? productRepository.save(product) : null;
     }
 
     private void validateProductIdAccess(Product product, Account account) {
