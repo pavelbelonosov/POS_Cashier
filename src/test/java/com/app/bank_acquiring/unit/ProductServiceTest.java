@@ -45,7 +45,6 @@ public class ProductServiceTest {
         productService = new ProductService(productRepository, accountRepository, shopService);
     }
 
-
     @Test
     public void whenGetProduct_thenReturnProductBelongingToAccount() {
         Account account = createMockedUserInRepository();

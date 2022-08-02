@@ -77,9 +77,9 @@ public class ProductController {
         return "products::#prodTable";
     }*/
 
-    @Transactional
+    //@Transactional
     @PostMapping("/products/updateBalance")
-    @CacheEvict(value = "products", allEntries = true)
+    //@CacheEvict(value = "products", allEntries = true)
     public String updateBalance(@RequestParam(name = "prods", required = false) long[] prods,
                                 @RequestParam(name = "balances", required = false) List<String> balances,
                                 @AuthenticationPrincipal UserDetails currentUser) {
@@ -93,7 +93,9 @@ public class ProductController {
         if (prods.length == list.size()) {
             for (int i = 0; i < prods.length; i++) {
                 //updating new balance
-                productService.getProduct(prods[i], currentUser.getUsername()).setBalance(Double.parseDouble(list.get(i)));
+                Product p = productService.getProduct(prods[i], currentUser.getUsername());
+                p.setBalance(Double.parseDouble(list.get(i)));
+                productService.saveProduct(p);
             }
         }
         return "redirect:/products";

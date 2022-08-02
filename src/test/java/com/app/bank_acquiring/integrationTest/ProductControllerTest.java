@@ -16,6 +16,7 @@ import com.app.bank_acquiring.service.ProductService;
 import com.app.bank_acquiring.service.ShopService;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -67,6 +68,8 @@ public class ProductControllerTest {
     @Autowired
     private ShopService shopService;
     @Autowired
+    private ProductService productService;
+    @Autowired
     CacheManager cacheManager;
 
 
@@ -85,17 +88,6 @@ public class ProductControllerTest {
         accountInfoRepository.deleteAll();
         productRepository.deleteAll();
     }
-
-    @Test
-    public void testCashing() {
-
-    }
-
-    private Optional<Product> getCachedProduct(Long id) {
-
-        return ofNullable(cacheManager.getCache("products")).map(c -> c.get(id, Product.class));
-    }
-
 
     @Test
     public void givenAdminAccount_whenGetProducts_thenResponsesStatusOk() throws Exception {
@@ -225,7 +217,7 @@ public class ProductControllerTest {
     }
 
     @Test
-    public void givenNotEqualAmountsOfIdsAndBalanceVAlues_whenUpdateBalance_thenNotUpdateInRepository() throws Exception {
+    public void givenNotEqualAmountsOfIdsAndBalanceValues_whenUpdateBalance_thenNotUpdateInRepository() throws Exception {
         //creating shop owner and products for the shop
         Account admin = createUserInRepository(Authority.ADMIN);
         Shop shop = createShopForAdminInRepository(admin);
@@ -246,6 +238,30 @@ public class ProductControllerTest {
         assertTrue(productRepository.findById(product1.getId()).get().getBalance() == 0);
         assertTrue(productRepository.findById(product2.getId()).get().getBalance() == 0);
     }
+
+    @Test
+    public void whenUpdateBalance_thenPutUpdatedProductInSpringCache() throws Exception {
+        Account admin = createUserInRepository(Authority.ADMIN);
+        Shop shop = createShopForAdminInRepository(admin);
+        Product product = createProductForShopInRepository(shop);
+        Long id = product.getId();
+        //invoking cacheable method
+        Product p = productService.getProduct(id, admin.getUsername());
+        //check if this product is added into the cache with nil balance
+        assertEquals(p, getCachedProduct(product.getId()));
+        assertTrue(getCachedProduct(id).getBalance() == 0);
+        //updating balance of cached product by invoking @CachePut on save method in ProductService
+        mockMvc.perform(post("/products/updateBalance")
+                        .with(user(admin.getUsername()).password(admin.getPassword())
+                                .authorities(getAuthorities(admin)))
+                        //sending products ids that we want to update
+                        .param("prods", new String[]{product.getId() + ""})
+                        //sending new balance values
+                        .param("balances", new String[]{"10"}))
+                .andExpect(redirectedUrl("/products"));
+        assertTrue(getCachedProduct(id).getBalance() == 10);
+    }
+
 
     @Test
     public void whenCopyProducts_thenNewProductsSavedInRepository() throws Exception {
@@ -403,6 +419,33 @@ public class ProductControllerTest {
                 .andExpect(redirectedUrl("/products"));
 
         assertTrue(productRepository.findAll().size() == 0);
+    }
+
+    @Test
+    public void testCacheMethodsFromProductService() {
+        //creating shop with owner/admin and product
+        Account admin = createUserInRepository(Authority.ADMIN);
+        Shop shop = createShopForAdminInRepository(admin);
+        Product product = createProductForShopInRepository(shop);
+        Long id = product.getId();
+        //invoking cacheable method
+        productService.getProduct(id, admin.getUsername());
+        //check if this product is added into the cache
+        assertEquals(product, getCachedProduct(id));
+        //updating product in repository
+        product.setBalance(123.45);
+        productService.saveProduct(product);
+        //check if updated product is put into the cache
+        assertEquals(product,getCachedProduct(id));
+        assertTrue(getCachedProduct(id).getBalance()==123.45);
+        //invoking cache evict method
+        productService.deleteProduct(id, admin.getUsername());
+        //check if this product is deleted from cache
+        assertNull(getCachedProduct(id));
+    }
+
+    private Product getCachedProduct(Long id) {
+        return cacheManager.getCache("products").get(id, Product.class);
     }
 
 

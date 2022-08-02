@@ -35,7 +35,7 @@ public class ProductService {
     private ShopService shopService;
 
     @Transactional
-    //@Cacheable(value = "products", key = "#id")
+    @Cacheable(value = "products", key = "#id")
     public Product getProduct(@NonNull Long id, @NonNull String currentUser) {
         Account current = accountRepository.findByUsername(currentUser);
         Product product = productRepository.getOne(id);
@@ -44,7 +44,7 @@ public class ProductService {
     }
 
     @Transactional
-    //@CacheEvict(value = "products", key = "#id")
+    @CacheEvict(value = "products", key = "#id")
     public void deleteProduct(@NonNull Long id, @NonNull String currentUser) {
         Account current = accountRepository.findByUsername(currentUser);
         Product product = productRepository.getOne(id);
@@ -72,9 +72,9 @@ public class ProductService {
                 saveProduct(newProduct);
             }
         }
-
     }
-    //@CachePut(value = "products", key = "#product.id")
+
+    @CachePut(value = "products", key = "#product.id")
     public Product saveProduct(Product product) {
         return product != null ? productRepository.save(product) : null;
     }

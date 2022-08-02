@@ -11,6 +11,7 @@ import com.app.bank_acquiring.repository.TransactionRepository;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -97,13 +98,14 @@ public class TransactionService {
     }
 
 
-    @Transactional
-    private Map<Product, Double> changeProductsAmountInRepository(List<Long> productIdsList, List<Double> prodAmountList,
+    //@Transactional
+    //@CacheEvict(value = "products", allEntries = true)
+    private Map<Product, Double> changeProductsAmountInRepository(List<Long> productIdsList, List<Double> prodAmountToSaleList,
                                                                   String currentUser, Type transactionType) {
         Map<Product, Double> prodToQuantity = new HashMap<>();
         for (int i = 0; i < productIdsList.size(); i++) {
             Product product = productService.getProduct(productIdsList.get(i), currentUser);
-            double prodAmount = prodAmountList.get(i);
+            double prodAmount = prodAmountToSaleList.get(i);
             double balance = product.getBalance();
             if (transactionType == Type.PAYMENT) {
                 balance -= prodAmount;
@@ -113,6 +115,7 @@ public class TransactionService {
             if (balance < 0) continue;
             product.setBalance(balance);
             prodToQuantity.put(product, prodAmount);
+            productService.saveProduct(product);
         }
         return prodToQuantity;
     }
