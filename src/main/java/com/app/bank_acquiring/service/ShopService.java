@@ -8,6 +8,8 @@ import com.app.bank_acquiring.repository.AccountRepository;
 import com.app.bank_acquiring.repository.ShopRepository;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,7 +19,7 @@ import java.util.List;
 @Service
 @AllArgsConstructor
 public class ShopService {
-
+    private final Logger logger = LoggerFactory.getLogger(ShopService.class);
     private AccountRepository accountRepository;
     private AccountInfoRepository accountInfoRepository;
     private ShopRepository shopRepository;
@@ -76,6 +78,8 @@ public class ShopService {
     private void validateShopIdAccess(Shop shop, Account owner) {
         if (shop != null) {
             if (owner == null || owner.getShops() == null || !owner.getShops().contains(shop)) {
+                logger.error("ID validation error: given account(id " + (owner != null ? owner.getId():"")
+                        + ") doesn't have permission to shop(id " + shop.getId() + ")");
                 throw new RuntimeException("Current account doesn't have access to this shop");
             }
         }
@@ -84,6 +88,8 @@ public class ShopService {
     private void validateEmployeeIdAccess(Shop shop, Account employee) {
         if (shop != null && employee != null) {
             if (shop.getAccounts() == null || !shop.getAccounts().contains(employee)) {
+                logger.error("ID validation error: given account(id " + employee.getId()
+                        + ") doesn't belong to shop(id " + shop.getId() + ")");
                 throw new RuntimeException("Current shop doesn't have access to this employee");
             }
         }

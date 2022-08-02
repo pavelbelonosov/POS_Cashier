@@ -27,7 +27,7 @@ import java.util.Map;
 @AllArgsConstructor
 public class TransactionService {
 
-    private final Logger logger = LoggerFactory.getLogger(ProductService.class);
+    private final Logger logger = LoggerFactory.getLogger(TransactionService.class);
     private AccountService accountService;
     private TerminalService terminalService;
     private UposService uposService;
@@ -80,7 +80,7 @@ public class TransactionService {
                 cheque = uposService.readCheque(terminal.getAccount().getId(), terminal.getShop().getId(), terminal.getTid());
                 transactionStatus = uposService.defineTransactionStatus(cheque);
             }
-            //initializing transaction to persist in db, failed operations alsa saved
+            //initializing transaction to persist in db, failed operations also saved
             Transaction transaction = new Transaction();
             transaction.setStatus(transactionStatus);
             transaction.setType(transactionType);

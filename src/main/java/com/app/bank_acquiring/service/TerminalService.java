@@ -9,6 +9,8 @@ import com.app.bank_acquiring.repository.TerminalRepository;
 import com.app.bank_acquiring.repository.TransactionRepository;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,7 +24,7 @@ import java.util.stream.Collectors;
 @Service
 @AllArgsConstructor
 public class TerminalService {
-
+    private final Logger logger = LoggerFactory.getLogger(TerminalService.class);
     private TerminalRepository terminalRepository;
     private AccountRepository accountRepository;
     private TransactionRepository transactionRepository;
@@ -36,6 +38,7 @@ public class TerminalService {
         terminalRepository.save(terminal);
         account.getTerminals().add(terminal);
         if (!uposService.createUserUpos(account.getId(), terminal)) {
+            logger.error("UPOS not created for the account(id " + account.getId() + ")");
             throw new RuntimeException("Error while creating UPOS for the account");
         }
     }
@@ -123,6 +126,10 @@ public class TerminalService {
 
     public void validateIdAccess(Account account, Terminal terminal) {
         if (terminal == null || account.getTerminals() == null || !account.getTerminals().contains(terminal)) {
+            logger.error("ID validation error: given account(id "
+                    + (account != null ? account.getId() : "")
+                    + ") doesn't have permission to terminal(id "
+                    + (terminal != null ? terminal.getId() : "") + ")");
             throw new RuntimeException("Current account doesn't have this terminal");
         }
     }

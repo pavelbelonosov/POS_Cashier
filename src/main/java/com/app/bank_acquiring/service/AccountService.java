@@ -8,7 +8,8 @@ import com.app.bank_acquiring.repository.AccountInfoRepository;
 import com.app.bank_acquiring.repository.AccountRepository;
 import com.app.bank_acquiring.repository.ShopRepository;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,7 +21,7 @@ import java.util.stream.Collectors;
 @Service
 @AllArgsConstructor
 public class AccountService {
-
+    private final Logger logger = LoggerFactory.getLogger(AccountService.class);
     private AccountRepository accountRepository;
     private PasswordEncoder passwordEncoder;
     private AccountInfoRepository accountInfoRepository;
@@ -123,13 +124,18 @@ public class AccountService {
 
     public void validateIdAccess(Long id, Account owner) {
         if (id == null || owner == null) {
+            logger.error("ID validation error: " + (id == null ? "given ID is null" : "")
+                    + (owner == null ? "given account is null" : ""));
             throw new RuntimeException("Invalid user id or current account");
         }
-        Account employee = accountRepository.getOne(id);
         if (id.equals(owner.getId())) {
             return;
         }
-        if (owner.getAuthority() != Authority.ADMIN || !getEmployees(owner).contains(employee)) {
+        Account employee = accountRepository.getOne(id);
+        if (employee == null || owner.getAuthority() != Authority.ADMIN || !getEmployees(owner).contains(employee)) {
+            logger.error("ID validation error: given owner account(id "
+                    + owner.getId() + ") doesn't have permission to this employee(id "
+                    + (employee != null ? employee.getId() : id + " not valid") + ")");
             throw new RuntimeException("Current account doesn't have access to this user");
         }
     }

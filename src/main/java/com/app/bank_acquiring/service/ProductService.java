@@ -82,6 +82,9 @@ public class ProductService {
     private void validateProductIdAccess(Product product, Account account) {
         if (product != null) {
             if (account == null || account.getShops() == null || !account.getShops().contains(product.getShop())) {
+                logger.error("ID validation error: given account(id "
+                        + (account != null ? account.getId() : "") + ") doesn't have permission to this product(id "
+                        + product.getId() + ")");
                 throw new RuntimeException("Current user doesn't have access to this product");
             }
         }
