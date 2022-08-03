@@ -8,6 +8,7 @@ import com.app.bank_acquiring.repository.AccountInfoRepository;
 import com.app.bank_acquiring.repository.AccountRepository;
 import com.app.bank_acquiring.repository.ShopRepository;
 import lombok.AllArgsConstructor;
+import lombok.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -28,7 +29,7 @@ public class AccountService {
     private ShopRepository shopRepository;
 
     @Transactional
-    public void createAdminUser(Account account, AccountInfo accountInfo) {
+    public void createAdminUser(@NonNull Account account, @NonNull AccountInfo accountInfo) {
         accountInfo.setAccount(account);
         account.setPassword(passwordEncoder.encode(account.getPassword()));
         account.setAuthority(Authority.ADMIN);
@@ -37,7 +38,7 @@ public class AccountService {
     }
 
     @Transactional
-    public void createEmployee(Account account, AccountInfo accountInfo, Shop shop) {
+    public void createEmployee(@NonNull Account account, @NonNull AccountInfo accountInfo, @NonNull Shop shop) {
         account.setPassword(passwordEncoder.encode(account.getPassword()));
         accountInfo.setAccount(account);
         accountInfoRepository.save(accountInfo);
@@ -46,7 +47,8 @@ public class AccountService {
     }
 
     @Transactional
-    public void updateEmployeeAccount(Long id, AccountInfo accountInfo, Shop shop, Authority authority) {
+    public void updateEmployeeAccount(@NonNull Long id, @NonNull AccountInfo accountInfo,
+                                      @NonNull Shop shop, @NonNull Authority authority) {
         Account user = accountRepository.getOne(id);
         AccountInfo userInfo = user.getAccountInfo();
         Shop oldShop = user.getShops().get(0);
@@ -104,10 +106,7 @@ public class AccountService {
     }
 
     public Account getAccountById(Long id) {
-        if (id != null) {
-            return accountRepository.getOne(id);
-        }
-        return null;
+        return id != null ? accountRepository.findById(id).orElse(null) : null;
     }
 
     public List<Account> getEmployees(Account owner) {
