@@ -246,9 +246,9 @@ public class ProductControllerTest {
         Product product = createProductForShopInRepository(shop);
         Long id = product.getId();
         //invoking cacheable method
-        Product p = productService.getProduct(id, admin.getUsername());
+        productService.getProduct(id, admin.getUsername());
         //check if this product is added into the cache with nil balance
-        assertEquals(p, getCachedProduct(product.getId()));
+        assertEquals(product, getCachedProduct(id));
         assertTrue(getCachedProduct(id).getBalance() == 0);
         //updating balance of cached product by invoking @CachePut on save method in ProductService
         mockMvc.perform(post("/products/updateBalance")

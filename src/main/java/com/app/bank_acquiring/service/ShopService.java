@@ -28,7 +28,7 @@ public class ShopService {
     @Transactional
     public Shop getShop(@NonNull Long id, @NonNull String currentUser) {
         Account current = accountRepository.findByUsername(currentUser);
-        Shop shop = shopRepository.getOne(id);
+        Shop shop = shopRepository.findById(id).orElse(null);
         validateShopIdAccess(shop, current);
         return shop;
     }
@@ -49,9 +49,9 @@ public class ShopService {
     @Transactional
     public void deleteAccountFromShop(@NonNull Long shopId, @NonNull Long accountId, @NonNull String currentUser) {
         Account owner = accountRepository.findByUsername(currentUser);
-        Shop shop = shopRepository.getOne(shopId);
+        Shop shop = shopRepository.findById(shopId).orElse(null);
         validateShopIdAccess(shop, owner);
-        Account employee = accountRepository.getOne(accountId);
+        Account employee = accountRepository.findById(accountId).orElse(null);
         validateEmployeeIdAccess(shop, employee);
         AccountInfo accountInfo = employee.getAccountInfo();
         shop.getAccounts().remove(employee);
@@ -62,7 +62,7 @@ public class ShopService {
     @Transactional
     public void deleteShop(@NonNull Long shopId, @NonNull String currentUser) {
         Account owner = accountRepository.findByUsername(currentUser);
-        Shop shop = shopRepository.getOne(shopId);
+        Shop shop = shopRepository.findById(shopId).orElse(null);
         validateShopIdAccess(shop, owner);
         shop.getAccounts().removeIf(account -> {
             if (!account.getId().equals(owner.getId())) {
@@ -78,7 +78,7 @@ public class ShopService {
     private void validateShopIdAccess(Shop shop, Account owner) {
         if (shop != null) {
             if (owner == null || owner.getShops() == null || !owner.getShops().contains(shop)) {
-                logger.error("ID validation error: given account(id " + (owner != null ? owner.getId():"")
+                logger.error("ID validation error: given account(id " + (owner != null ? owner.getId() : "")
                         + ") doesn't have permission to shop(id " + shop.getId() + ")");
                 throw new RuntimeException("Current account doesn't have access to this shop");
             }
@@ -86,9 +86,10 @@ public class ShopService {
     }
 
     private void validateEmployeeIdAccess(Shop shop, Account employee) {
-        if (shop != null && employee != null) {
-            if (shop.getAccounts() == null || !shop.getAccounts().contains(employee)) {
-                logger.error("ID validation error: given account(id " + employee.getId()
+        if (shop != null) {
+            if (employee == null || shop.getAccounts() == null || !shop.getAccounts().contains(employee)) {
+                logger.error("ID validation error: given account(id "
+                        + (employee != null ? employee.getId() : "not valid")
                         + ") doesn't belong to shop(id " + shop.getId() + ")");
                 throw new RuntimeException("Current shop doesn't have access to this employee");
             }
