@@ -13,10 +13,7 @@ import org.mockito.Mockito;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -127,6 +124,7 @@ public class AccountServiceTest {
                 .thenReturn(user);
         Mockito.when(accountRepository.getOne(user.getId()))
                 .thenReturn(user);
+        Mockito.when(accountRepository.findById(user.getId())).thenReturn(Optional.of(user));
         return user;
     }
 
