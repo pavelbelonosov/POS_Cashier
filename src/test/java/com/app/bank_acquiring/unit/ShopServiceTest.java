@@ -17,6 +17,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 
 import static org.junit.Assert.*;
@@ -188,7 +189,7 @@ public class ShopServiceTest {
         user.setAccountInfo(new AccountInfo());
 
         Mockito.when(accountRepository.findByUsername(user.getUsername())).thenReturn(user);
-        Mockito.when(accountRepository.getOne(user.getId())).thenReturn(user);
+        Mockito.when(accountRepository.findById(user.getId())).thenReturn(Optional.of(user));
         doAnswer(invocationOnMock -> {
             Account arg = invocationOnMock.getArgument(0);
             arg.setId(-1L);
@@ -201,7 +202,7 @@ public class ShopServiceTest {
         Shop shop = spy(Shop.class);
         shop.setName("shop");
         shop.setId(Math.abs(new Random().nextLong()));
-        Mockito.when(shopRepository.getOne(shop.getId())).thenReturn(shop);
+        Mockito.when(shopRepository.findById(shop.getId())).thenReturn(Optional.of(shop));
         doAnswer(invocationOnMock -> {
             Shop arg = invocationOnMock.getArgument(0);
             arg.setId(-1L);
