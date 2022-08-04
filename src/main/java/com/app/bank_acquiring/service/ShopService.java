@@ -85,7 +85,7 @@ public class ShopService {
                     throw new IdValidationException("Current account doesn't have access to this shop");
                 }
         } catch (EntityNotFoundException e){
-            logger.error("ID validation error: given entity not exist");
+            logger.error("ID validation error: entity not exist");
             throw new IdValidationException("Current account doesn't have access to this shop");
         }
 
@@ -99,7 +99,7 @@ public class ShopService {
                     throw new IdValidationException("Current shop doesn't have access to this employee");
                 }
         } catch (EntityNotFoundException e){
-            logger.error("ID validation error: given entity not exist");
+            logger.error("ID validation error: entity not exist");
             throw new IdValidationException("Current shop doesn't have access to this employee");
         }
     }

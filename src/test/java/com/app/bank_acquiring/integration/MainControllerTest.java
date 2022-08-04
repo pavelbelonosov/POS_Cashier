@@ -1,4 +1,4 @@
-package com.app.bank_acquiring.integrationTest;
+package com.app.bank_acquiring.integration;
 
 import com.app.bank_acquiring.domain.Shop;
 import com.app.bank_acquiring.domain.Terminal;

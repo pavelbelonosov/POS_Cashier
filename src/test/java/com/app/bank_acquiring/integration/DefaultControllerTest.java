@@ -1,4 +1,4 @@
-package com.app.bank_acquiring.integrationTest;
+package com.app.bank_acquiring.integration;
 
 import com.app.bank_acquiring.domain.account.Account;
 import com.app.bank_acquiring.domain.account.AccountInfo;

@@ -4,6 +4,7 @@ import com.app.bank_acquiring.domain.Shop;
 import com.app.bank_acquiring.domain.account.Account;
 
 import com.app.bank_acquiring.service.AccountService;
+import com.app.bank_acquiring.service.IdValidationException;
 import com.app.bank_acquiring.service.ShopService;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -25,6 +26,14 @@ public class ShopController {
     @ModelAttribute
     public Shop getNewShop() {
         return new Shop();
+    }
+
+    @ExceptionHandler(IdValidationException.class)
+    public String exceptionHandler(Model model, IdValidationException ex){
+        model.addAttribute("status",403);
+        model.addAttribute("error", "Нет доступа");
+        model.addAttribute("message", ex.getMessage());
+        return "error";
     }
 
     @GetMapping("/shops")
