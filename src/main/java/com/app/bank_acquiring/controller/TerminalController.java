@@ -3,6 +3,7 @@ package com.app.bank_acquiring.controller;
 import com.app.bank_acquiring.domain.account.Account;
 import com.app.bank_acquiring.domain.Terminal;
 import com.app.bank_acquiring.service.AccountService;
+import com.app.bank_acquiring.service.IdValidationException;
 import com.app.bank_acquiring.service.TerminalService;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -27,6 +28,14 @@ public class TerminalController {
     @ModelAttribute
     private Terminal getTerminal() {
         return new Terminal();
+    }
+
+    @ExceptionHandler(IdValidationException.class)
+    public String exceptionHandler(Model model, IdValidationException ex){
+        model.addAttribute("status",403);
+        model.addAttribute("error", "Нет доступа");
+        model.addAttribute("message", ex.getMessage());
+        return "error";
     }
 
     @GetMapping("/terminals")
