@@ -7,6 +7,7 @@ import com.app.bank_acquiring.domain.transaction.Transaction;
 import com.app.bank_acquiring.repository.AccountRepository;
 import com.app.bank_acquiring.repository.TerminalRepository;
 import com.app.bank_acquiring.repository.TransactionRepository;
+import com.app.bank_acquiring.service.IdValidationException;
 import com.app.bank_acquiring.service.TerminalService;
 import com.app.bank_acquiring.service.UposService;
 import org.junit.Before;
@@ -18,6 +19,7 @@ import org.mockito.Mockito;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.Random;
 
 import static org.junit.Assert.*;
@@ -70,7 +72,7 @@ public class TerminalServiceTest {
 
     @Test
     public void givenIncorrectTerminal_whenUpdateTerminal_thenThrowsRuntimeException() {
-        exceptionRule.expect(RuntimeException.class);
+        exceptionRule.expect(IdValidationException.class);
         exceptionRule.expectMessage("Current account doesn't have this terminal");
 
         Account account1 = createUser();
@@ -111,7 +113,7 @@ public class TerminalServiceTest {
 
     @Test
     public void givenIncorrectIdAndUsername_whenTestConnection_thenThrowRuntimeException() {
-        exceptionRule.expect(RuntimeException.class);
+        exceptionRule.expect(IdValidationException.class);
         exceptionRule.expectMessage("Current account doesn't have this terminal");
 
         Account account1 = createUser();
@@ -143,7 +145,7 @@ public class TerminalServiceTest {
 
     @Test
     public void givenIncorrectTerminal_whenDeleteTerminal_thenThrowsRuntimeException() {
-        exceptionRule.expect(RuntimeException.class);
+        exceptionRule.expect(IdValidationException.class);
         exceptionRule.expectMessage("Current account doesn't have this terminal");
 
         Account account1 = createUser();
@@ -175,7 +177,7 @@ public class TerminalServiceTest {
     }
     @Test
     public void givenIncorrectTerminalIdAndUsername_whenGetValidatedTerminal_thenThrowsRuntimeException() {
-        exceptionRule.expect(RuntimeException.class);
+        exceptionRule.expect(IdValidationException.class);
         exceptionRule.expectMessage("Current account doesn't have this terminal");
 
         Account account1 = createUser();
@@ -212,6 +214,7 @@ public class TerminalServiceTest {
         terminal.setId(Math.abs(new Random().nextLong()));
         Mockito.when(terminalRepository.findByTid(terminal.getTid())).thenReturn(terminal);
         Mockito.when(terminalRepository.getOne(terminal.getId())).thenReturn(terminal);
+        Mockito.when(terminalRepository.findById(terminal.getId())).thenReturn(Optional.of(terminal));
         doAnswer(invocationOnMock -> {
             Terminal arg = invocationOnMock.getArgument(0);
             arg.setId(-1L);
