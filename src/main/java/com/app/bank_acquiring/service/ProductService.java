@@ -21,6 +21,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.List;
@@ -80,13 +81,17 @@ public class ProductService {
     }
 
     private void validateProductIdAccess(Product product, Account account) {
-        if (product != null) {
-            if (account == null || account.getShops() == null || !account.getShops().contains(product.getShop())) {
+        try {
+            if (product == null || account == null || account.getShops() == null
+                    || !account.getShops().contains(product.getShop())) {
                 logger.error("ID validation error: given account(id "
-                        + (account != null ? account.getId() : "") + ") doesn't have permission to this product(id "
-                        + product.getId() + ")");
-                throw new RuntimeException("Current user doesn't have access to this product");
+                        + (account != null ? account.getId() : "not valid") + ") doesn't have permission to this product(id "
+                        + (product!=null?product.getId():"not valid") + ")");
+                throw new IdValidationException("Current user doesn't have access to this product");
             }
+        } catch (EntityNotFoundException e) {
+            logger.error("ID validation error: entity not exist");
+            throw new IdValidationException("Current user doesn't have access to this product");
         }
     }
 
@@ -94,7 +99,6 @@ public class ProductService {
     public byte[] createExcelFile(Long accountId, Long shopId, List<Product> products) {
         try {
             if (accountId == null || shopId == null || products == null) throw new IllegalArgumentException();
-
             Workbook workbook = generateExcel(products);
             File excelFile = new File("C:/temp/bank/" + accountId + "/" + shopId + "/products.xlsx");
             FileUtils.createParentDirectories(excelFile);
@@ -108,7 +112,6 @@ public class ProductService {
             logger.error("Error while creating excel file: " + e.getMessage());
             return new byte[]{};
         }
-
     }
 
     private Workbook generateExcel(List<Product> products) {

@@ -6,6 +6,7 @@ import com.app.bank_acquiring.domain.product.MeasurementUnit;
 import com.app.bank_acquiring.domain.product.Product;
 import com.app.bank_acquiring.domain.product.Type;
 import com.app.bank_acquiring.service.AccountService;
+import com.app.bank_acquiring.service.IdValidationException;
 import com.app.bank_acquiring.service.ProductService;
 import com.app.bank_acquiring.service.ShopService;
 import lombok.AllArgsConstructor;
@@ -40,6 +41,14 @@ public class ProductController {
     @ModelAttribute
     public Product getProduct() {
         return new Product();
+    }
+
+    @ExceptionHandler(IdValidationException.class)
+    public String exceptionHandler(Model model, IdValidationException ex){
+        model.addAttribute("status",403);
+        model.addAttribute("error", "Нет доступа");
+        model.addAttribute("message", ex.getMessage());
+        return "error";
     }
 
     @GetMapping("/products")
