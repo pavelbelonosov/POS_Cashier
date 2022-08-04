@@ -7,6 +7,7 @@ import com.app.bank_acquiring.domain.account.Authority;
 import com.app.bank_acquiring.repository.AccountInfoRepository;
 import com.app.bank_acquiring.repository.AccountRepository;
 import com.app.bank_acquiring.repository.ShopRepository;
+import com.app.bank_acquiring.service.IdValidationException;
 import com.app.bank_acquiring.service.ShopService;
 import org.junit.After;
 import org.junit.Before;
@@ -60,6 +61,9 @@ public class ShopControllerTest {
                 .webAppContextSetup(context)
                 .apply(springSecurity())
                 .build();
+        shopRepository.deleteAll();
+        accountRepository.deleteAll();
+        accountInfoRepository.deleteAll();
     }
 
     @After
@@ -167,7 +171,7 @@ public class ShopControllerTest {
     }
 
 
-    @Test(expected = Exception.class)
+    @Test
     public void givenWrongShopId_whenDeleteShop_thenThrowsException() throws Exception {
         //creating two shop owners
         Account admin1 = createUserInRepository(Authority.ADMIN);
@@ -178,8 +182,60 @@ public class ShopControllerTest {
         assertTrue(shopRepository.findAll().size() == 2);
         //should throw exception due to ids validation
         mockMvc.perform(delete("/shops/" + shop1.getId())
+                .with(user(admin2.getUsername()).password(admin2.getPassword())
+                        .authorities(getAuthorities(admin2))))
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof IdValidationException));
+    }
+
+    @Test
+    public void whenDeleteAccount_thenDeletesAccountFromRepository() throws Exception {
+        //creating shop with owner/admin
+        Account admin = createUserInRepository(Authority.ADMIN);
+        Shop shop = createShopForAdminInRepository(admin);
+        //creating employee for the shop
+        Account cashier = createUserInRepository(Authority.CASHIER);
+        shopService.bundleShopWithAccount(shop, cashier.getUsername());
+        //confirming that there are two accs in repo
+        System.out.println(accountRepository.findAll().size());
+        assertTrue(accountRepository.findAll().size() == 2);
+
+        mockMvc.perform(delete("/shops/" + shop.getId() + "/accounts/" + cashier.getId())
+                        .with(user(admin.getUsername()).password(admin.getPassword())
+                                .authorities(getAuthorities(admin))))
+                .andExpect(redirectedUrl("/accounts"));
+        assertNull(accountRepository.findByUsername(cashier.getUsername()));
+        assertTrue(accountRepository.findAll().size() == 1);
+    }
+
+    @Test
+    public void givenWrongIds_whenDeleteAccount_thenThrowsException() throws Exception {
+        //creating two shops with owners/admins
+
+        Account admin1 = createUserInRepository(Authority.ADMIN);
+        Shop shop1 = createShopForAdminInRepository(admin1);
+        Account admin2 = createUserInRepository(Authority.ADMIN);
+        Shop shop2 = createShopForAdminInRepository(admin2);
+        //creating employee for the shop1
+        Account cashier1 = createUserInRepository(Authority.CASHIER);
+        shopService.bundleShopWithAccount(shop1, cashier1.getUsername());
+        //confirming that there are two accs in repo
+        System.out.println(accountRepository.findAll().size());
+        assertTrue(accountRepository.findAll().size() == 3);
+        //sending existing but wrong shop -> should throw exception due to ids validation
+        mockMvc.perform(delete("/shops/" + shop2.getId() + "/accounts/" + cashier1.getId())
                         .with(user(admin2.getUsername()).password(admin2.getPassword())
-                                .authorities(getAuthorities(admin2))));
+                                .authorities(getAuthorities(admin2))))
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof IdValidationException));
+        //sending non-existing shop -> should throw exception due to ids validation
+        mockMvc.perform(delete("/shops/" + 500 + "/accounts/" + cashier1.getId())
+                        .with(user(admin2.getUsername()).password(admin2.getPassword())
+                                .authorities(getAuthorities(admin2))))
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof IdValidationException));
+        //sending existing shop, but non-existing user -> should throw exception due to ids validation
+        mockMvc.perform(delete("/shops/" + shop2.getId() + "/accounts/" + 500)
+                        .with(user(admin2.getUsername()).password(admin2.getPassword())
+                                .authorities(getAuthorities(admin2))))
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof IdValidationException));
     }
 
 
