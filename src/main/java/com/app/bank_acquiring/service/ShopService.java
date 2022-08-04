@@ -53,7 +53,7 @@ public class ShopService {
         Account owner = accountRepository.findByUsername(currentUser);
         Shop shop = shopRepository.getOne(shopId);
         validateShopIdAccess(shop, owner);
-        Account employee = accountRepository.findById(accountId).orElse(null);
+        Account employee = accountRepository.getOne(accountId);
         validateEmployeeIdAccess(shop, employee);
         AccountInfo accountInfo = employee.getAccountInfo();
         shop.getAccounts().remove(employee);
@@ -80,12 +80,12 @@ public class ShopService {
     private void validateShopIdAccess(Shop shop, Account owner) {
         try {
                 if (owner.getShops() == null || !owner.getShops().contains(shop)) {
-                    logger.error("ID validation error: given account(id " + (owner != null ? owner.getId() : "")
+                    logger.error("ID validation error: given account(id " + owner.getId()
                             + ") doesn't have permission to shop(id " + shop.getId() + ")");
                     throw new IdValidationException("Current account doesn't have access to this shop");
                 }
         } catch (EntityNotFoundException e){
-            logger.error("ID validation error: given shop not exist");
+            logger.error("ID validation error: given entity not exist");
             throw new IdValidationException("Current account doesn't have access to this shop");
         }
 
@@ -95,15 +95,13 @@ public class ShopService {
         try {
                 if (shop.getAccounts() == null || !shop.getAccounts().contains(employee)) {
                     logger.error("ID validation error: given account(id "
-                            + (employee != null ? employee.getId() : "not valid")
-                            + ") doesn't belong to shop(id " + shop.getId() + ")");
+                            + employee.getId() + ") doesn't belong to shop(id " + shop.getId() + ")");
                     throw new IdValidationException("Current shop doesn't have access to this employee");
                 }
         } catch (EntityNotFoundException e){
-            logger.error("ID validation error: given shop not exist");
+            logger.error("ID validation error: given entity not exist");
             throw new IdValidationException("Current shop doesn't have access to this employee");
         }
     }
-
 
 }
