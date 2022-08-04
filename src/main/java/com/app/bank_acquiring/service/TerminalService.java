@@ -112,7 +112,7 @@ public class TerminalService {
             return null;
         }
         Account user = accountRepository.findByUsername(currentUser);
-        Terminal terminal = terminalRepository.getOne(id);
+        Terminal terminal = terminalRepository.findById(id).orElse(null);
         validateIdAccess(user, terminal);
         return terminal;
     }
@@ -130,7 +130,7 @@ public class TerminalService {
                     + (account != null ? account.getId() : "")
                     + ") doesn't have permission to terminal(id "
                     + (terminal != null ? terminal.getId() : "") + ")");
-            throw new RuntimeException("Current account doesn't have this terminal");
+            throw new IdValidationException("Current account doesn't have this terminal");
         }
     }
 
