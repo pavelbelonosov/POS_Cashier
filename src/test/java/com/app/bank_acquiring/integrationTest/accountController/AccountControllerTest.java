@@ -8,6 +8,7 @@ import com.app.bank_acquiring.repository.AccountInfoRepository;
 import com.app.bank_acquiring.repository.AccountRepository;
 import com.app.bank_acquiring.repository.ShopRepository;
 import com.app.bank_acquiring.service.AccountService;
+import com.app.bank_acquiring.service.IdValidationException;
 import org.junit.After;
 
 import org.junit.Before;
@@ -143,7 +144,7 @@ public class AccountControllerTest {
         assertTrue(content.contains(employee.getUsername()));
     }
 
-    @Test(expected = NestedServletException.class)
+    @Test
     public void givenNonAdminAccount_whenGetAccount_thenThrowsException() throws Exception {
         Account admin = createUserInRepository(Authority.ADMIN);
         Shop shop = createShopForAdmin(admin);
@@ -151,7 +152,8 @@ public class AccountControllerTest {
         accountService.createEmployee(employee, new AccountInfo(), shop);
         mockMvc.perform(get("/accounts/" + admin.getId())
                 .with(user(employee.getUsername()).password(employee.getPassword())
-                        .authorities(getAuthorities(employee))));
+                        .authorities(getAuthorities(employee))))
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof IdValidationException));
     }
 
     @Test

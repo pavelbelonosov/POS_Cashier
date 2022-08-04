@@ -5,6 +5,7 @@ import com.app.bank_acquiring.domain.account.Account;
 import com.app.bank_acquiring.domain.account.AccountInfo;
 import com.app.bank_acquiring.domain.account.Authority;
 import com.app.bank_acquiring.service.AccountService;
+import com.app.bank_acquiring.service.IdValidationException;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -34,6 +35,14 @@ public class AccountController {
     @ModelAttribute
     private AccountInfo getAccountInfo() {
         return new AccountInfo();
+    }
+
+    @ExceptionHandler(IdValidationException.class)
+    public String exceptionHandler(Model model, IdValidationException ex){
+        model.addAttribute("status",403);
+        model.addAttribute("error", "Нет доступа");
+        model.addAttribute("message", ex.getMessage());
+        return "error";
     }
 
     @GetMapping("/accounts")

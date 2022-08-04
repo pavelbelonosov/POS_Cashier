@@ -124,7 +124,7 @@ public class AccountServiceTest {
                 .thenReturn(user);
         Mockito.when(accountRepository.getOne(user.getId()))
                 .thenReturn(user);
-        Mockito.when(accountRepository.findById(user.getId())).thenReturn(Optional.of(user));
+        //Mockito.when(accountRepository.findById(user.getId())).thenReturn(Optional.of(user));
         return user;
     }
 

@@ -91,7 +91,7 @@ public class AccountService {
     @Transactional
     public void changeEmployeePassword(Long id, String newPassword) {
         if (id != null && newPassword != null && !newPassword.isEmpty()) {
-            Account employee = accountRepository.getOne(id);
+            Account employee = accountRepository.findById(id).orElse(null);
             if (employee != null) {
                 employee.setPassword(passwordEncoder.encode(newPassword));
             }
@@ -106,7 +106,7 @@ public class AccountService {
     }
 
     public Account getAccountById(Long id) {
-        return id != null ? accountRepository.findById(id).orElse(null) : null;
+        return id != null ? accountRepository.getOne(id) : null;
     }
 
     public List<Account> getEmployees(Account owner) {
@@ -125,17 +125,18 @@ public class AccountService {
         if (id == null || owner == null) {
             logger.error("ID validation error: " + (id == null ? "given ID is null" : "")
                     + (owner == null ? "given account is null" : ""));
-            throw new RuntimeException("Invalid user id or current account");
+            throw new IdValidationException("Invalid user id or current account");
         }
         if (id.equals(owner.getId())) {
             return;
         }
-        Account employee = accountRepository.getOne(id);
-        if (employee == null || owner.getAuthority() != Authority.ADMIN || !getEmployees(owner).contains(employee)) {
+        Account employee = accountRepository.findById(id).orElse(null);
+        if (employee == null || owner.getAuthority() != Authority.ADMIN
+                || !getEmployees(owner).contains(employee)) {
             logger.error("ID validation error: given owner account(id "
                     + owner.getId() + ") doesn't have permission to this employee(id "
                     + (employee != null ? employee.getId() : id + " not valid") + ")");
-            throw new RuntimeException("Current account doesn't have access to this user");
+            throw new IdValidationException("Current account doesn't have access to this user");
         }
     }
 
