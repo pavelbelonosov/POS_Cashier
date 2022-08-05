@@ -53,12 +53,15 @@ public class TransactionService {
                 prodToQuantity = changeProductsAmountInRepository(transactionDto.getProductsList(),
                         transactionDto.getProductsAmountList(), currentUser, transactionType);
             }
-            //initializing transaction to persist in db, failed operations alsa saved
+            //initializing transaction to persist in db, failed operations also saved
             Transaction transaction = convertToTransaction(transactionDto, transactionStatus, terminal,
                     user.getUsername(), transactionType);
             //updating sales statistics of given terminal
             salesCounterService.addTransaction(transaction, terminal.getTid());
             //obtaining operation cheque
+            if (cheque.isEmpty()) {
+                cheque = "Ошибка считывания бансковского слипа";
+            }
             transaction.setCheque(salesCounterService.getOperationTransactionToString(transaction, terminal, prodToQuantity)
                     + cheque);//нужно будет убрать чек при неуспешной операции
             //evicting products from cart after operation
@@ -167,6 +170,9 @@ public class TransactionService {
         TransactionDto dto = new TransactionDto();
         dto.setStatus(entity.getStatus());
         dto.setCheque(entity.getCheque());
+        dto.setCashierName(entity.getCashier());
+        dto.setAmount(entity.getAmount());
+        dto.setDateTime(entity.getDateTime());
         return dto;
     }
 
