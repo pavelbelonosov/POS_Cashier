@@ -6,6 +6,7 @@ import com.app.bank_acquiring.service.AccountService;
 import com.app.bank_acquiring.service.IdValidationException;
 import com.app.bank_acquiring.service.TerminalService;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -30,7 +31,9 @@ public class TerminalController {
         return new Terminal();
     }
 
+
     @ExceptionHandler(IdValidationException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
     public String exceptionHandler(Model model, IdValidationException ex){
         model.addAttribute("status",403);
         model.addAttribute("error", "Нет доступа");

@@ -44,6 +44,7 @@ public class ProductController {
     }
 
     @ExceptionHandler(IdValidationException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
     public String exceptionHandler(Model model, IdValidationException ex){
         model.addAttribute("status",403);
         model.addAttribute("error", "Нет доступа");

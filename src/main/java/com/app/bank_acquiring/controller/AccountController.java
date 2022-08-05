@@ -8,6 +8,7 @@ import com.app.bank_acquiring.service.AccountService;
 import com.app.bank_acquiring.service.IdValidationException;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -38,6 +39,7 @@ public class AccountController {
     }
 
     @ExceptionHandler(IdValidationException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
     public String exceptionHandler(Model model, IdValidationException ex){
         model.addAttribute("status",403);
         model.addAttribute("error", "Нет доступа");
