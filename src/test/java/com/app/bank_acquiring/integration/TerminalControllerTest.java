@@ -10,6 +10,7 @@ import com.app.bank_acquiring.domain.product.Product;
 import com.app.bank_acquiring.domain.product.Type;
 import com.app.bank_acquiring.repository.*;
 import com.app.bank_acquiring.service.AccountService;
+import com.app.bank_acquiring.service.IdValidationException;
 import com.app.bank_acquiring.service.TerminalService;
 import org.junit.After;
 import org.junit.Before;
@@ -31,12 +32,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ActiveProfiles("test")
 @RunWith(SpringRunner.class)
@@ -82,7 +82,7 @@ public class TerminalControllerTest {
         //creating shop with owner/admin and terminal
         Account admin = createUserInRepository(Authority.ADMIN);
         Shop shop = createShopForAdminInRepository(admin);
-        Terminal terminal = createTerminalForShopInRepository(shop);
+        Terminal terminal = createTerminalForShopInRepository(shop, admin);
         MvcResult res = mockMvc.perform(get("/terminals")
                         .with(user(admin.getUsername()).password(admin.getPassword())
                                 .authorities(getAuthorities(admin))))
@@ -107,6 +107,198 @@ public class TerminalControllerTest {
                 .andExpect(status().isForbidden());
     }
 
+    @Test
+    public void givenAdminAccount_whenGetTerminalById_thenStatusOk() throws Exception {
+        //creating shop with owner/admin and terminal
+        Account admin = createUserInRepository(Authority.ADMIN);
+        Shop shop = createShopForAdminInRepository(admin);
+        Terminal terminal = createTerminalForShopInRepository(shop, admin);
+        MvcResult res = mockMvc.perform(get("/terminals/" + terminal.getId())
+                        .with(user(admin.getUsername()).password(admin.getPassword())
+                                .authorities(getAuthorities(admin))))
+                .andExpect(status().isOk())
+                .andExpect(view().name("terminal"))
+                .andReturn();
+        String content = res.getResponse().getContentAsString();
+        assertTrue(content.contains(terminal.getTid()));
+    }
+
+    @Test
+    public void givenWrongIds_whenGetTerminalById_thenThrowsException() throws Exception {
+        //creating shop with owner/admin and terminal
+        Account admin1 = createUserInRepository(Authority.ADMIN);
+        Shop shop = createShopForAdminInRepository(admin1);
+        Terminal terminal = createTerminalForShopInRepository(shop, admin1);
+        //when sending wrong existing user -> should throw Exception due to validation issue
+        Account admin2 = createUserInRepository(Authority.ADMIN);
+        mockMvc.perform(get("/terminals/" + terminal.getId())
+                        .with(user(admin2.getUsername()).password(admin2.getPassword())
+                                .authorities(getAuthorities(admin2))))
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof IdValidationException))
+                .andExpect(status().isForbidden())
+                .andExpect(view().name("error"));
+
+        //when sending not existing terminal -> should throw Exception due to validation issue
+        mockMvc.perform(get("/terminals/" + 500)
+                        .with(user(admin1.getUsername()).password(admin1.getPassword())
+                                .authorities(getAuthorities(admin1))))
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof IdValidationException))
+                .andExpect(status().isForbidden())
+                .andExpect(view().name("error"));
+    }
+
+    @Test
+    public void givenAdminAccount_whenTestTerminalConnection_thenStatusRedirect() throws Exception {
+        //creating shop with owner/admin and terminal
+        Account admin = createUserInRepository(Authority.ADMIN);
+        Shop shop = createShopForAdminInRepository(admin);
+        Terminal terminal = createTerminalForShopInRepository(shop, admin);
+
+        mockMvc.perform(get("/terminals/" + terminal.getId() + "/test")
+                        .with(user(admin.getUsername()).password(admin.getPassword())
+                                .authorities(getAuthorities(admin))))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/terminals/" + terminal.getId()));
+    }
+
+    @Test
+    public void givenAdminAccount_whenSetTerminalToCurrentAccount_thenStatusRedirect() throws Exception {
+        //creating shop with owner/admin
+        Account admin = createUserInRepository(Authority.ADMIN);
+        Shop shop = createShopForAdminInRepository(admin);
+        //creating detached terminal with shop
+        Terminal terminal = createDetachedTerminal();
+        terminal.setShop(shop);
+
+        mockMvc.perform(post("/terminals")
+                        .with(user(admin.getUsername()).password(admin.getPassword())
+                                .authorities(getAuthorities(admin)))
+                        .flashAttr("terminal", terminal))
+                .andExpect(redirectedUrl("/terminals"));
+        // terminal should be saved in repo
+        assertNotNull(terminalRepository.findByTid(terminal.getTid()));
+    }
+
+    @Test
+    public void givenNotValidFields_whenSetTerminalToCurrentAccount_thenReturnBindingErrors() throws Exception {
+        //creating shop with owner/admin
+        Account admin = createUserInRepository(Authority.ADMIN);
+        Shop shop = createShopForAdminInRepository(admin);
+        //creating detached terminal with shop
+        Terminal terminal = createDetachedTerminal();
+        terminal.setTid("");//not valid constraint
+        terminal.setIp("");//not valid constraint
+
+        mockMvc.perform(post("/terminals")
+                        .with(user(admin.getUsername()).password(admin.getPassword())
+                                .authorities(getAuthorities(admin)))
+                        .flashAttr("terminal", terminal))
+                .andExpect(model().hasErrors())
+                .andExpect(model().attributeHasFieldErrors("terminal", "shop", "tid", "ip"))
+                .andExpect(view().name("terminals"));
+        // terminal should not be saved in repo
+        assertNull(terminalRepository.findByTid(terminal.getTid()));
+    }
+
+    @Test
+    public void givenAdminAccount_whenSetWorkTerminalToAccount_thenStatusRedirect() throws Exception {
+        //creating shop with owner/admin and terminal in repos
+        Account admin = createUserInRepository(Authority.ADMIN);
+        Shop shop = createShopForAdminInRepository(admin);
+        Terminal terminal = createTerminalForShopInRepository(shop, admin);
+
+        mockMvc.perform(post("/accounts/current/terminals/workingterminal")
+                        .with(user(admin.getUsername()).password(admin.getPassword())
+                                .authorities(getAuthorities(admin)))
+                        .param("terminalId", terminal.getId() + ""))
+                .andExpect(redirectedUrl("/main"));
+        // terminal's tid should be added to account's workTerminal field
+        assertTrue(accountRepository.findByUsername(admin.getUsername())
+                .getWorkTerminalTid().equals(terminal.getTid()));
+    }
+
+    @Test
+    public void givenAdminAccount_whenUpdateTerminal_thenStatusRedirect() throws Exception {
+        //creating shop with owner/admin and terminal in repos
+        Account admin = createUserInRepository(Authority.ADMIN);
+        Shop shop = createShopForAdminInRepository(admin);
+        Terminal terminal = createTerminalForShopInRepository(shop, admin);
+        String newIp = "99.99.99.99";
+        String newHeader = "newHeader";
+
+        mockMvc.perform(post("/terminals/" + terminal.getId())
+                        .with(user(admin.getUsername()).password(admin.getPassword())
+                                .authorities(getAuthorities(admin)))
+                        .param("ip", newIp)
+                        .param("chequeHeader", newHeader))
+                .andExpect(redirectedUrl("/terminals/" + terminal.getId()));
+        // terminal's fields should be updated in repo
+        Terminal updatedTerm = terminalRepository.findByTid(terminal.getTid());
+        assertTrue(updatedTerm.getIp().equals(newIp));
+        assertTrue(updatedTerm.getChequeHeader().equals(newHeader));
+    }
+
+    @Test
+    public void givenNotValidParams_whenUpdateTerminal_thenTerminalNitUpdatedinDB() throws Exception {
+        //creating shop with owner/admin and terminal in repos
+        Account admin = createUserInRepository(Authority.ADMIN);
+        Shop shop = createShopForAdminInRepository(admin);
+        Terminal terminal = createTerminalForShopInRepository(shop, admin);
+        String currentIp = terminal.getIp().intern();
+        String currentHeader = terminal.getChequeHeader();
+        String newIp = "  ";//not valid
+        String newHeader = ""; //not valid
+
+        mockMvc.perform(post("/terminals/" + terminal.getId())
+                        .with(user(admin.getUsername()).password(admin.getPassword())
+                                .authorities(getAuthorities(admin)))
+                        .param("ip", newIp)
+                        .param("chequeHeader", newHeader))
+                .andExpect(redirectedUrl("/terminals/" + terminal.getId()));
+        // terminal's fields should not be updated in repo
+        Terminal updatedTerm = terminalRepository.findByTid(terminal.getTid());
+        assertTrue(updatedTerm.getIp().equals(currentIp));
+        assertTrue(updatedTerm.getChequeHeader().equals(currentHeader));
+    }
+
+    @Test
+    public void givenAdmin_whenDeleteTerminal_thenTerminalIsDeletedFromRepository() throws Exception {
+        //creating shop with owner/admin and terminal in repos
+        Account admin = createUserInRepository(Authority.ADMIN);
+        Shop shop = createShopForAdminInRepository(admin);
+        Terminal terminal = createTerminalForShopInRepository(shop, admin);
+
+        mockMvc.perform(delete("/terminals/" + terminal.getId())
+                        .with(user(admin.getUsername()).password(admin.getPassword())
+                                .authorities(getAuthorities(admin))))
+                .andExpect(redirectedUrl("/terminals"));
+        //terminal should be deleted from repo
+       assertNull(terminalRepository.findByTid(terminal.getTid()));
+    }
+
+    @Test
+    public void givenWrongId_whenDeleteTerminal_thenStatusForbidden() throws Exception {
+        //creating two shop two with owner/admin and two terminal in repos
+        Account admin1 = createUserInRepository(Authority.ADMIN);
+        Shop shop1 = createShopForAdminInRepository(admin1);
+        Terminal terminal1 = createTerminalForShopInRepository(shop1, admin1);
+
+        Account admin2 = createUserInRepository(Authority.ADMIN);
+        Shop shop2 = createShopForAdminInRepository(admin2);
+        Terminal terminal2 = createTerminalForShopInRepository(shop2, admin2);
+        //sending terminal not belonging to authenticated admin
+        mockMvc.perform(delete("/terminals/" + terminal2.getId())
+                        .with(user(admin1.getUsername()).password(admin1.getPassword())
+                                .authorities(getAuthorities(admin1))))
+                //@ExceptionHandler catches IdValidationException
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof IdValidationException))
+                .andExpect(status().isForbidden())
+                //response with error.html
+                .andExpect(view().name("error"));
+        //terminal should not be deleted from repo
+        assertTrue(terminalRepository.findAll().size()==2);
+    }
+
     private Account createUserInRepository(Authority authority) {
         Account user = new Account();
         user.setUsername("username" + new Random().nextInt(Integer.MAX_VALUE));
@@ -127,13 +319,25 @@ public class TerminalControllerTest {
         return shopRepository.save(shop);
     }
 
-    private Terminal createTerminalForShopInRepository(Shop shop) {
+    private Terminal createTerminalForShopInRepository(Shop shop, Account account) {
         Terminal terminal = new Terminal();
         terminal.setTid("12345678");
         terminal.setIp("1.1.1.1");
         terminal.setMid("123456789000");
+        terminal.setChequeHeader("header");
         terminal.setShop(shop);
+        terminal.setAccount(account);
         return terminalRepository.save(terminal);
+    }
+
+
+    private Terminal createDetachedTerminal() {
+        Terminal terminal = new Terminal();
+        terminal.setTid("12345678");
+        terminal.setIp("1.1.1.1");
+        terminal.setMid("123456789000");
+        terminal.setChequeHeader("header");
+        return terminal;
     }
 
     private List<SimpleGrantedAuthority> getAuthorities(Account account) {
