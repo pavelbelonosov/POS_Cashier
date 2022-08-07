@@ -126,18 +126,17 @@ public class TransactionService {
 
     public List<String> getSalesStatistics(String currentUser) {
         String userWorkingTid = accountService.findByUsername(currentUser).getWorkTerminalTid();
+        List<String> list = new ArrayList<>();
         if (userWorkingTid != null) {
             SalesCounter salesCounter = salesCounterService.getSalesCounter(userWorkingTid);
             DecimalFormat df = new DecimalFormat("0.00");
             if (salesCounter != null && salesCounter.getTerminalTid().equals(userWorkingTid)) {
-                List<String> list = new ArrayList<>();
                 list.add("В кассе: " + df.format(salesCounter.getBalancePerDay()));
                 list.add("Продажи: " + df.format(salesCounter.getSalesPerDay()) + "(" + salesCounter.getSalesCounterPerDay() + ")");
                 list.add("Возвраты: " + df.format(salesCounter.getRefundsPerDay()) + "(" + salesCounter.getRefundsCounterPerDay() + ")");
-                return list;
             }
         }
-        return new ArrayList<>();
+        return list;
     }
 
     public boolean sendEmail(String currentUser, List<String> emailAddressAndCheque) {
