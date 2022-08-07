@@ -56,7 +56,7 @@ public class TransactionRestController {
     @GetMapping("/api/v1/transactions/stat")
     public ResponseEntity<List<String>> getTransactionStatistics(@AuthenticationPrincipal UserDetails currentUser) {
         List<String> stat = transactionService.getSalesStatistics(currentUser.getUsername());
-        return stat == null ? new ResponseEntity<>(HttpStatus.NOT_FOUND) :
+        return stat.isEmpty() ? new ResponseEntity<>(HttpStatus.NOT_FOUND) :
                 new ResponseEntity<>(stat, HttpStatus.OK);
     }
 
