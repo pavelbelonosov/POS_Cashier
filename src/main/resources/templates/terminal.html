@@ -8,7 +8,7 @@
         <div class="row">
             <div class="col-md-auto">
                 <h3 th:text="'TID: '+ ${terminal.tid}"> TID</h3>
-                <form class="form-group" th:action="@{/terminals/{id}/test(id=${terminal.id})}" th:method="GET">
+                <form class="form-group" th:if="${terminal.standalone==false}" th:action="@{/terminals/{id}/test(id=${terminal.id})}" th:method="GET">
                     <button type="submit" class="btn btn-dark">Тест соединения</button>
                     <span th:if="${!terminal.transactions.empty}"
                           th:text="${terminal.transactions[0].status==true}?'Успешно':'Тест не пройден'"></span>
@@ -33,6 +33,11 @@
                 </table>
                 <form class="form-group" th:action="@{/terminals/{id}(id=${terminal.id})}" method="POST">
                     <div class="form-group">
+                        <label for="connection">Тип подключения:</label>
+                        <select class="form-control" id="connection" name="connection" onchange="changeVisibility(this.value)">
+                            <option th:each="val : ${connection}" th:value="${val}"
+                                    th:text="${val==true}?'Автономный':'Интегрированный'"></option>
+                        </select>
                         <label for="ip">IP-address:</label>
                         <input type="text" id="ip" name="ip" class="form-control" th:placeholder="${terminal.ip}"
                                pattern="^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$"/>
@@ -85,10 +90,20 @@
 <div th:replace="fragments/layout :: forToggleScript"></div>
 <script type="text/javascript" language="javascript"
         src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
-<script language="javascript" type="text/javascript">
-    $(document).ready( function () {
-        $('#dataTable').DataTable();
-    } );
+<script>
+function changeVisibility(value) {
+if(value=="true"){
+document.getElementById("ip").disabled=true;
+document.getElementById("chequeHeader").disabled=true
+} else {
+document.querySelectorAll('[disabled]')
+        .forEach(e=>e.removeAttribute('disabled'));
+}
+}
+
+$(document).ready( function () {
+$('#dataTable').DataTable();
+} );
 $('#dataTable').dataTable( {
   "lengthMenu": [ [10, 25, 50, -1], [10, 25, 50, "Все"] ],
     "language": {
