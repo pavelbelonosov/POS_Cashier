@@ -218,7 +218,7 @@ public class TerminalControllerTest {
     }
 
     @Test
-    public void givenAdminAccount_whenUpdateTerminal_thenStatusRedirect() throws Exception {
+    public void givenIkr_whenUpdateTerminal_thenStatusRedirect() throws Exception {
         //creating shop with owner/admin and terminal in repos
         Account admin = createUserInRepository(Authority.ADMIN);
         Shop shop = createShopForAdminInRepository(admin);
@@ -229,6 +229,7 @@ public class TerminalControllerTest {
         mockMvc.perform(post("/terminals/" + terminal.getId())
                         .with(user(admin.getUsername()).password(admin.getPassword())
                                 .authorities(getAuthorities(admin)))
+                        .param("connection",false+"")//integrated POS type
                         .param("ip", newIp)
                         .param("chequeHeader", newHeader))
                 .andExpect(redirectedUrl("/terminals/" + terminal.getId()));
@@ -239,7 +240,7 @@ public class TerminalControllerTest {
     }
 
     @Test
-    public void givenNotValidParams_whenUpdateTerminal_thenTerminalNitUpdatedinDB() throws Exception {
+    public void givenIkrAndNotValidParams_whenUpdateTerminal_thenTerminalNotUpdatedInDB() throws Exception {
         //creating shop with owner/admin and terminal in repos
         Account admin = createUserInRepository(Authority.ADMIN);
         Shop shop = createShopForAdminInRepository(admin);
@@ -252,6 +253,7 @@ public class TerminalControllerTest {
         mockMvc.perform(post("/terminals/" + terminal.getId())
                         .with(user(admin.getUsername()).password(admin.getPassword())
                                 .authorities(getAuthorities(admin)))
+                        .param("connection",false+"")//integrated POS
                         .param("ip", newIp)
                         .param("chequeHeader", newHeader))
                 .andExpect(redirectedUrl("/terminals/" + terminal.getId()));
@@ -325,6 +327,7 @@ public class TerminalControllerTest {
         terminal.setIp("1.1.1.1");
         terminal.setMid("123456789000");
         terminal.setChequeHeader("header");
+        terminal.setStandalone(false);//integrated pos
         terminal.setShop(shop);
         terminal.setAccount(account);
         return terminalRepository.save(terminal);
