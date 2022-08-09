@@ -67,7 +67,7 @@ create table terminal
  (
    id int8 not null,
    cheque_header varchar(120),
-   ip varchar(255) not null,
+   ip varchar(255),
    mid varchar(255),
    tid varchar(255),
    account_id int8,
