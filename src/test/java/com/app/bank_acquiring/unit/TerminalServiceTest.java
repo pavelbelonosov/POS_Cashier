@@ -64,7 +64,7 @@ public class TerminalServiceTest {
         assertTrue(terminal.getIp().equals("1.1.1.1"));
         assertTrue(terminal.getChequeHeader() == null);
         terminalService.addTerminalToAccount(terminal, account.getUsername());
-        terminalService.updateTerminal(terminal.getId(), account.getUsername(), "1.2.3.4", "header");
+        terminalService.updateTerminal(terminal.getId(), account.getUsername(), false, "1.2.3.4", "header");
         Mockito.verify(terminalRepository).save(terminal);
         assertTrue(terminal.getIp().equals("1.2.3.4"));
         assertTrue(terminal.getChequeHeader().equals("header"));
@@ -82,7 +82,7 @@ public class TerminalServiceTest {
         Terminal terminal2 = createTerminal();
         terminalService.addTerminalToAccount(terminal2, account2.getUsername());
         //must throw RuntimeException due to ids' validation
-        terminalService.updateTerminal(terminal1.getId(), account2.getUsername(), " ", " ");
+        terminalService.updateTerminal(terminal1.getId(), account2.getUsername(), false," ", " ");
     }
 
     @Test
@@ -92,7 +92,7 @@ public class TerminalServiceTest {
         assertTrue(terminal.getIp().equals("1.1.1.1"));
         assertTrue(terminal.getChequeHeader() == null);
         terminalService.addTerminalToAccount(terminal, account.getUsername());
-        terminalService.updateTerminal(terminal.getId(), account.getUsername(), " ", " ");
+        terminalService.updateTerminal(terminal.getId(), account.getUsername(),false, " ", " ");
         assertTrue(terminal.getIp().equals("1.1.1.1"));
         assertTrue(terminal.getChequeHeader() == null);
     }
@@ -211,6 +211,7 @@ public class TerminalServiceTest {
         terminal.setIp("1.1.1.1");
         terminal.setMid("123456789000");
         terminal.setShop(createShop());
+        terminal.setStandalone(false);
         terminal.setId(Math.abs(new Random().nextLong()));
         Mockito.when(terminalRepository.findByTid(terminal.getTid())).thenReturn(terminal);
         Mockito.when(terminalRepository.getOne(terminal.getId())).thenReturn(terminal);
