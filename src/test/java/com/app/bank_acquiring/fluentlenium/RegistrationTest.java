@@ -20,7 +20,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
-
+import static org.assertj.core.api.Assertions.assertThat;
 import java.util.concurrent.TimeUnit;
 
 
@@ -37,20 +37,23 @@ public class RegistrationTest extends FluentTest {
 
     @Before
     public void setUp(){
-
-
     }
 
     @Test
     public void testGetAndPost(){
        goTo("http://localhost:" + port + "/accounts/registration");
+       assertThat(window().title()).contains("POS-кассир | Регистрация");
+       //filling reg.form and click submit button
        find("#username").fill().with("useruser");
        find("#password").fill().with("useruser");
        find("#repeatPWD").fill().with("useruser");
        find("#email").fill().with("user@user.ru");
-
-       find("form").first().submit();
-       await().atMost(2, TimeUnit.SECONDS);
-       assertEquals(accountRepository.findByUsername("useruser").getUsername(),"useruser");
+       find("button").click();
+       //should redirect to login page
+       await().atMost(1, TimeUnit.SECONDS);
+       assertThat(url()).contains("/login.html");
+       assertThat(window().title()).contains("POS-кассир | Вход");
+       //new user is saved
+       assertThat(accountRepository.findByUsername("useruser").getUsername().equals("useruser"));
     }
 }
