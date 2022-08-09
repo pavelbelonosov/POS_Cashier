@@ -44,15 +44,17 @@ public class TerminalService {
     }
 
     @Transactional
-    public void updateTerminal(Long id, String currentUser, @NonNull String ip, @NonNull String chequeHeader) {
+    public void updateTerminal(Long id, String currentUser, boolean connection,
+                               String ip, String chequeHeader) {
         Terminal terminal = getValidatedTerminal(id, currentUser);
-        if (!ip.isBlank()) {
-            terminal.setIp(ip);
+        if (connection) {
+            terminal.setStandalone(true);//standalone POS without integration
+        } else {
+            terminal.setStandalone(false);//integrated with cash register POS
+            if (ip != null && !ip.isBlank()) terminal.setIp(ip);
+            if (chequeHeader != null & !chequeHeader.isBlank()) terminal.setChequeHeader(chequeHeader);
+            uposService.updateUposSettings(accountRepository.findByUsername(currentUser).getId(), terminal);
         }
-        if (!chequeHeader.isBlank()) {
-            terminal.setChequeHeader(chequeHeader);
-        }
-        uposService.updateUposSettings(accountRepository.findByUsername(currentUser).getId(), terminal);
     }
 
     @Transactional
