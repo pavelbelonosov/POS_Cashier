@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.io.FileNotFoundException;
 import java.util.Collections;
+import java.util.List;
 
 @Controller
 @AllArgsConstructor
@@ -34,8 +35,8 @@ public class TerminalController {
 
     @ExceptionHandler(IdValidationException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
-    public String exceptionHandler(Model model, IdValidationException ex){
-        model.addAttribute("status",403);
+    public String exceptionHandler(Model model, IdValidationException ex) {
+        model.addAttribute("status", 403);
         model.addAttribute("error", "Нет доступа");
         model.addAttribute("message", ex.getMessage());
         return "error";
@@ -54,6 +55,7 @@ public class TerminalController {
         Terminal terminal = terminalService.getValidatedTerminal(id, currentUser.getUsername());
         Collections.reverse(terminal.getTransactions());
         model.addAttribute("terminal", terminal);
+        model.addAttribute("connection", List.of(false, true));//standalone vs integrated pos type
         model.addAttribute("workAccounts",
                 terminalService.getEmployeesWithThisWorkTerminal(terminal.getTid(), currentUser.getUsername()));
         return "terminal";
@@ -90,9 +92,10 @@ public class TerminalController {
 
 
     @PostMapping("/terminals/{id}")
-    public String updateTerminal(@RequestParam String ip, @RequestParam String chequeHeader,
-                                 @PathVariable Long id, @AuthenticationPrincipal UserDetails currentUser) throws FileNotFoundException {
-        terminalService.updateTerminal(id, currentUser.getUsername(), ip, chequeHeader);
+    public String updateTerminal(@RequestParam boolean connection, @RequestParam(required = false) String ip,
+                                 @RequestParam(required = false) String chequeHeader, @PathVariable Long id,
+                                 @AuthenticationPrincipal UserDetails currentUser) throws FileNotFoundException {
+        terminalService.updateTerminal(id, currentUser.getUsername(), connection, ip, chequeHeader);
         return "redirect:/terminals/" + id;
     }
 
