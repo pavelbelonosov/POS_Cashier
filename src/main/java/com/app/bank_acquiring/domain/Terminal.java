@@ -25,11 +25,14 @@ public class Terminal extends AbstractPersistable<Long> {
     @EqualsAndHashCode.Include
     private String tid;
 
+    @NotNull
+    private Boolean standalone; //интегрированный терминал vs атономный
+
     @Pattern(regexp = "^[0-9]{12}$", message = "Неверный формат MID")
     @EqualsAndHashCode.Include
     private String mid;
 
-    @NotNull(message = "IP не может быть пустым")
+    //@NotNull(message = "IP не может быть пустым")
     @Pattern(regexp = "^[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}$", message = "Неверный формат IP-адреса")
     private String ip;
 
