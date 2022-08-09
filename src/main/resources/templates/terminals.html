@@ -16,10 +16,15 @@
                         </select>
                     </div>
                     <button class="btn btn-dark" type="submit">Встать за кассу</button>
-                </form><br>
+                </form>
+                <br>
                 <h3>Добавить терминал:</h3>
                 <form class="form-group" th:action="@{/terminals}" th:object="${terminal}" method="POST">
                     <div class="form-group">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="standalone" id="standalone" th:field="*{standalone}" onclick="changeVisibility()"/>
+                            <label class="form-check-label" for="standalone">Использовать автономный терминал:</label>
+                        </div>
                         <label for="tid">Terminal ID:</label>
                         <input type="text" th:field="*{tid}" id="tid" name="tid" class="form-control"
                                placeholder="12345678" required/>
@@ -67,6 +72,7 @@
                                 <tr>
                                     <td>TID</td>
                                     <td>MID</td>
+                                    <td>Автономный</td>
                                     <td>IP</td>
                                     <td>Заголовок чека</td>
                                     <td>В работе</td>
@@ -75,11 +81,13 @@
                                 </thead>
                                 <tbody>
                                 <tr th:if="${shop.terminals.empty}">
-                                    <td colspan="6">Нет добавленных терминалов</td>
+                                    <td colspan="7">Нет добавленных терминалов</td>
                                 </tr>
                                 <tr th:each="term : ${shop.terminals}">
-                                    <td> <a th:href="@{/terminals/{id}(id=${term.id})}" th:text="${term.tid}">Tid</a></td>
+                                    <td><a th:href="@{/terminals/{id}(id=${term.id})}" th:text="${term.tid}">Tid</a>
+                                    </td>
                                     <td th:text="${term.mid}">Mid</td>
+                                    <td th:text="${term.standalone==true}?'Да':''"></td>
                                     <td th:text="${term.ip}">Ip address</td>
                                     <td th:text="${term.chequeHeader}">Header</td>
                                     <td th:text="${term.tid == account.workTerminalTid}?'Да':''"></td>
@@ -111,4 +119,12 @@
 </main>
 </body>
 <div th:replace="fragments/layout :: forToggleScript"></div>
+<script>
+window.onload = changeVisibility();
+function changeVisibility() {
+var isChecked = document.getElementById("standalone").checked;
+document.getElementById("ip").disabled = isChecked;
+document.getElementById("chequeHeader").disabled = isChecked;
+}
+</script>
 </html>
