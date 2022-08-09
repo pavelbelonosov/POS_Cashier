@@ -45,13 +45,29 @@ public class TransactionService {
             String cheque = "";
             boolean transactionStatus = false;
             Map<Product, Double> prodToQuantity = new HashMap<>();
-            if (uposService.makeOperation(terminal.getAccount().getId(), terminal.getShop().getId(),
-                    terminal.getTid(), transactionDto.getAmount(), transactionType)) {
-                cheque = uposService.readCheque(terminal.getAccount().getId(), terminal.getShop().getId(), terminal.getTid());
-                transactionStatus = uposService.defineTransactionStatus(cheque);
+            //if terminal is standalone ->skip UPOS operation -> change products balance
+            if (!terminal.getStandalone()) {
+                if (uposService.makeOperation(terminal.getAccount().getId(), terminal.getShop().getId(),
+                        terminal.getTid(), transactionDto.getAmount(), transactionType)) {
+                    cheque = uposService.readCheque(terminal.getAccount().getId(), terminal.getShop().getId(), terminal.getTid());
+                    transactionStatus = uposService.defineTransactionStatus(cheque);
+                    if(transactionStatus){
+                        //update products' balance in db: decrease or increase due to transaction type - payment or refund, and getting sold products
+                        prodToQuantity = changeProductsAmountInRepository(transactionDto.getProductsList(),
+                                transactionDto.getProductsAmountList(), currentUser, transactionType);
+                    }
+
+                    //if exception while parsing upos transaction cheque from system or upos doesnt perform cheque
+                    if (cheque.isEmpty()) {
+                        cheque = "Ошибка считывания банковского слипа";
+                    }
+                }
+            } else {
                 //update products' balance in db: decrease or increase due to transaction type - payment or refund, and getting sold products
                 prodToQuantity = changeProductsAmountInRepository(transactionDto.getProductsList(),
                         transactionDto.getProductsAmountList(), currentUser, transactionType);
+                //when bank pos is not involved transaction always successes
+                transactionStatus = true;
             }
             //initializing transaction to persist in db, failed operations also saved
             Transaction transaction = convertToTransaction(transactionDto, transactionStatus, terminal,
@@ -59,9 +75,6 @@ public class TransactionService {
             //updating sales statistics of given terminal
             salesCounterService.addTransaction(transaction, terminal.getTid());
             //obtaining operation cheque
-            if (cheque.isEmpty()) {
-                cheque = "Ошибка считывания бансковского слипа";
-            }
             transaction.setCheque(salesCounterService.getOperationTransactionToString(transaction, terminal, prodToQuantity)
                     + cheque);//нужно будет убрать чек при неуспешной операции
             //evicting products from cart after operation
