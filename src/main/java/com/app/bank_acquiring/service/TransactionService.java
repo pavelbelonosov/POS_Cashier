@@ -51,7 +51,8 @@ public class TransactionService {
                         terminal.getTid(), transactionDto.getAmount(), transactionType)) {
                     cheque = uposService.readCheque(terminal.getAccount().getId(), terminal.getShop().getId(), terminal.getTid());
                     transactionStatus = uposService.defineTransactionStatus(cheque);
-                    if(transactionStatus){
+                    //update balance only if transaction finished successfully
+                    if (transactionStatus) {
                         //update products' balance in db: decrease or increase due to transaction type - payment or refund, and getting sold products
                         prodToQuantity = changeProductsAmountInRepository(transactionDto.getProductsList(),
                                 transactionDto.getProductsAmountList(), currentUser, transactionType);
@@ -75,8 +76,10 @@ public class TransactionService {
             //updating sales statistics of given terminal
             salesCounterService.addTransaction(transaction, terminal.getTid());
             //obtaining operation cheque
-            transaction.setCheque(salesCounterService.getOperationTransactionToString(transaction, terminal, prodToQuantity)
-                    + cheque);//нужно будет убрать чек при неуспешной операции
+            if (transactionStatus) {
+                transaction.setCheque(salesCounterService.getOperationTransactionToString(transaction, terminal, prodToQuantity)
+                        + cheque);
+            }
             //evicting products from cart after operation
             productCart.getProductsWithAmount().clear();
             return convertToDto(transactionRepository.save(transaction));
@@ -91,10 +94,19 @@ public class TransactionService {
             //performing acquiring report operation
             String cheque = "";
             boolean transactionStatus = false;
-            if (uposService.makeReportOperation(terminal.getAccount().getId(), terminal.getShop().getId(),
-                    terminal.getTid(), transactionType)) {
-                cheque = uposService.readCheque(terminal.getAccount().getId(), terminal.getShop().getId(), terminal.getTid());
-                transactionStatus = uposService.defineTransactionStatus(cheque);
+            //if terminal is standalone ->skip UPOS operation
+            if (!terminal.getStandalone()) {
+                if (uposService.makeReportOperation(terminal.getAccount().getId(), terminal.getShop().getId(),
+                        terminal.getTid(), transactionType)) {
+                    cheque = uposService.readCheque(terminal.getAccount().getId(), terminal.getShop().getId(), terminal.getTid());
+                    transactionStatus = uposService.defineTransactionStatus(cheque);
+                    if (cheque.isEmpty()) {
+                        cheque = "Ошибка считывания банковского слипа";
+                    }
+                }
+            } else {
+                //when bank pos is standalone transaction always successes
+                transactionStatus = true;
             }
             //initializing transaction to persist in db, failed operations also saved
             Transaction transaction = new Transaction();
@@ -103,9 +115,13 @@ public class TransactionService {
             transaction.setDateTime(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
             transaction.setTerminal(terminal);
             transaction.setCashier(currentUser);
-            transaction.setCheque(salesCounterService.getReportOperationToString(transaction, terminal) + cheque);//нужно будет убрать чек при неуспешной операции
+            //obtaining operation cheque
+            if (transactionStatus) {
+                transaction.setCheque(salesCounterService.getReportOperationToString(transaction, terminal) + cheque);
+            }
             //when shift closed successfully, sales counter of given terminal is reset
             if (transactionStatus && transactionType == Type.CLOSE_DAY) {
+
                 salesCounterService.closeDay(terminal.getTid());
             }
             return convertToDto(transactionRepository.save(transaction));
