@@ -65,7 +65,7 @@ public class SalesCounterService {
             i++;
         }
         s.append("ИТОГ: " + transaction.getAmount() + "\n");
-        s.append("Безналичными: " + transaction.getAmount() + "\n");
+        if(!terminal.getStandalone()) s.append("Безналичными: " + transaction.getAmount() + "\n");
         s.append("Спасибо за покупку!\n");
         s.append("\n");
         return s.toString();
@@ -84,8 +84,8 @@ public class SalesCounterService {
         s.append("ЧЕКОВ ЗА СМЕНУ "
                 + (salesCounter != null ? (salesCounter.getSalesCounterPerDay() + salesCounter.getRefundsCounterPerDay()) : 0) + "\n");
         s.append("Кассир " + transaction.getCashier() + "\n");
-        s.append("ПРИХОД (БЕЗНАЛИЧНЫМИ) " + df.format(salesCounter != null ? salesCounter.getSalesPerDay() : 0) + "\n");
-        s.append("ВОЗВРАТ ПРИХОДА (БЕЗНАЛИЧНЫМИ) " + df.format(salesCounter != null ? salesCounter.getRefundsPerDay() : 0) + "\n");
+        s.append("ПРИХОД " + df.format(salesCounter != null ? salesCounter.getSalesPerDay() : 0) + "\n");
+        s.append("ВОЗВРАТ ПРИХОДА " + df.format(salesCounter != null ? salesCounter.getRefundsPerDay() : 0) + "\n");
         s.append("ВЫРУЧКА  " + df.format(salesCounter != null ? salesCounter.getBalancePerDay() : 0) + "\n");
         s.append("НЕОБНУЛЯЕМАЯ СУММА ПРИХОДА " + df.format(salesCounter != null ? salesCounter.getSalesAll() : 0) + "\n");
         s.append("\n");
