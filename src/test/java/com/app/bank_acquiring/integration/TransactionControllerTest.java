@@ -45,7 +45,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * The test class for pos-transaction(payment, refund, close day etc.) functions via rest api. Doesn't require POS-terminal to be connected.
  * Logic:each test creates one shop with one terminal, one product, one admin and optionally one employee.
  * UPOS files copied by app internal "mechanism" from base dir and deleted after each test.
- * Each case takes about 15 sec, because of upos module process invocation.
+ * Standalone POS-type is used for tests to avoid upos process invocation.
  */
 @ActiveProfiles("test")
 @RunWith(SpringRunner.class)
@@ -122,8 +122,8 @@ public class TransactionControllerTest {
                         .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=UTF-8"))
-                //because terminal is not connected->transaction fails
-                .andExpect(jsonPath("$.status").value("false"))
+                //standalone pos -> transaction successfull
+                .andExpect(jsonPath("$.status").value("true"))
                 //cheque content
                 .andExpect(jsonPath("$.cheque").isNotEmpty());
         //even failed transaction should be saved in db
@@ -162,8 +162,8 @@ public class TransactionControllerTest {
                         .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=UTF-8"))
-                //because terminal is not connected->transaction fails
-                .andExpect(jsonPath("$.status").value("false"))
+                //standalone pos -> transaction successfull
+                .andExpect(jsonPath("$.status").value("true"))
                 //cheque content
                 .andExpect(jsonPath("$.cheque").isNotEmpty());
         //even failed transaction should be saved in db
@@ -202,8 +202,8 @@ public class TransactionControllerTest {
                         .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=UTF-8"))
-                //because terminal is not connected->transaction fails
-                .andExpect(jsonPath("$.status").value("false"))
+                //standalone pos -> transaction successfull
+                .andExpect(jsonPath("$.status").value("true"))
                 //cheque content
                 .andExpect(jsonPath("$.cheque").isNotEmpty());
         //even failed transaction should be saved in db
@@ -240,8 +240,8 @@ public class TransactionControllerTest {
                         .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=UTF-8"))
-                //because terminal is not connected->transaction fails
-                .andExpect(jsonPath("$.status").value("false"))
+                //standalone pos -> transaction successfull
+                .andExpect(jsonPath("$.status").value("true"))
                 //cheque content
                 .andExpect(jsonPath("$.cheque").isNotEmpty());
         //even failed transaction should be saved in db
@@ -280,8 +280,8 @@ public class TransactionControllerTest {
                         .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=UTF-8"))
-                //because terminal is not connected->transaction fails
-                .andExpect(jsonPath("$.status").value("false"))
+                //standalone pos -> transaction successfull
+                .andExpect(jsonPath("$.status").value("true"))
                 //cheque content
                 .andExpect(jsonPath("$.cheque").isNotEmpty());
         //even failed transaction should be saved in db
@@ -320,8 +320,8 @@ public class TransactionControllerTest {
                         .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=UTF-8"))
-                //because terminal is not connected->transaction fails
-                .andExpect(jsonPath("$.status").value("false"))
+                //standalone pos -> transaction successfull
+                .andExpect(jsonPath("$.status").value("true"))
                 //cheque content
                 .andExpect(jsonPath("$.cheque").isNotEmpty());
         //even failed transaction should be saved in db
@@ -407,8 +407,8 @@ public class TransactionControllerTest {
                                 .authorities(getAuthorities(admin))))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=UTF-8"))
-                //because terminal is not connected->transaction fails
-                .andExpect(jsonPath("$.status").value("false"))
+                //standalone pos -> transaction successfull
+                .andExpect(jsonPath("$.status").value("true"))
                 //cheque content
                 .andExpect(jsonPath("$.cheque").isNotEmpty());
         //even failed transaction should be saved in db
@@ -441,8 +441,8 @@ public class TransactionControllerTest {
                                 .authorities(getAuthorities(employee))))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=UTF-8"))
-                //because terminal is not connected->transaction fails
-                .andExpect(jsonPath("$.status").value("false"))
+                //standalone pos -> transaction successfull
+                .andExpect(jsonPath("$.status").value("true"))
                 //cheque content
                 .andExpect(jsonPath("$.cheque").isNotEmpty());
         //even failed transaction should be saved in db
@@ -475,8 +475,8 @@ public class TransactionControllerTest {
                                 .authorities(getAuthorities(employee))))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=UTF-8"))
-                //because terminal is not connected->transaction fails
-                .andExpect(jsonPath("$.status").value("false"))
+                //standalone pos -> transaction successfull
+                .andExpect(jsonPath("$.status").value("true"))
                 //cheque content
                 .andExpect(jsonPath("$.cheque").isNotEmpty());
         //even failed transaction should be saved in db
@@ -507,8 +507,8 @@ public class TransactionControllerTest {
                                 .authorities(getAuthorities(admin))))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=UTF-8"))
-                //because terminal is not connected->transaction fails
-                .andExpect(jsonPath("$.status").value("false"))
+                //standalone pos -> transaction successfull
+                .andExpect(jsonPath("$.status").value("true"))
                 //cheque content
                 .andExpect(jsonPath("$.cheque").isNotEmpty());
         //even failed transaction should be saved in db
@@ -541,8 +541,8 @@ public class TransactionControllerTest {
                                 .authorities(getAuthorities(employee))))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=UTF-8"))
-                //because terminal is not connected->transaction fails
-                .andExpect(jsonPath("$.status").value("false"))
+                //standalone pos -> transaction successfull
+                .andExpect(jsonPath("$.status").value("true"))
                 //cheque content
                 .andExpect(jsonPath("$.cheque").isNotEmpty());
         //even failed transaction should be saved in db
@@ -575,8 +575,8 @@ public class TransactionControllerTest {
                                 .authorities(getAuthorities(employee))))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=UTF-8"))
-                //because terminal is not connected->transaction fails
-                .andExpect(jsonPath("$.status").value("false"))
+                //standalone pos -> transaction successfull
+                .andExpect(jsonPath("$.status").value("true"))
                 //cheque content
                 .andExpect(jsonPath("$.cheque").isNotEmpty());
         //even failed transaction should be saved in db
@@ -742,6 +742,7 @@ public class TransactionControllerTest {
     private Terminal createDetachedTerminalForShop(Shop shop) {
         Terminal terminal = new Terminal();
         terminal.setTid("00000000");
+        terminal.setStandalone(true);
         terminal.setIp("1.1.1.1");
         terminal.setMid("123456789000");
         terminal.setChequeHeader("header");

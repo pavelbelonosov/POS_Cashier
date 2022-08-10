@@ -336,6 +336,7 @@ public class TerminalControllerTest {
 
     private Terminal createDetachedTerminal() {
         Terminal terminal = new Terminal();
+        terminal.setStandalone(false);
         terminal.setTid("12345678");
         terminal.setIp("1.1.1.1");
         terminal.setMid("123456789000");

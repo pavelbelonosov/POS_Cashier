@@ -132,6 +132,7 @@ public class MainControllerTest {
     private Terminal createTerminalForShop(Shop shop) {
         Terminal terminal = new Terminal();
         terminal.setTid("12345678");
+        terminal.setStandalone(false);
         terminal.setIp("1.1.1.1");
         terminal.setMid("123456789000");
         terminal.setShop(shop);

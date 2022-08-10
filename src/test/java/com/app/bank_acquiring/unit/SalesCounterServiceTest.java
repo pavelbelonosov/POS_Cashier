@@ -76,7 +76,7 @@ public class SalesCounterServiceTest {
         Mockito.when(salesCounterRepository.findByTerminalTid(terminalTid)).thenReturn(salesCounter);
         salesCounterService.addTransaction(secondTransaction, terminalTid);
         assertTrue(salesCounter.getSalesPerDay() == firstTransaction.getAmount() + secondTransaction.getAmount());
-        assertTrue(salesCounter.getSalesPerDay() == 2);
+        assertTrue(salesCounter.getSalesCounterPerDay() == 2);
         assertTrue(salesCounter.getBalancePerDay() == firstTransaction.getAmount() + secondTransaction.getAmount());
 
     }
@@ -189,6 +189,7 @@ public class SalesCounterServiceTest {
         Transaction transaction = new Transaction();
         transaction.setType(transactionType);
         transaction.setDateTime(LocalDateTime.now());
+        terminal.setStandalone(false);
         transaction.setCheque("cheque");
         transaction.setAmount(1.10);
         transaction.setTerminal(terminal);

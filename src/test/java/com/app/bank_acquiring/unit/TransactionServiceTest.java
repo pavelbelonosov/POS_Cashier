@@ -143,6 +143,7 @@ public class TransactionServiceTest {
         Terminal terminal = new Terminal();
         terminal.setTid("12345678");
         terminal.setIp("1.1.1.1");
+        terminal.setStandalone(false);
         terminal.setMid("123456789000");
         terminal.setShop(createShop());
         terminal.setId(Math.abs(new Random().nextLong()));
