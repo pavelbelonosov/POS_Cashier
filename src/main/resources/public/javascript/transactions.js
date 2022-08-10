@@ -3,13 +3,16 @@ var http = new XMLHttpRequest();
 
 
 function makePayment() {
+if(!verifyCartEmpty()){
 http.open("POST", url+"/pay", true);
 http.setRequestHeader('Content-Type', 'application/json');
 http.send(JSON.stringify(createTransactionObject()));
 getResponseFromServerWithCheque("paymentBtn");
 }
+}
 
 function makeRefund(){
+if(!verifyCartEmpty()){
 if (!confirm("Вы уверены, что хотите сделать возврат?")) {
 return;
 }
@@ -17,6 +20,7 @@ http.open("POST", url+"/refund", true);
 http.setRequestHeader('Content-Type', 'application/json');
 http.send(JSON.stringify(createTransactionObject()));
 getResponseFromServerWithCheque("refundBtn");
+}
 }
 
 function closeDay(){
@@ -131,6 +135,10 @@ var productsInCart = document.getElementsByName("productInCart");
         while(productsInCart.length>0){
         productsInCart.forEach(e=>e.remove());
         }
+var products = document.getElementsByName('prodName');
+products.forEach(p=>p.innerText="");
+var productsAmount = document.getElementsByName('prodAmount');
+productsAmount.forEach(a=>a.innerText="");
 document.getElementById("totalPrice").textContent="";
 }
 
@@ -143,6 +151,15 @@ window.print();
 document.body.innerHTML = allElements;
 
 document.getElementById("responseCheque").addEventListener("click", printCheque);
+}
+
+function verifyCartEmpty(){
+var productsInCart = document.getElementsByName("productInCart");
+if(productsInCart.length==0){
+return true;
+}else{
+return false;
+}
 }
 
 function reloadPage(){
