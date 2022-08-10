@@ -285,7 +285,7 @@ public class AccountControllerTest {
                         .flashAttr("account", admin)
                         .param("newPassword", newPassword)
                         .param("repeatPwd", newPassword))
-                .andExpect(redirectedUrl("/accounts/current"));
+                .andExpect(redirectedUrl("/login"));
         String accountPassword = accountRepository.findByUsername(admin.getUsername()).getPassword();
         assertTrue(passwordEncoder.matches(newPassword, accountPassword));
 
@@ -297,7 +297,7 @@ public class AccountControllerTest {
                         .flashAttr("account", admin)
                         .param("newPassword", newPassword)
                         .param("repeatPwd", newPassword))
-                .andExpect(redirectedUrl("/accounts/current"));
+                .andExpect(redirectedUrl("/login"));
         accountPassword = accountRepository.findByUsername(employee.getUsername()).getPassword();
         assertTrue(passwordEncoder.matches(newPassword, accountPassword));
     }
