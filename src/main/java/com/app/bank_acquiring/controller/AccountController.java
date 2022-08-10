@@ -7,6 +7,7 @@ import com.app.bank_acquiring.domain.account.Authority;
 import com.app.bank_acquiring.service.AccountService;
 import com.app.bank_acquiring.service.IdValidationException;
 import lombok.AllArgsConstructor;
+import org.apache.catalina.session.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -18,6 +19,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.Arrays;
 
@@ -146,8 +148,8 @@ public class AccountController {
 
     @PostMapping("/accounts/current/newpwd")
     public String changeCurrentAccountPassword(@Valid @ModelAttribute Account account, BindingResult bindingResult,
-                                       @RequestParam String newPassword, @RequestParam String repeatPwd,
-                                       @AuthenticationPrincipal UserDetails currentUser, Model model) {
+                                               @RequestParam String newPassword, @RequestParam String repeatPwd,
+                                               @AuthenticationPrincipal UserDetails currentUser, Model model, HttpServletRequest request) {
         Account owner = accountService.findByUsername(currentUser.getUsername());
         if (!passwordEncoder.matches(account.getPassword(), owner.getPassword())) {
             FieldError fieldError = new FieldError("account", "password", "Неверный пароль");
@@ -165,7 +167,8 @@ public class AccountController {
             return getCurrentAccount(model, currentUser);
         }
         accountService.changeCurrentAccountPassword(owner,newPassword);
-        return "redirect:/accounts/current";
+        request.getSession().invalidate();
+        return "redirect:/login";
 
     }
 
