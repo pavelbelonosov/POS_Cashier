@@ -22,6 +22,7 @@ public class Terminal extends AbstractPersistable<Long> {
     @NotEmpty(message = "TID не может быть пустым")
     @NotBlank(message = "TID не может состоть из пробелов")
     @Pattern(regexp = "^[0-9]{8}$", message = "Неверный формат TID")
+    @Column(unique = true)
     @EqualsAndHashCode.Include
     private String tid;
 
