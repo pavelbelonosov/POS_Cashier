@@ -2,6 +2,8 @@ package com.app.bank_acquiring.fluentlenium;
 
 
 import org.fluentlenium.adapter.junit.FluentTest;
+
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,13 +23,20 @@ public class RegistrationTest extends FluentTest {
 
     @LocalServerPort
     private Integer port;
+    private String registrationUrl;
+    private String regPageTitle;
 
+    @Before
+    public void setUp(){
+        registrationUrl = "http://localhost:" + port + "/accounts/registration";
+        regPageTitle = "POS-кассир | Регистрация";
+    }
 
     @Test
     public void testGetAndPost() {
         //opening registration endpoint
-        goTo("http://localhost:" + port + "/accounts/registration");
-        assertThat(window().title()).contains("POS-кассир | Регистрация");
+        goTo(registrationUrl);
+        assertThat(window().title()).contains(regPageTitle);
         //filling register form and click submit button
         find("#username").fill().with("useruser");
         find("#password").fill().with("useruser");
@@ -43,8 +52,8 @@ public class RegistrationTest extends FluentTest {
     @Test
     public void givenInvalidData_whenPost_thenReturnsErrorsFromServer() {
         //opening registration endpoint
-        goTo("http://localhost:" + port + "/accounts/registration");
-        assertThat(window().title()).contains("POS-кассир | Регистрация");
+        goTo(registrationUrl);
+        assertThat(window().title()).contains(regPageTitle);
         //filling register form with invalid data and click submit button
         find("#username").fill().with("user");//invalid name
         find("#password").fill().with("user");//invalid pwd
@@ -53,7 +62,7 @@ public class RegistrationTest extends FluentTest {
         find("button").click();
         //no redirection to login page due validation errors
         await().atMost(1, TimeUnit.SECONDS);
-        assertThat(url()).contains("/accounts/registration");
+        assertThat(url()).contains(registrationUrl);
         assertThat(pageSource()).contains("Пароли не совпадают");
         assertThat(pageSource()).contains("Слишком короткий пароль");
         assertThat(pageSource()).contains("Логин от 8 до 40 символов");
