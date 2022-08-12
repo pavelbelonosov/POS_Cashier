@@ -22,6 +22,7 @@ public class Account extends AbstractPersistable<Long> {
     @NotNull(message = "Логин не может быть пустым")
     @NotBlank(message = "Логин не может быть пустым")
     @Size(min = 8, max = 40, message = "Логин от 8 до 40 символов")
+    @Column(unique = true)
     @EqualsAndHashCode.Include
     private String username;
 
