@@ -71,6 +71,10 @@ public class TerminalController {
     @PostMapping("/terminals")
     public String setTerminalToCurrentAccount(@Valid @ModelAttribute Terminal terminal, BindingResult bindingResult,
                                               @AuthenticationPrincipal UserDetails currentUser, Model model) {
+        if(terminalService.getTerminalByTid(terminal.getTid())!=null){
+            bindingResult.addError(new FieldError("terminal", "tid",
+                    "Терминал с таким TID уже существует"));
+        }
         if (bindingResult.hasErrors()) {
             return getTerminals(model, currentUser);
         }
@@ -78,7 +82,7 @@ public class TerminalController {
             terminalService.addTerminalToAccount(terminal, currentUser.getUsername());
             return "redirect:/terminals";
         } catch (RuntimeException e) {
-            bindingResult.addError(new FieldError("terminal", "tid", "Не удалось добавить терминал. Ошибка файловой ситсемы"));
+            bindingResult.addError(new FieldError("terminal", "tid", "Не удалось добавить терминал. Ошибка файловой сисnемы"));
             return getTerminals(model, currentUser);
         }
     }
