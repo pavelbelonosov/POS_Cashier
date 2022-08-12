@@ -229,7 +229,7 @@ public class TerminalControllerTest {
         mockMvc.perform(post("/terminals/" + terminal.getId())
                         .with(user(admin.getUsername()).password(admin.getPassword())
                                 .authorities(getAuthorities(admin)))
-                        .param("connection",false+"")//integrated POS type
+                        .param("connection", false + "")//integrated POS type
                         .param("ip", newIp)
                         .param("chequeHeader", newHeader))
                 .andExpect(redirectedUrl("/terminals/" + terminal.getId()));
@@ -253,7 +253,7 @@ public class TerminalControllerTest {
         mockMvc.perform(post("/terminals/" + terminal.getId())
                         .with(user(admin.getUsername()).password(admin.getPassword())
                                 .authorities(getAuthorities(admin)))
-                        .param("connection",false+"")//integrated POS
+                        .param("connection", false + "")//integrated POS
                         .param("ip", newIp)
                         .param("chequeHeader", newHeader))
                 .andExpect(redirectedUrl("/terminals/" + terminal.getId()));
@@ -275,7 +275,7 @@ public class TerminalControllerTest {
                                 .authorities(getAuthorities(admin))))
                 .andExpect(redirectedUrl("/terminals"));
         //terminal should be deleted from repo
-       assertNull(terminalRepository.findByTid(terminal.getTid()));
+        assertNull(terminalRepository.findByTid(terminal.getTid()));
     }
 
     @Test
@@ -288,6 +288,7 @@ public class TerminalControllerTest {
         Account admin2 = createUserInRepository(Authority.ADMIN);
         Shop shop2 = createShopForAdminInRepository(admin2);
         Terminal terminal2 = createTerminalForShopInRepository(shop2, admin2);
+
         //sending terminal not belonging to authenticated admin
         mockMvc.perform(delete("/terminals/" + terminal2.getId())
                         .with(user(admin1.getUsername()).password(admin1.getPassword())
@@ -298,7 +299,7 @@ public class TerminalControllerTest {
                 //response with error.html
                 .andExpect(view().name("error"));
         //terminal should not be deleted from repo
-        assertTrue(terminalRepository.findAll().size()==2);
+        assertTrue(terminalRepository.findAll().size() == 2);
     }
 
     private Account createUserInRepository(Authority authority) {
@@ -323,7 +324,7 @@ public class TerminalControllerTest {
 
     private Terminal createTerminalForShopInRepository(Shop shop, Account account) {
         Terminal terminal = new Terminal();
-        terminal.setTid("12345678");
+        terminal.setTid((new Random().nextInt(1000)+10000000)+"");
         terminal.setIp("1.1.1.1");
         terminal.setMid("123456789000");
         terminal.setChequeHeader("header");
@@ -337,7 +338,7 @@ public class TerminalControllerTest {
     private Terminal createDetachedTerminal() {
         Terminal terminal = new Terminal();
         terminal.setStandalone(false);
-        terminal.setTid("12345678");
+        terminal.setTid((new Random().nextInt(1000)+10000000)+"");
         terminal.setIp("1.1.1.1");
         terminal.setMid("123456789000");
         terminal.setChequeHeader("header");
