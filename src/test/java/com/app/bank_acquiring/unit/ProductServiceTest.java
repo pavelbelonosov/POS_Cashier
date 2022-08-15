@@ -175,7 +175,7 @@ public class ProductServiceTest {
 
     }
 
-    private Account createMockedUserInRepository() {
+   private Account createMockedUserInRepository() {
         Account user = Mockito.spy(Account.class);
         user.setUsername("username" + new Random().nextInt(Integer.MAX_VALUE));
         user.setPassword("password");

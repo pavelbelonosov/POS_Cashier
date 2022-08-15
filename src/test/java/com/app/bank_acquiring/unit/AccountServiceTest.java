@@ -22,7 +22,7 @@ import static org.mockito.ArgumentMatchers.eq;
 
 
 @ActiveProfiles("test")
-public class AccountServiceTest {
+public class AccountServiceTest{
 
     private String password = "password";
 

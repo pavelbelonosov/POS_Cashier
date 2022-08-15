@@ -1,42 +1,26 @@
 package com.app.bank_acquiring.fluentlenium;
 
 
-import org.fluentlenium.adapter.junit.FluentTest;
-
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.concurrent.TimeUnit;
+
+import static org.fluentlenium.assertj.FluentLeniumAssertions.assertThat;
 
 
 @ActiveProfiles("test")
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class RegistrationTest extends FluentTest {
-
-    @LocalServerPort
-    private Integer port;
-    private String registrationUrl;
-    private String regPageTitle;
-
-    @Before
-    public void setUp(){
-        registrationUrl = "http://localhost:" + port + "/accounts/registration";
-        regPageTitle = "POS-кассир | Регистрация";
-    }
+public class RegistrationTest extends BaseTest {
 
     @Test
-    public void testGetAndPost() {
+    public void whenSubmit_thenRedirectToLoginPage() {
         //opening registration endpoint
         goTo(registrationUrl);
-        assertThat(window().title()).contains(regPageTitle);
+        isAtRegistrationPage();
         //filling register form and click submit button
         find("#username").fill().with("useruser");
         find("#password").fill().with("useruser");
@@ -45,15 +29,15 @@ public class RegistrationTest extends FluentTest {
         find("button").click();
         //should redirect to login page
         await().atMost(1, TimeUnit.SECONDS);
-        assertThat(url()).contains("/login.html");
-        assertThat(window().title()).contains("POS-кассир | Вход");
+        assertThat(url()).contains(loginUrl);
+        isAtLoginPage();
     }
 
     @Test
-    public void givenInvalidData_whenPost_thenReturnsErrorsFromServer() {
+    public void givenInvalidData_whenSubmit_thenReloadPageWithErrors() {
         //opening registration endpoint
         goTo(registrationUrl);
-        assertThat(window().title()).contains(regPageTitle);
+        isAtRegistrationPage();
         //filling register form with invalid data and click submit button
         find("#username").fill().with("user");//invalid name
         find("#password").fill().with("user");//invalid pwd
