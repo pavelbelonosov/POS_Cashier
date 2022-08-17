@@ -47,7 +47,7 @@ public class UtilPopulate {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public void clearTables(){
+    public void clearTables() {
         shopRepository.deleteAll();
         accountRepository.deleteAll();
         accountInfoRepository.deleteAll();
@@ -66,14 +66,6 @@ public class UtilPopulate {
         accountInfo.setAccount(user);
         accountInfoRepository.save(accountInfo);
         return accountRepository.save(user);
-    }
-
-    public Account createDetachedUser(Authority authority) {
-        Account user = new Account();
-        user.setUsername("username" + new Random().nextInt(Integer.MAX_VALUE));
-        user.setPassword(passwordEncoder.encode("password"));
-        user.setAuthority(authority);
-        return user;
     }
 
     public Shop createShopForAdmin(Account admin) {
@@ -96,6 +88,83 @@ public class UtilPopulate {
         return productRepository.save(product);
     }
 
+    public Terminal createTerminalForShop(Shop shop, Account account) {
+        Terminal terminal = new Terminal();
+        terminal.setTid((new Random().nextInt(1000) + 10000000) + "");
+        terminal.setIp("1.1.1.1");
+        terminal.setMid("123456789000");
+        terminal.setChequeHeader("header");
+        terminal.setStandalone(false);//integrated pos
+        terminal.setShop(shop);
+        terminal.setAccount(account);
+        return terminalRepository.save(terminal);
+    }
+
+
+    /**
+     * The method is used to create Account object, which is not persisted in repository yet.
+     * Mainly used as thymeleaf object, when testing post requests from client to create new Account.
+     *
+     * @param authority Account AUTHORITY
+     * @return
+     */
+    public Account createDetachedUser(Authority authority) {
+        Account user = new Account();
+        user.setUsername("username" + new Random().nextInt(Integer.MAX_VALUE));
+        user.setPassword(passwordEncoder.encode("password"));
+        user.setAuthority(authority);
+        return user;
+    }
+
+    /**
+     * The method is used to create Shop object, which is not persisted in repository yet.
+     * Mainly used as thymeleaf object, when testing post requests from client to create new Shop.
+     *
+     * @return
+     */
+    public Shop createDetachedShop() {
+        Shop shop = new Shop();
+        shop.setName("shop");
+        return shop;
+    }
+
+    /**
+     * The method is used to create Product object, which is not persisted in repository yet.
+     * Mainly used as thymeleaf object, when testing post requests from client to create new Product.
+     *
+     * @param type Product TYPE
+     * @return
+     */
+    public Product createDetachedProduct(Type type) {
+        Product product = new Product();
+        product.setName("product");
+        product.setType(type);
+        product.setMeasurementUnit(MeasurementUnit.UNIT);
+        return product;
+    }
+
+    /**
+     * The method is used to create Terminal object, which is not persisted in repository yet.
+     * Mainly used as thymeleaf object, when testing post requests from client to create new Terminal.
+     *
+     * @return
+     */
+    public Terminal createDetachedTerminal() {
+        Terminal terminal = new Terminal();
+        terminal.setStandalone(false);
+        terminal.setTid((new Random().nextInt(1000) + 10000000) + "");
+        terminal.setIp("1.1.1.1");
+        terminal.setMid("123456789000");
+        terminal.setChequeHeader("header");
+        return terminal;
+    }
+
+    /**
+     * The method is used to create Terminal object, which belongs to given shop and is not persisted in repository yet.
+     * Mainly used as thymeleaf object, when testing post requests from client to create new Terminal.
+     * @param shop
+     * @return
+     */
     public Terminal createDetachedTerminalForShop(Shop shop) {
         Terminal terminal = new Terminal();
         terminal.setTid("00000000");
@@ -105,29 +174,6 @@ public class UtilPopulate {
         terminal.setChequeHeader("header");
         terminal.setShop(shop);
         return terminal;
-    }
-
-    public Terminal createDetachedTerminal() {
-        Terminal terminal = new Terminal();
-        terminal.setStandalone(false);
-        terminal.setTid((new Random().nextInt(1000)+10000000)+"");
-        terminal.setIp("1.1.1.1");
-        terminal.setMid("123456789000");
-        terminal.setChequeHeader("header");
-        return terminal;
-    }
-
-
-    public Terminal createTerminalForShop(Shop shop, Account account) {
-        Terminal terminal = new Terminal();
-        terminal.setTid((new Random().nextInt(1000)+10000000)+"");
-        terminal.setIp("1.1.1.1");
-        terminal.setMid("123456789000");
-        terminal.setChequeHeader("header");
-        terminal.setStandalone(false);//integrated pos
-        terminal.setShop(shop);
-        terminal.setAccount(account);
-        return terminalRepository.save(terminal);
     }
 
     public List<SimpleGrantedAuthority> getAuthorities(Account account) {
