@@ -9,42 +9,29 @@ import com.app.bank_acquiring.domain.product.MeasurementUnit;
 import com.app.bank_acquiring.domain.product.Product;
 import com.app.bank_acquiring.domain.product.Type;
 import com.app.bank_acquiring.repository.*;
-import com.app.bank_acquiring.service.AccountService;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
 @ActiveProfiles("test")
 @Service
+@AllArgsConstructor
 public class UtilPopulate {
 
-    @Autowired
     private AccountRepository accountRepository;
-    @Autowired
     private AccountInfoRepository accountInfoRepository;
-    @Autowired
-    private AccountService accountService;
-    @Autowired
     private ShopRepository shopRepository;
-    @Autowired
     private ProductRepository productRepository;
-    @Autowired
     private TerminalRepository terminalRepository;
-    @Autowired
     private SalesCounterRepository salesCounterRepository;
-    @Autowired
     private TransactionRepository transactionRepository;
-    @Autowired
     private PasswordEncoder passwordEncoder;
 
     public void clearTables() {
@@ -100,13 +87,12 @@ public class UtilPopulate {
         return terminalRepository.save(terminal);
     }
 
-
     /**
      * The method is used to create Account object, which is not persisted in repository yet.
      * Mainly used as thymeleaf object, when testing post requests from client to create new Account.
      *
      * @param authority Account AUTHORITY
-     * @return
+     * @return not persisted Account
      */
     public Account createDetachedUser(Authority authority) {
         Account user = new Account();
@@ -120,7 +106,7 @@ public class UtilPopulate {
      * The method is used to create Shop object, which is not persisted in repository yet.
      * Mainly used as thymeleaf object, when testing post requests from client to create new Shop.
      *
-     * @return
+     * @return not persisted Shop
      */
     public Shop createDetachedShop() {
         Shop shop = new Shop();
@@ -133,7 +119,7 @@ public class UtilPopulate {
      * Mainly used as thymeleaf object, when testing post requests from client to create new Product.
      *
      * @param type Product TYPE
-     * @return
+     * @return not persisted Product
      */
     public Product createDetachedProduct(Type type) {
         Product product = new Product();
@@ -147,7 +133,7 @@ public class UtilPopulate {
      * The method is used to create Terminal object, which is not persisted in repository yet.
      * Mainly used as thymeleaf object, when testing post requests from client to create new Terminal.
      *
-     * @return
+     * @return not persisted Terminal
      */
     public Terminal createDetachedTerminal() {
         Terminal terminal = new Terminal();
@@ -162,8 +148,8 @@ public class UtilPopulate {
     /**
      * The method is used to create Terminal object, which belongs to given shop and is not persisted in repository yet.
      * Mainly used as thymeleaf object, when testing post requests from client to create new Terminal.
-     * @param shop
-     * @return
+     * @param shop Shop to which Terminal is bundled
+     * @return not persisted Terminal
      */
     public Terminal createDetachedTerminalForShop(Shop shop) {
         Terminal terminal = new Terminal();
@@ -177,7 +163,7 @@ public class UtilPopulate {
     }
 
     public List<SimpleGrantedAuthority> getAuthorities(Account account) {
-        return Arrays.asList(new SimpleGrantedAuthority(account.getAuthority().toString()));
+        return List.of(new SimpleGrantedAuthority(account.getAuthority().toString()));
     }
 
 }
