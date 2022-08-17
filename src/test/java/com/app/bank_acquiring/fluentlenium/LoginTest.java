@@ -15,7 +15,7 @@ public class LoginTest extends BaseTest {
 
     @Test
     public void whenSubmit_thenRedirectToMainPage() {
-        registerUser("useruser","password");
+        registerAdminUser("useruser","password");
         goTo(loginUrl);
         //filling dorm and submit
         find("#username").fill().with("useruser");
@@ -28,7 +28,7 @@ public class LoginTest extends BaseTest {
 
     @Test
     public void givenInvalidUsernamePwd_whenSubmit_thenReturnPageWithError(){
-        registerUser("useruser","password");
+        registerAdminUser("useruser","password");
         goTo(loginUrl);
         //filling form with invalid username
         find("#username").fill().with("user");
