@@ -55,7 +55,7 @@ public class DefaultControllerTest {
         mockMvc.perform(get("/").with(anonymous()))
                 .andExpect(redirectedUrl("/main"));
 
-        Account admin = utilPopulate.createUserInRepository(Authority.ADMIN);
+        Account admin = utilPopulate.createUser(Authority.ADMIN);
         mockMvc.perform(get("/")
                         .with(user(admin.getUsername()).password(admin.getPassword())
                                 .authorities(utilPopulate.getAuthorities(admin))))
@@ -65,7 +65,7 @@ public class DefaultControllerTest {
 
     @Test
     public void givenAdminUser_whenLogin_thenAuthorizeUser() throws Exception {
-        Account admin = utilPopulate.createUserInRepository(Authority.ADMIN);
+        Account admin = utilPopulate.createUser(Authority.ADMIN);
         mockMvc.perform(formLogin("/login.html").user(admin.getUsername()).password("password"))
                 .andExpect(authenticated().withUsername(admin.getUsername()))
                 .andExpect(authenticated().withAuthorities(utilPopulate.getAuthorities(admin)));
@@ -73,7 +73,7 @@ public class DefaultControllerTest {
 
     @Test
     public void givenCashierUser_whenLogin_thenAuthorizeUser() throws Exception {
-        Account cashier = utilPopulate.createUserInRepository(Authority.CASHIER);
+        Account cashier = utilPopulate.createUser(Authority.CASHIER);
         mockMvc.perform(formLogin("/login.html").user(cashier.getUsername()).password("password"))
                 .andExpect(authenticated().withUsername(cashier.getUsername()))
                 .andExpect(authenticated().withAuthorities(utilPopulate.getAuthorities(cashier)));
@@ -81,7 +81,7 @@ public class DefaultControllerTest {
 
     @Test
     public void givenHeadCashierUser_whenLogin_thenAuthorizeUser() throws Exception {
-        Account headCashier = utilPopulate.createUserInRepository(Authority.HEAD_CASHIER);
+        Account headCashier = utilPopulate.createUser(Authority.HEAD_CASHIER);
         mockMvc.perform(formLogin("/login.html").user(headCashier.getUsername()).password("password"))
                 .andExpect(authenticated().withUsername(headCashier.getUsername()))
                 .andExpect(authenticated().withAuthorities(utilPopulate.getAuthorities(headCashier)));

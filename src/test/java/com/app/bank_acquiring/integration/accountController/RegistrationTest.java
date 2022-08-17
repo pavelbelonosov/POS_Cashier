@@ -4,10 +4,7 @@ import com.app.bank_acquiring.domain.account.Account;
 import com.app.bank_acquiring.domain.account.AccountInfo;
 import com.app.bank_acquiring.domain.account.Authority;
 import com.app.bank_acquiring.integration.UtilPopulate;
-import com.app.bank_acquiring.repository.AccountInfoRepository;
 import com.app.bank_acquiring.repository.AccountRepository;
-import com.app.bank_acquiring.repository.ShopRepository;
-import com.app.bank_acquiring.service.AccountService;
 import org.junit.After;
 
 import org.junit.Before;
@@ -99,7 +96,7 @@ public class RegistrationTest {
 
     @Test
     public void givenExistingUsername_whenCreateAdminUser_thenReturnsBindingError() throws Exception {
-        Account admin = utilPopulate.createUserInRepository(Authority.ADMIN);
+        Account admin = utilPopulate.createUser(Authority.ADMIN);
         mockMvc.perform(post("/accounts/registration")
                         .flashAttr("account", admin)
                         .flashAttr("accountInfo", new AccountInfo())

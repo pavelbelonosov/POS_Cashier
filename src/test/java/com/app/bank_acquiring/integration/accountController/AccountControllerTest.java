@@ -4,6 +4,7 @@ import com.app.bank_acquiring.domain.Shop;
 import com.app.bank_acquiring.domain.account.Account;
 import com.app.bank_acquiring.domain.account.AccountInfo;
 import com.app.bank_acquiring.domain.account.Authority;
+import com.app.bank_acquiring.integration.UtilPopulate;
 import com.app.bank_acquiring.repository.AccountInfoRepository;
 import com.app.bank_acquiring.repository.AccountRepository;
 import com.app.bank_acquiring.repository.ShopRepository;
@@ -17,7 +18,6 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -26,11 +26,6 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
 
 import static org.junit.Assert.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
@@ -58,6 +53,8 @@ public class AccountControllerTest {
     private ShopRepository shopRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private UtilPopulate utilPopulate;
 
     @Before
     public void setup() {
@@ -69,36 +66,34 @@ public class AccountControllerTest {
 
     @After
     public void tearDown() {
-        shopRepository.deleteAll();
-        accountRepository.deleteAll();
-        accountInfoRepository.deleteAll();
+        utilPopulate.clearTables();
     }
 
     @Test
     public void givenAdminAccount_whenGetAccounts_thenResponsesStatusOk() throws Exception {
-        Account admin = createUserInRepository(Authority.ADMIN);
+        Account admin = utilPopulate.createUser(Authority.ADMIN);
         mockMvc.perform(get("/accounts")
                         .with(user(admin.getUsername()).password(admin.getPassword())
-                                .authorities(getAuthorities(admin))))
+                                .authorities(utilPopulate.getAuthorities(admin))))
                 .andExpect(status().isOk())
                 .andExpect(view().name("accounts"));
     }
 
     @Test
     public void givenCashierAccount_whenGetAccounts_thenResponsesStatusForbidden() throws Exception {
-        Account cashier = createUserInRepository(Authority.CASHIER);
+        Account cashier = utilPopulate.createUser(Authority.CASHIER);
         mockMvc.perform(get("/accounts")
                         .with(user(cashier.getUsername()).password(cashier.getPassword())
-                                .authorities(getAuthorities(cashier))))
+                                .authorities(utilPopulate.getAuthorities(cashier))))
                 .andExpect(status().isForbidden());
     }
 
     @Test
     public void givenHeadCashierAccount_whenGetAccounts_thenResponsesStatusForbidden() throws Exception {
-        Account headCashier = createUserInRepository(Authority.HEAD_CASHIER);
+        Account headCashier = utilPopulate.createUser(Authority.HEAD_CASHIER);
         mockMvc.perform(get("/accounts")
                         .with(user(headCashier.getUsername()).password(headCashier.getPassword())
-                                .authorities(getAuthorities(headCashier))))
+                                .authorities(utilPopulate.getAuthorities(headCashier))))
                 .andExpect(status().isForbidden());
     }
 
@@ -111,13 +106,13 @@ public class AccountControllerTest {
 
     @Test
     public void givenAdminAccount_whenGetAccounts_thenResponseContainsEmployees() throws Exception {
-        Account admin = createUserInRepository(Authority.ADMIN);
-        Shop shop = createShopForAdmin(admin);
-        Account employee = createDetachedUser(Authority.CASHIER);
+        Account admin = utilPopulate.createUser(Authority.ADMIN);
+        Shop shop = utilPopulate.createShopForAdmin(admin);
+        Account employee = utilPopulate.createDetachedUser(Authority.CASHIER);
         accountService.createEmployee(employee, new AccountInfo(), shop);
         MvcResult res = mockMvc.perform(get("/accounts")
                         .with(user(admin.getUsername()).password(admin.getPassword())
-                                .authorities(getAuthorities(admin))))
+                                .authorities(utilPopulate.getAuthorities(admin))))
                 .andExpect(view().name("accounts"))
                 .andReturn();
 
@@ -127,13 +122,13 @@ public class AccountControllerTest {
 
     @Test
     public void givenAdminAccount_whenGetAccount_thenStatusOkAndResponseContainsEmployee() throws Exception {
-        Account admin = createUserInRepository(Authority.ADMIN);
-        Shop shop = createShopForAdmin(admin);
-        Account employee = createDetachedUser(Authority.CASHIER);
+        Account admin = utilPopulate.createUser(Authority.ADMIN);
+        Shop shop = utilPopulate.createShopForAdmin(admin);
+        Account employee = utilPopulate.createDetachedUser(Authority.CASHIER);
         accountService.createEmployee(employee, new AccountInfo(), shop);
         MvcResult res = mockMvc.perform(get("/accounts/" + employee.getId())
                         .with(user(admin.getUsername()).password(admin.getPassword())
-                                .authorities(getAuthorities(admin))))
+                                .authorities(utilPopulate.getAuthorities(admin))))
                 .andExpect(status().isOk())
                 .andExpect(view().name("account"))
                 .andReturn();
@@ -143,22 +138,22 @@ public class AccountControllerTest {
 
     @Test
     public void givenNonAdminAccount_whenGetAccount_thenThrowsException() throws Exception {
-        Account admin = createUserInRepository(Authority.ADMIN);
-        Shop shop = createShopForAdmin(admin);
-        Account employee = createDetachedUser(Authority.CASHIER);
+        Account admin = utilPopulate.createUser(Authority.ADMIN);
+        Shop shop = utilPopulate.createShopForAdmin(admin);
+        Account employee = utilPopulate.createDetachedUser(Authority.CASHIER);
         accountService.createEmployee(employee, new AccountInfo(), shop);
         mockMvc.perform(get("/accounts/" + admin.getId())
                 .with(user(employee.getUsername()).password(employee.getPassword())
-                        .authorities(getAuthorities(employee))))
+                        .authorities(utilPopulate.getAuthorities(employee))))
                 .andExpect(result -> assertTrue(result.getResolvedException() instanceof IdValidationException));
     }
 
     @Test
     public void givenAdminAccount_whenGetCurrentAccount_thenStatusOkAndResponseContainsAccount() throws Exception {
-        Account admin = createUserInRepository(Authority.ADMIN);
+        Account admin = utilPopulate.createUser(Authority.ADMIN);//createUserInRepository(Authority.ADMIN);
         MvcResult res = mockMvc.perform(get("/accounts/current")
                         .with(user(admin.getUsername()).password(admin.getPassword())
-                                .authorities(getAuthorities(admin))))
+                                .authorities(utilPopulate.getAuthorities(admin))))
                 .andExpect(status().isOk())
                 .andExpect(view().name("account"))
                 .andReturn();
@@ -168,12 +163,12 @@ public class AccountControllerTest {
 
     @Test
     public void givenNonAdminAccount_whenGetCurrentAccount_thenStatusOkAndResponseContainsAccount() throws Exception {
-        Account cashier = createUserInRepository(Authority.CASHIER);
-        Account headCashier = createUserInRepository(Authority.HEAD_CASHIER);
+        Account cashier = utilPopulate.createUser(Authority.CASHIER);
+        Account headCashier = utilPopulate.createUser(Authority.HEAD_CASHIER);
 
         MvcResult res = mockMvc.perform(get("/accounts/current")
                         .with(user(cashier.getUsername()).password(cashier.getPassword())
-                                .authorities(getAuthorities(cashier))))
+                                .authorities(utilPopulate.getAuthorities(cashier))))
                 .andExpect(status().isOk())
                 .andExpect(view().name("account"))
                 .andReturn();
@@ -182,7 +177,7 @@ public class AccountControllerTest {
 
         res = mockMvc.perform(get("/accounts/current")
                         .with(user(headCashier.getUsername()).password(headCashier.getPassword())
-                                .authorities(getAuthorities(headCashier))))
+                                .authorities(utilPopulate.getAuthorities(headCashier))))
                 .andExpect(status().isOk())
                 .andExpect(view().name("account"))
                 .andReturn();
@@ -193,14 +188,15 @@ public class AccountControllerTest {
     @Test
     @Transactional
     public void whenCreateEmployee_thenRedirectToAccountsPageAndCreatesAccountInDb() throws Exception {
-        Account admin = createUserInRepository(Authority.ADMIN);
-        Shop shop = createShopForAdmin(admin);
-        Account employee = createDetachedUser(Authority.CASHIER);
+        Account admin = utilPopulate.createUser(Authority.ADMIN);
+        Shop shop = utilPopulate.createShopForAdmin(admin);
+        Account employee = utilPopulate.createDetachedUser(Authority.CASHIER);
+
         AccountInfo accountInfo = new AccountInfo();
         accountInfo.setTelephoneNumber("9876543210");
         mockMvc.perform(post("/accounts")
                         .with(user(admin.getUsername()).password(admin.getPassword())
-                                .authorities(getAuthorities(admin)))
+                                .authorities(utilPopulate.getAuthorities(admin)))
                         .flashAttr("account", employee)
                         .flashAttr("accountInfo", accountInfo)
                         .param("shop", shop.getId() + ""))
@@ -213,16 +209,17 @@ public class AccountControllerTest {
 
     @Test
     public void givenExistingUsername_whenCreateEmployee_thenReturnAccountsPageWithBindingError() throws Exception {
-        Account admin = createUserInRepository(Authority.ADMIN);
-        Shop shop = createShopForAdmin(admin);
-        Account employee = createDetachedUser(Authority.CASHIER);
+        Account admin = utilPopulate.createUser(Authority.ADMIN);
+        Shop shop = utilPopulate.createShopForAdmin(admin);
+        Account employee = utilPopulate.createDetachedUser(Authority.CASHIER);
+
         AccountInfo accountInfo = new AccountInfo();
         accountInfo.setTelephoneNumber("9876543210");
         accountService.createEmployee(employee, accountInfo, shop);
 
         mockMvc.perform(post("/accounts")
                         .with(user(admin.getUsername()).password(admin.getPassword())
-                                .authorities(getAuthorities(admin)))
+                                .authorities(utilPopulate.getAuthorities(admin)))
                         .flashAttr("account", employee)
                         .flashAttr("accountInfo", accountInfo)
                         .param("shop", shop.getId() + ""))
@@ -233,16 +230,17 @@ public class AccountControllerTest {
 
     @Test
     public void whenUpdateAccount_thenRedirectAndUpdatesAccountInfoInDb() throws Exception {
-        Account admin = createUserInRepository(Authority.ADMIN);
-        Shop shop = createShopForAdmin(admin);
-        Account employee = createDetachedUser(Authority.CASHIER);
+        Account admin = utilPopulate.createUser(Authority.ADMIN);
+        Shop shop = utilPopulate.createShopForAdmin(admin);
+        Account employee = utilPopulate.createDetachedUser(Authority.CASHIER);
+
         AccountInfo accountInfo = new AccountInfo();
         accountInfo.setTelephoneNumber("9876543210");
         accountService.createEmployee(employee, accountInfo, shop);
 
         mockMvc.perform(post("/accounts/" + employee.getId())
                         .with(user(admin.getUsername()).password(admin.getPassword())
-                                .authorities(getAuthorities(admin)))
+                                .authorities(utilPopulate.getAuthorities(admin)))
                         .flashAttr("accountInfo", accountInfo)
                         .param("shop", shop.getId() + "")
                         .param("authority", Authority.HEAD_CASHIER + ""))
@@ -256,18 +254,18 @@ public class AccountControllerTest {
         AccountInfo accountInfo = new AccountInfo();
         accountInfo.setTelephoneNumber("9876543210");
 
-        Account admin = createUserInRepository(Authority.ADMIN);
+        Account admin = utilPopulate.createUser(Authority.ADMIN);
         mockMvc.perform(post("/accounts/current")
                         .with(user(admin.getUsername()).password(admin.getPassword())
-                                .authorities(getAuthorities(admin)))
+                                .authorities(utilPopulate.getAuthorities(admin)))
                         .flashAttr("accountInfo", accountInfo))
                 .andExpect(redirectedUrl("/accounts/current"));
         assertTrue(accountInfoRepository.findByAccount(admin).getTelephoneNumber().equals(accountInfo.getTelephoneNumber()));
 
-        Account employee = createUserInRepository(Authority.CASHIER);
+        Account employee = utilPopulate.createUser(Authority.CASHIER);
         mockMvc.perform(post("/accounts/current")
                         .with(user(employee.getUsername()).password(employee.getPassword())
-                                .authorities(getAuthorities(employee)))
+                                .authorities(utilPopulate.getAuthorities(employee)))
                         .flashAttr("accountInfo", accountInfo))
                 .andExpect(redirectedUrl("/accounts/current"));
         assertTrue(accountInfoRepository.findByAccount(employee).getTelephoneNumber().equals(accountInfo.getTelephoneNumber()));
@@ -277,11 +275,11 @@ public class AccountControllerTest {
     public void whenChangeCurrentAccountPassword_thenUpdatesAccountPasswordInDb() throws Exception {
         String newPassword = "newPassword";
 
-        Account admin = createUserInRepository(Authority.ADMIN);
-        admin.setPassword("password");//to pass into controller as part of model
+        Account admin = utilPopulate.createUser(Authority.ADMIN);//createUserInRepository(Authority.ADMIN);
+        admin.setPassword("password");//to pass decoded pwd into controller as part of model
         mockMvc.perform(post("/accounts/current/newpwd")
                         .with(user(admin.getUsername()).password(admin.getPassword())
-                                .authorities(getAuthorities(admin)))
+                                .authorities(utilPopulate.getAuthorities(admin)))
                         .flashAttr("account", admin)
                         .param("newPassword", newPassword)
                         .param("repeatPwd", newPassword))
@@ -289,11 +287,11 @@ public class AccountControllerTest {
         String accountPassword = accountRepository.findByUsername(admin.getUsername()).getPassword();
         assertTrue(passwordEncoder.matches(newPassword, accountPassword));
 
-        Account employee = createUserInRepository(Authority.CASHIER);
+        Account employee = utilPopulate.createUser(Authority.CASHIER);
         employee.setPassword("password");//to pass into controller as part of model
         mockMvc.perform(post("/accounts/current/newpwd")
                         .with(user(employee.getUsername()).password(employee.getPassword())
-                                .authorities(getAuthorities(employee)))
+                                .authorities(utilPopulate.getAuthorities(employee)))
                         .flashAttr("account", admin)
                         .param("newPassword", newPassword)
                         .param("repeatPwd", newPassword))
@@ -305,12 +303,12 @@ public class AccountControllerTest {
 
     @Test
     public void givenIncorrectExistingPassword_whenChangeCurrentAccountPassword_thenReturnAccountPageWithBindingError() throws Exception {
-        Account admin = createUserInRepository(Authority.ADMIN);
+        Account admin = utilPopulate.createUser(Authority.ADMIN);
         admin.setPassword("incorrectPassword");//to pass into controller as part of model
         String newPassword = "newPassword";
         mockMvc.perform(post("/accounts/current/newpwd")
                         .with(user(admin.getUsername()).password(admin.getPassword())
-                                .authorities(getAuthorities(admin)))
+                                .authorities(utilPopulate.getAuthorities(admin)))
                         .flashAttr("account", admin)
                         .param("newPassword", newPassword)
                         .param("repeatPwd", newPassword))
@@ -323,12 +321,12 @@ public class AccountControllerTest {
 
     @Test
     public void givenPasswordMismatch_whenChangeCurrentAccountPassword_thenReturnAccountPageWithBindingError() throws Exception {
-        Account admin = createUserInRepository(Authority.ADMIN);
-        admin.setPassword("incorrectPassword");//to pass into controller as part of model
+        Account admin = utilPopulate.createUser(Authority.ADMIN);
         String newPassword = "newPassword";
+
         mockMvc.perform(post("/accounts/current/newpwd")
                         .with(user(admin.getUsername()).password(admin.getPassword())
-                                .authorities(getAuthorities(admin)))
+                                .authorities(utilPopulate.getAuthorities(admin)))
                         .flashAttr("account", admin)
                         .param("newPassword", newPassword)
                         .param("repeatPwd", "passwordMismatch"))
@@ -341,12 +339,12 @@ public class AccountControllerTest {
 
     @Test
     public void givenInvalidNewPassword_whenChangeCurrentAccountPassword_thenReturnAccountPageWithBindingError() throws Exception {
-        Account admin = createUserInRepository(Authority.ADMIN);
-        admin.setPassword("password");//to pass into controller as part of model
+        Account admin = utilPopulate.createUser(Authority.ADMIN);
         String newPassword = "newPassword";
+
         mockMvc.perform(post("/accounts/current/newpwd")
                         .with(user(admin.getUsername()).password(admin.getPassword())
-                                .authorities(getAuthorities(admin)))
+                                .authorities(utilPopulate.getAuthorities(admin)))
                         .flashAttr("account", admin)
                         .param("newPassword", " ")
                         .param("repeatPwd", " "))
@@ -361,13 +359,14 @@ public class AccountControllerTest {
     public void whenChangeAccountPassword_thenUpdatesAccountPasswordInDb() throws Exception {
         String newPassword = "newPassword";
 
-        Account admin = createUserInRepository(Authority.ADMIN);
-        Shop shop = createShopForAdmin(admin);
-        Account employee = createDetachedUser(Authority.CASHIER);
+        Account admin = utilPopulate.createUser(Authority.ADMIN);
+        Shop shop = utilPopulate.createShopForAdmin(admin);
+        Account employee = utilPopulate.createDetachedUser(Authority.CASHIER);
+
         accountService.createEmployee(employee, new AccountInfo(), shop);
         mockMvc.perform(post("/accounts/" + employee.getId() + "/newpwd")
                         .with(user(admin.getUsername()).password(admin.getPassword())
-                                .authorities(getAuthorities(admin)))
+                                .authorities(utilPopulate.getAuthorities(admin)))
                         .flashAttr("account", admin)
                         .param("newPassword", newPassword)
                         .param("repeatPwd", newPassword))
@@ -380,13 +379,14 @@ public class AccountControllerTest {
     public void givenPasswordMismatch_whenChangeAccountPassword_thenReturnsAccountPageWithBindingError() throws Exception {
         String newPassword = "newPassword";
 
-        Account admin = createUserInRepository(Authority.ADMIN);
-        Shop shop = createShopForAdmin(admin);
-        Account employee = createDetachedUser(Authority.CASHIER);
+        Account admin = utilPopulate.createUser(Authority.ADMIN);
+        Shop shop = utilPopulate.createShopForAdmin(admin);
+        Account employee = utilPopulate.createDetachedUser(Authority.CASHIER);
+
         accountService.createEmployee(employee, new AccountInfo(), shop);
         mockMvc.perform(post("/accounts/" + employee.getId() + "/newpwd")
                         .with(user(admin.getUsername()).password(admin.getPassword())
-                                .authorities(getAuthorities(admin)))
+                                .authorities(utilPopulate.getAuthorities(admin)))
                         .flashAttr("account", admin)
                         .param("newPassword", newPassword)
                         .param("repeatPwd", "mismatch"))
@@ -401,13 +401,14 @@ public class AccountControllerTest {
     public void givenInvalidNewPassword_whenChangeAccountPassword_thenReturnsAccountPageWithBindingError() throws Exception {
         String newPassword = "newPassword";
 
-        Account admin = createUserInRepository(Authority.ADMIN);
-        Shop shop = createShopForAdmin(admin);
-        Account employee = createDetachedUser(Authority.CASHIER);
+        Account admin = utilPopulate.createUser(Authority.ADMIN);
+        Shop shop = utilPopulate.createShopForAdmin(admin);
+        Account employee = utilPopulate.createDetachedUser(Authority.CASHIER);
+
         accountService.createEmployee(employee, new AccountInfo(), shop);
         mockMvc.perform(post("/accounts/" + employee.getId() + "/newpwd")
                         .with(user(admin.getUsername()).password(admin.getPassword())
-                                .authorities(getAuthorities(admin)))
+                                .authorities(utilPopulate.getAuthorities(admin)))
                         .flashAttr("account", admin)
                         .param("newPassword", " ")
                         .param("repeatPwd", " "))
@@ -418,36 +419,5 @@ public class AccountControllerTest {
         assertFalse(passwordEncoder.matches(newPassword, accountPassword));
     }
 
-    private Account createUserInRepository(Authority authority) {
-        Account user = new Account();
-        user.setUsername("username" + new Random().nextInt(Integer.MAX_VALUE));
-        user.setPassword(passwordEncoder.encode("password"));
-        user.setAuthority(authority);
-        AccountInfo accountInfo = new AccountInfo();
-        accountInfo.setAccount(user);
-        accountInfoRepository.save(accountInfo);
-        return accountRepository.save(user);
-    }
-
-    private Account createDetachedUser(Authority authority) {
-        Account user = new Account();
-        user.setUsername("username" + new Random().nextInt(Integer.MAX_VALUE));
-        user.setPassword(passwordEncoder.encode("password"));
-        user.setAuthority(authority);
-        return user;
-    }
-
-    private Shop createShopForAdmin(Account admin) {
-        Shop shop = new Shop();
-        shop.setName("shop");
-        List<Account> accountList = new ArrayList<>();
-        accountList.add(admin);
-        shop.setAccounts(accountList);
-        return shopRepository.save(shop);
-    }
-
-    private List<SimpleGrantedAuthority> getAuthorities(Account account) {
-        return Arrays.asList(new SimpleGrantedAuthority(account.getAuthority().toString()));
-    }
 
 }

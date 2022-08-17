@@ -57,7 +57,7 @@ public class UtilPopulate {
         salesCounterRepository.deleteAll();
     }
 
-    public Account createUserInRepository(Authority authority) {
+    public Account createUser(Authority authority) {
         Account user = new Account();
         user.setUsername("username" + new Random().nextInt(Integer.MAX_VALUE));
         user.setPassword(passwordEncoder.encode("password"));
@@ -85,12 +85,7 @@ public class UtilPopulate {
         return shopRepository.save(shop);
     }
 
-    public List<SimpleGrantedAuthority> getAuthorities(Account account) {
-        return Arrays.asList(new SimpleGrantedAuthority(account.getAuthority().toString()));
-    }
-
-
-    public Product createProductForShopInRepository(Shop shop) {
+    public Product createProductForShop(Shop shop) {
         Product product = new Product();
         product.setShop(shop);
         product.setName("product");
@@ -112,7 +107,7 @@ public class UtilPopulate {
         return terminal;
     }
 
-    private Terminal createDetachedTerminal() {
+    public Terminal createDetachedTerminal() {
         Terminal terminal = new Terminal();
         terminal.setStandalone(false);
         terminal.setTid((new Random().nextInt(1000)+10000000)+"");
@@ -123,7 +118,7 @@ public class UtilPopulate {
     }
 
 
-    private Terminal createTerminalForShopInRepository(Shop shop, Account account) {
+    public Terminal createTerminalForShop(Shop shop, Account account) {
         Terminal terminal = new Terminal();
         terminal.setTid((new Random().nextInt(1000)+10000000)+"");
         terminal.setIp("1.1.1.1");
@@ -135,6 +130,8 @@ public class UtilPopulate {
         return terminalRepository.save(terminal);
     }
 
-
+    public List<SimpleGrantedAuthority> getAuthorities(Account account) {
+        return Arrays.asList(new SimpleGrantedAuthority(account.getAuthority().toString()));
+    }
 
 }
