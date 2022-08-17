@@ -3,6 +3,7 @@ package com.app.bank_acquiring.integration.accountController;
 import com.app.bank_acquiring.domain.account.Account;
 import com.app.bank_acquiring.domain.account.AccountInfo;
 import com.app.bank_acquiring.domain.account.Authority;
+import com.app.bank_acquiring.integration.UtilPopulate;
 import com.app.bank_acquiring.repository.AccountInfoRepository;
 import com.app.bank_acquiring.repository.AccountRepository;
 import com.app.bank_acquiring.repository.ShopRepository;
@@ -44,11 +45,7 @@ public class RegistrationTest {
     @Autowired
     private AccountRepository accountRepository;
     @Autowired
-    private AccountInfoRepository accountInfoRepository;
-    @Autowired
-    private AccountService accountService;
-    @Autowired
-    private ShopRepository shopRepository;
+    private UtilPopulate utilPopulate;
 
     @Before
     public void setup() {
@@ -60,9 +57,7 @@ public class RegistrationTest {
 
     @After
     public void tearDown() {
-        shopRepository.deleteAll();
-        accountRepository.deleteAll();
-        accountInfoRepository.deleteAll();
+       utilPopulate.clearTables();
     }
 
     @Test
@@ -104,7 +99,7 @@ public class RegistrationTest {
 
     @Test
     public void givenExistingUsername_whenCreateAdminUser_thenReturnsBindingError() throws Exception {
-        Account admin = createUserInRepository(Authority.ADMIN);
+        Account admin = utilPopulate.createUserInRepository(Authority.ADMIN);
         mockMvc.perform(post("/accounts/registration")
                         .flashAttr("account", admin)
                         .flashAttr("accountInfo", new AccountInfo())
@@ -132,14 +127,4 @@ public class RegistrationTest {
                 .andExpect(view().name("registration"));
     }
 
-    private Account createUserInRepository(Authority authority) {
-        Account user = new Account();
-        user.setUsername("username" + new Random().nextInt(Integer.MAX_VALUE));
-        user.setPassword("password");
-        user.setAuthority(authority);
-        AccountInfo accountInfo = new AccountInfo();
-        accountInfo.setAccount(user);
-        accountInfoRepository.save(accountInfo);
-        return accountRepository.save(user);
-    }
 }
