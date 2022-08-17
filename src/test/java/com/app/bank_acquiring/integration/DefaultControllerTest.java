@@ -1,10 +1,7 @@
 package com.app.bank_acquiring.integration;
 
 import com.app.bank_acquiring.domain.account.Account;
-import com.app.bank_acquiring.domain.account.AccountInfo;
 import com.app.bank_acquiring.domain.account.Authority;
-import com.app.bank_acquiring.repository.AccountInfoRepository;
-import com.app.bank_acquiring.repository.AccountRepository;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,17 +9,11 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestBuilders.formLogin;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
@@ -43,11 +34,7 @@ public class DefaultControllerTest {
     @Autowired
     private MockMvc mockMvc;
     @Autowired
-    private AccountRepository accountRepository;
-    @Autowired
-    private AccountInfoRepository accountInfoRepository;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private UtilPopulate utilPopulate;
 
     @Before
     public void setup() {
@@ -59,8 +46,7 @@ public class DefaultControllerTest {
 
     @After
     public void tearDown() {
-        accountRepository.deleteAll();
-        accountInfoRepository.deleteAll();
+        utilPopulate.clearTables();
     }
 
 
@@ -69,36 +55,36 @@ public class DefaultControllerTest {
         mockMvc.perform(get("/").with(anonymous()))
                 .andExpect(redirectedUrl("/main"));
 
-        Account admin = createUserInRepository(Authority.ADMIN);
+        Account admin = utilPopulate.createUserInRepository(Authority.ADMIN);
         mockMvc.perform(get("/")
                         .with(user(admin.getUsername()).password(admin.getPassword())
-                                .authorities(getAuthorities(admin))))
+                                .authorities(utilPopulate.getAuthorities(admin))))
                 .andExpect(redirectedUrl("/main"));
 
     }
 
     @Test
     public void givenAdminUser_whenLogin_thenAuthorizeUser() throws Exception {
-        Account admin = createUserInRepository(Authority.ADMIN);
+        Account admin = utilPopulate.createUserInRepository(Authority.ADMIN);
         mockMvc.perform(formLogin("/login.html").user(admin.getUsername()).password("password"))
                 .andExpect(authenticated().withUsername(admin.getUsername()))
-                .andExpect(authenticated().withAuthorities(getAuthorities(admin)));
+                .andExpect(authenticated().withAuthorities(utilPopulate.getAuthorities(admin)));
     }
 
     @Test
     public void givenCashierUser_whenLogin_thenAuthorizeUser() throws Exception {
-        Account cashier = createUserInRepository(Authority.CASHIER);
+        Account cashier = utilPopulate.createUserInRepository(Authority.CASHIER);
         mockMvc.perform(formLogin("/login.html").user(cashier.getUsername()).password("password"))
                 .andExpect(authenticated().withUsername(cashier.getUsername()))
-                .andExpect(authenticated().withAuthorities(getAuthorities(cashier)));
+                .andExpect(authenticated().withAuthorities(utilPopulate.getAuthorities(cashier)));
     }
 
     @Test
     public void givenHeadCashierUser_whenLogin_thenAuthorizeUser() throws Exception {
-        Account headCashier = createUserInRepository(Authority.HEAD_CASHIER);
+        Account headCashier = utilPopulate.createUserInRepository(Authority.HEAD_CASHIER);
         mockMvc.perform(formLogin("/login.html").user(headCashier.getUsername()).password("password"))
                 .andExpect(authenticated().withUsername(headCashier.getUsername()))
-                .andExpect(authenticated().withAuthorities(getAuthorities(headCashier)));
+                .andExpect(authenticated().withAuthorities(utilPopulate.getAuthorities(headCashier)));
     }
 
     @Test
@@ -108,18 +94,4 @@ public class DefaultControllerTest {
                 .andExpect(redirectedUrl("/login-error.html"));
     }
 
-    private Account createUserInRepository(Authority authority) {
-        Account user = new Account();
-        user.setUsername("username" + new Random().nextInt(Integer.MAX_VALUE));
-        user.setPassword(passwordEncoder.encode("password"));
-        user.setAuthority(authority);
-        AccountInfo accountInfo = new AccountInfo();
-        accountInfo.setAccount(user);
-        accountInfoRepository.save(accountInfo);
-        return accountRepository.save(user);
-    }
-
-    private List<SimpleGrantedAuthority> getAuthorities(Account account) {
-        return Arrays.asList(new SimpleGrantedAuthority(account.getAuthority().toString()));
-    }
 }
