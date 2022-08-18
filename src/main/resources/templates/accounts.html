@@ -76,7 +76,7 @@
                 </thead>
                 <tbody>
                 <tr th:if="${employees.empty}">
-                    <td colspan="7">Нет добавленных сотрудников</td>
+                    <td colspan="6">Нет добавленных сотрудников</td>
                 </tr>
                 <tr th:each="employee : ${employees}">
                     <td><a th:text="${employee.username}" th:href="@{/accounts/{id}(id=${employee.id})}"></a></td>
