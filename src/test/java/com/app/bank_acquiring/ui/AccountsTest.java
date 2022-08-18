@@ -1,4 +1,4 @@
-package com.app.bank_acquiring.fluentlenium;
+package com.app.bank_acquiring.ui;
 
 import org.fluentlenium.core.domain.FluentWebElement;
 import org.junit.Test;
@@ -6,8 +6,6 @@ import org.junit.runner.RunWith;
 import org.openqa.selenium.support.FindBy;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import java.util.concurrent.TimeUnit;
 
 import static org.fluentlenium.assertj.FluentLeniumAssertions.assertThat;
 import static org.fluentlenium.core.filter.FilterConstructor.containingTextContent;

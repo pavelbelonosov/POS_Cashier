@@ -1,8 +1,9 @@
-package com.app.bank_acquiring.fluentlenium;
+package com.app.bank_acquiring.ui;
 
 import com.app.bank_acquiring.domain.Shop;
 import com.app.bank_acquiring.domain.account.Account;
 import com.app.bank_acquiring.repository.*;
+import org.assertj.core.api.Assertions;
 import org.fluentlenium.adapter.junit.FluentTest;
 import org.fluentlenium.configuration.FluentConfiguration;
 import org.junit.After;
@@ -98,6 +99,17 @@ public abstract class BaseTest extends FluentTest {
         isAtMainPage();
     }
 
+    protected void createShop(String username){
+        goTo(shopsUrl);
+        isAtShopsPage();
+        find("#name").fill().with(username);
+        find("#city").fill().with("MyCity");
+        find("#address").fill().with("MyAddress");
+        find("button").click();
+        isAtShopsPage();
+        Assertions.assertThat(pageSource()).contains(username);
+    }
+
     protected void clearTables() {
         shopRepository.deleteAll();
         accountRepository.deleteAll();
@@ -108,31 +120,31 @@ public abstract class BaseTest extends FluentTest {
         salesCounterRepository.deleteAll();
     }
 
-    protected Account getAcc(String user){
-       // System.out.println(accountRepository.findAll().size());
+    protected Account getAcc(String user) {
+        // System.out.println(accountRepository.findAll().size());
         return accountRepository.findByUsername(user);
     }
 
-    protected Shop createShopWithEmployees(Account account){
+    protected Shop createShopWithEmployees(Account account) {
 
         return shopRepository.findById(4L).orElse(null);
     }
 
 
     protected void isAtLoginPage() {
-        assertThat(window().title()).contains(loginPageTitle);
+        assertThat(window().title()).isEqualTo(loginPageTitle);
     }
 
     protected void isAtRegistrationPage() {
-        assertThat(window().title()).contains(regPageTitle);
+        assertThat(window().title()).isEqualTo(regPageTitle);
     }
 
     protected void isAtMainPage() {
-        assertThat(window().title()).contains(mainPageTitle);
+        assertThat(window().title()).isEqualTo(mainPageTitle);
     }
 
     protected void isAtShopsPage() {
-        assertThat(window().title()).contains(shopsPageTitle);
+        assertThat(window().title()).isEqualTo(shopsPageTitle);
     }
 
     protected void isAtProductsPage() {
@@ -143,11 +155,11 @@ public abstract class BaseTest extends FluentTest {
         assertThat(window().title()).isEqualTo(accountsPageTitle);
     }
 
-    protected void isAtTerminalsPage(){
+    protected void isAtTerminalsPage() {
         assertThat(window().title()).isEqualTo(terminalsPageTitle);
     }
 
-    protected void isAtAccountProfilePage(){
+    protected void isAtAccountProfilePage() {
         assertThat(window().title()).isEqualTo(accountProfilePageTitle);
     }
 

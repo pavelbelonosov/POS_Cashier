@@ -1,4 +1,4 @@
-package com.app.bank_acquiring.fluentlenium;
+package com.app.bank_acquiring.ui;
 
 import org.fluentlenium.core.domain.FluentWebElement;
 import org.junit.Test;
