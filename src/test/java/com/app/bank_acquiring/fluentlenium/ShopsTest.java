@@ -1,31 +1,15 @@
 package com.app.bank_acquiring.fluentlenium;
 
-
-import com.app.bank_acquiring.repository.AccountInfoRepository;
-import com.app.bank_acquiring.repository.AccountRepository;
-import com.app.bank_acquiring.repository.ShopRepository;
 import org.fluentlenium.core.domain.FluentWebElement;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.openqa.selenium.By;
 import org.openqa.selenium.support.FindBy;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
-
-import javax.persistence.EntityManager;
 import java.util.concurrent.TimeUnit;
 
 import static org.fluentlenium.assertj.FluentLeniumAssertions.assertThat;
-import static org.fluentlenium.core.filter.FilterConstructor.*;
 
 @ActiveProfiles("test")
 @RunWith(SpringRunner.class)
@@ -37,7 +21,7 @@ public class ShopsTest extends BaseTest {
     @Test
     public void whenSubmit_thenNewShopAddedIntoTable() {
         //register and login
-        registerUser("useruser", "password");
+        registerAdminUser("useruser", "password");
         loginUser("useruser", "password");
         //going to shops url
         goTo(shopsUrl);
@@ -58,7 +42,7 @@ public class ShopsTest extends BaseTest {
     @Test
     public void givenBlankShopName_whenSubmit_thenReloadPageWithError() {
         //register and login
-        registerUser("useruser", "password");
+        registerAdminUser("useruser", "password");
         loginUser("useruser", "password");
         //going to shops url
         goTo(shopsUrl);
@@ -80,7 +64,7 @@ public class ShopsTest extends BaseTest {
     @Test
     public void givenInvalidCityAddress_whenSubmit_thenTrimInputValues() {
         //register and login
-        registerUser("useruser", "password");
+        registerAdminUser("useruser", "password");
         loginUser("useruser", "password");
         //going to shops url
         goTo(shopsUrl);
@@ -99,7 +83,7 @@ public class ShopsTest extends BaseTest {
     @Test
     public void whenDelete_thenShopNotPresentAfterReload() {
         //register and login
-        registerUser("useruser", "password");
+        registerAdminUser("useruser", "password");
         loginUser("useruser", "password");
         //going to shops url
         goTo(shopsUrl);
