@@ -39,16 +39,14 @@ public class RegistrationTest extends BaseTest {
         goTo(registrationUrl);
         isAtRegistrationPage();
         //filling register form with invalid data and click submit button
-        find("#username").fill().with("user");//invalid name
-        find("#password").fill().with("user");//invalid pwd
-        find("#repeatPWD").fill().with("useruser");//pwds not match
+        find("#username").fill().with("useruser");
+        find("#password").fill().with("password");
+        find("#repeatPWD").fill().with("differentPassword");//pwds not match
         find("#email").fill().with("user@user.ru");
         find("button").click();
-        //no redirection to login page due validation errors
+        //no redirection to login page due validation error
         await().atMost(1, TimeUnit.SECONDS);
         assertThat(url()).contains(registrationUrl);
         assertThat(pageSource()).contains("Пароли не совпадают");
-        assertThat(pageSource()).contains("Слишком короткий пароль");
-        assertThat(pageSource()).contains("Логин от 8 до 40 символов");
     }
 }
