@@ -16,7 +16,7 @@ import io.github.bonigarcia.wdm.WebDriverManager;
 import static org.fluentlenium.assertj.FluentLeniumAssertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@FluentConfiguration(webDriver = "chrome", capabilities = "{\"chromeOptions\": {\"args\": [\"headless\",\"disable-gpu\"]}}")
+@FluentConfiguration(webDriver = "chrome", capabilities = "{\"chromeOptions\": {\"args\": [\"headless\",\"disable-gpu\",\"window-size=1920,1080\"]}}")
 public abstract class BaseTest extends FluentTest {
 
     static {
