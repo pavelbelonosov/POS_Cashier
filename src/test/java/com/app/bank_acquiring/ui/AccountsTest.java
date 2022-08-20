@@ -111,6 +111,29 @@ public class AccountsTest extends BaseTest {
         verifyAccountTableIsEmpty();
     }
 
+    @Test
+    public void whenClickOnEmployeeUsername_thenGoToEmployeeProfilePage(){
+        //register->login->add shop
+        registerAdminUser("useruser", "password");
+        loginUser("useruser", "password");
+        createShop("MyShop");
+        //going to accounts url
+        goTo(accountsUrl);
+        isAtAccountsPage();
+        verifyAccountTableIsEmpty();
+        //filling form to create new employee
+        find("#username").fill().with("MyEmployee");//mandatory input
+        find("#password").fill().with("password");//mandatory input
+        find("#telephoneNumber").fill().with("9991113344");//mandatory input
+        find("#shop").click().fillSelect().withIndex(0);//mandatory select
+        find("#authority").click().fillSelect().withIndex(0);//mandatory select
+        find("form").submit();
+        isAtAccountsPage();
+        //clicking href with employee username
+        el("td",containingTextContent("MyEmployee")).click();
+        isAtAccountProfilePage();
+    }
+
     private void verifyAccountTableIsEmpty() {
         assertThat(employeesTable.textContent()).contains("Нет добавленных сотрудников");
     }
