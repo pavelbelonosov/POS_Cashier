@@ -107,7 +107,22 @@ public abstract class BaseTest extends FluentTest {
         find("#address").fill().with("MyAddress");
         find("button").click();
         isAtShopsPage();
-        Assertions.assertThat(pageSource()).contains(username);
+        assertThat(pageSource()).contains(username);
+    }
+
+    protected void createEmployee(String employeeUsername, String shopName){
+        goTo(accountsUrl);
+        isAtAccountsPage();
+        find("#username").fill().with(employeeUsername);//mandatory input
+        find("#password").fill().with("password");//mandatory input
+        find("#firstName").fill().with("John");
+        find("#lastName").fill().with("Doe");
+        find("#telephoneNumber").fill().with("9991113344");//mandatory input
+        find("#shop").click().fillSelect().withText(shopName);//mandatory select
+        find("#authority").click().fillSelect().withIndex(0);//mandatory select
+        find("form").submit();
+        isAtAccountsPage();
+        Assertions.assertThat(pageSource()).contains(employeeUsername);
     }
 
     protected void clearTables() {
@@ -119,17 +134,6 @@ public abstract class BaseTest extends FluentTest {
         terminalRepository.deleteAll();
         salesCounterRepository.deleteAll();
     }
-
-    protected Account getAcc(String user) {
-        // System.out.println(accountRepository.findAll().size());
-        return accountRepository.findByUsername(user);
-    }
-
-    protected Shop createShopWithEmployees(Account account) {
-
-        return shopRepository.findById(4L).orElse(null);
-    }
-
 
     protected void isAtLoginPage() {
         assertThat(window().title()).isEqualTo(loginPageTitle);
