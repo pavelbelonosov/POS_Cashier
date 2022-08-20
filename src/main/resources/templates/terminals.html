@@ -98,7 +98,7 @@
                                 </tr>
                                 <tr th:if="${!shop.terminals.empty}" th:each="acc: ${shop.accounts}">
                                     <div th:if="${acc.id!=account.id}">
-                                        <td colspan="6"
+                                        <td colspan="7"
                                             th:text="${acc.workTerminalTid!=null}?${acc.workTerminalTid} + ' в работе у сотрудника '+ ${acc.username}:''">
                                             Terminals at work
                                         </td>

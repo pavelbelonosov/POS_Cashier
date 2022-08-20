@@ -142,11 +142,10 @@
                                             Обновить остаток
                                         </button>
                                         <button type="submit" class="btn btn-dark"
-                                                th:formaction="@{/shops/{id}/products/copy(id=${shop.id})}">Копировать в
-                                        </button>
+                                                th:formaction="@{/shops/{id}/products/copy(id=${shop.id})}">Копировать в</button>
                                         <div class="col-sm-5">
                                             <select class="form-control form-control-sm" name="targetShopId">
-                                                <option value=""></option>
+                                                <option value="0"></option>
                                                 <option th:each="s : ${account.shops}" th:if="${s.id!=shop.id}"
                                                         th:value="${s.id}"
                                                         th:text="${s.name}+', '+${s.address}"></option>
