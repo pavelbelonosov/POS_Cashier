@@ -14,6 +14,8 @@ import org.springframework.boot.web.server.LocalServerPort;
 import io.github.bonigarcia.wdm.WebDriverManager;
 
 import static org.fluentlenium.assertj.FluentLeniumAssertions.assertThat;
+import static org.fluentlenium.core.filter.FilterConstructor.containingTextContent;
+import static org.fluentlenium.core.filter.MatcherConstructor.regex;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @FluentConfiguration(webDriver = "chrome", capabilities = "{\"chromeOptions\": {\"args\": [\"headless\",\"disable-gpu\",\"window-size=1920,1080\"]}}")
@@ -32,7 +34,7 @@ public abstract class BaseTest extends FluentTest {
     protected String shopsUrl, shopsPageTitle;
     protected String productsUrl, productsPageTitle;
     protected String accountsUrl, accountsPageTitle;
-    protected String terminalsUrl, terminalsPageTitle;
+    protected String terminalsUrl, terminalsPageTitle, terminalPageTitle;
     protected String currentProfileUrl, accountProfilePageTitle;
     protected String logoutUrl;
 
@@ -72,6 +74,7 @@ public abstract class BaseTest extends FluentTest {
         productsPageTitle = "POS-кассир | База товаров";
         accountsPageTitle = "POS-кассир | Сотрудники";
         terminalsPageTitle = "POS-кассир | Терминалы";
+        terminalPageTitle = "POS-кассир | Терминал";
         accountProfilePageTitle = "POS-кассир | Аккаунт";
     }
 
@@ -110,7 +113,7 @@ public abstract class BaseTest extends FluentTest {
         assertThat(pageSource()).contains(username);
     }
 
-    protected void createEmployee(String employeeUsername, String shopName){
+    protected void createEmployee(String employeeUsername, int shopIndex){
         goTo(accountsUrl);
         isAtAccountsPage();
         find("#username").fill().with(employeeUsername);//mandatory input
@@ -118,11 +121,31 @@ public abstract class BaseTest extends FluentTest {
         find("#firstName").fill().with("John");
         find("#lastName").fill().with("Doe");
         find("#telephoneNumber").fill().with("9991113344");//mandatory input
-        find("#shop").click().fillSelect().withText(shopName);//mandatory select
+        find("#shop").click().fillSelect().withIndex(shopIndex);//mandatory select
         find("#authority").click().fillSelect().withIndex(0);//mandatory select
         find("form").submit();
         isAtAccountsPage();
-        Assertions.assertThat(pageSource()).contains(employeeUsername);
+        assertThat(pageSource()).contains(employeeUsername);
+    }
+
+    protected void createTerminalPos(String terminalTid, boolean standalone, int shopSelectIndex){
+        goTo(terminalsUrl);
+        isAtTerminalsPage();
+        //filling form for IKR POS and submit
+        el("#tid").fill().with("12345678");//mandatory input
+        el("#mid").fill().with("123456789012");//mandatory input
+        el("#shop").fillSelect().withIndex(0);//mandatory select(selecting only one existing shop)
+
+        if(standalone){
+            el("#standalone").click();//checkbox with standalone/ikr
+        } else{
+            el("#ip").fill().with("1.2.3.4");//mandatory input for ikr
+            el("#chequeHeader").fill().with("Cheque | Header"); //input for ikr only
+        }
+
+        el("button", containingTextContent("Сохранить")).click();
+        isAtTerminalsPage();
+        assertThat(pageSource()).contains(terminalTid);
     }
 
     protected void clearTables() {
@@ -162,6 +185,8 @@ public abstract class BaseTest extends FluentTest {
     protected void isAtTerminalsPage() {
         assertThat(window().title()).isEqualTo(terminalsPageTitle);
     }
+
+    protected void isAtTerminalPage(){assertThat(window().title()).isEqualTo(terminalPageTitle); }
 
     protected void isAtAccountProfilePage() {
         assertThat(window().title()).isEqualTo(accountProfilePageTitle);
