@@ -21,6 +21,7 @@ public class SalesCounterService {
     private SalesCounterRepository salesCounterRepository;
 
     public void addTransaction(Transaction transaction, String terminalTid) {
+        if(!transaction.getStatus()) return;
         SalesCounter salesCounter = getSalesCounter(terminalTid);
         if (salesCounter == null) {
             salesCounter = new SalesCounter();
