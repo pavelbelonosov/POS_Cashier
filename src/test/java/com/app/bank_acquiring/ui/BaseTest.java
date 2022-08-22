@@ -15,10 +15,14 @@ import io.github.bonigarcia.wdm.WebDriverManager;
 
 import static org.fluentlenium.assertj.FluentLeniumAssertions.assertThat;
 import static org.fluentlenium.core.filter.FilterConstructor.containingTextContent;
+import static org.fluentlenium.core.filter.FilterConstructor.withName;
 import static org.fluentlenium.core.filter.MatcherConstructor.regex;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@FluentConfiguration(webDriver = "chrome", capabilities = "{\"chromeOptions\": {\"args\": [\"headless\",\"disable-gpu\",\"window-size=1920,1080\"]}}")
+@FluentConfiguration(webDriver = "chrome", capabilities = "{\"chromeOptions\": {\"args\": [" +
+        "\"headless\"," +
+        "\"disable-gpu\"," +
+        "\"window-size=1920,1080\"]}}")
 public abstract class BaseTest extends FluentTest {
 
     static {
@@ -102,7 +106,7 @@ public abstract class BaseTest extends FluentTest {
         isAtMainPage();
     }
 
-    protected void createShop(String username){
+    protected void createShop(String username) {
         goTo(shopsUrl);
         isAtShopsPage();
         find("#name").fill().with(username);
@@ -113,7 +117,24 @@ public abstract class BaseTest extends FluentTest {
         assertThat(pageSource()).contains(username);
     }
 
-    protected void createEmployee(String employeeUsername, int shopIndex){
+    protected void createProduct(String prodName, int shopSelectIndex) {
+        goTo(productsUrl);
+        isAtProductsPage();
+        //filling form with new product
+        find("#shop").fillSelect().withIndex(shopSelectIndex + 1);//0 index is empty option
+        find("#type").fillSelect().withText("Товар");//product type (item or service), mandatory
+        find("#name").fill().with(prodName);//mandatory input
+        find("#purchasePrice").fill().with("100.10");
+        find("#sellingPrice").fill().with("123.45");//mandatory input
+        find("#measurementUnit").fillSelect().withIndex(shopSelectIndex);//mandatory select
+        find("#vendorCode").fill().with("123456ABCD");
+        find("#barCode").fill().with("123456789");
+        find("#balance").fill().with("150");//mandatory input
+        el("form").el("button", containingTextContent("Сохранить")).click();
+        isAtProductsPage();
+    }
+
+    protected void createEmployee(String employeeUsername, int shopIndex) {
         goTo(accountsUrl);
         isAtAccountsPage();
         find("#username").fill().with(employeeUsername);//mandatory input
@@ -128,17 +149,17 @@ public abstract class BaseTest extends FluentTest {
         assertThat(pageSource()).contains(employeeUsername);
     }
 
-    protected void createTerminalPos(String terminalTid, boolean standalone, int shopSelectIndex){
+    protected void createTerminalPos(String terminalTid, boolean standalone, int shopSelectIndex) {
         goTo(terminalsUrl);
         isAtTerminalsPage();
         //filling form for IKR POS and submit
         el("#tid").fill().with("12345678");//mandatory input
         el("#mid").fill().with("123456789012");//mandatory input
-        el("#shop").fillSelect().withIndex(0);//mandatory select(selecting only one existing shop)
+        el("#shop").fillSelect().withIndex(shopSelectIndex);//mandatory select(selecting only one existing shop)
 
-        if(standalone){
+        if (standalone) {
             el("#standalone").click();//checkbox with standalone/ikr
-        } else{
+        } else {
             el("#ip").fill().with("1.2.3.4");//mandatory input for ikr
             el("#chequeHeader").fill().with("Cheque | Header"); //input for ikr only
         }
@@ -146,6 +167,14 @@ public abstract class BaseTest extends FluentTest {
         el("button", containingTextContent("Сохранить")).click();
         isAtTerminalsPage();
         assertThat(pageSource()).contains(terminalTid);
+    }
+
+    protected void takeTerminalToWork(String terminalTid) {
+        goTo(terminalsUrl);
+        isAtTerminalsPage();
+        el("select", withName("terminalId")).fillSelect().withText(terminalTid);
+        el("button", containingTextContent("Встать за кассу")).click();
+        isAtMainPage();
     }
 
     protected void clearTables() {
@@ -186,7 +215,9 @@ public abstract class BaseTest extends FluentTest {
         assertThat(window().title()).isEqualTo(terminalsPageTitle);
     }
 
-    protected void isAtTerminalPage(){assertThat(window().title()).isEqualTo(terminalPageTitle); }
+    protected void isAtTerminalPage() {
+        assertThat(window().title()).isEqualTo(terminalPageTitle);
+    }
 
     protected void isAtAccountProfilePage() {
         assertThat(window().title()).isEqualTo(accountProfilePageTitle);
