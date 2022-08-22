@@ -38,9 +38,10 @@ public class TransactionService {
     private EmailServiceComponent emailService;
 
     public TransactionDto makeTransactionOperation(String currentUser, TransactionDto transactionDto, Type transactionType) {
-        if (currentUser != null && !currentUser.isBlank()) {
-            Account user = accountService.findByUsername(currentUser);
-            Terminal terminal = terminalService.getTerminalByTid(user.getWorkTerminalTid());
+        Account user = accountService.findByUsername(currentUser);
+        Terminal terminal = terminalService.getTerminalByTid(user.getWorkTerminalTid());
+        System.out.println(currentUser+"\n"+user.getId());
+        if (user != null && terminal != null) {
             //performing acquiring operation
             String cheque = "";
             boolean transactionStatus = false;
@@ -79,18 +80,22 @@ public class TransactionService {
             if (transactionStatus) {
                 transaction.setCheque(salesCounterService.getOperationTransactionToString(transaction, terminal, prodToQuantity)
                         + cheque);
+                //evicting products from cart after operation
+                productCart.getProductsWithAmount().clear();
+            } else{
+                transaction.setCheque(cheque);
             }
-            //evicting products from cart after operation
-            productCart.getProductsWithAmount().clear();
             return convertToDto(transactionRepository.save(transaction));
         }
-        return new TransactionDto();
+        TransactionDto dto = new TransactionDto();
+        transactionDto.setStatus(false);
+        return dto;
     }
 
     public TransactionDto makeReportOperation(String currentUser, Type transactionType) {
-        if (currentUser != null && !currentUser.isBlank()) {
-            Account user = accountService.findByUsername(currentUser);
-            Terminal terminal = terminalService.getTerminalByTid(user.getWorkTerminalTid());
+        Account user = accountService.findByUsername(currentUser);
+        Terminal terminal = terminalService.getTerminalByTid(user.getWorkTerminalTid());
+        if (user != null && terminal != null) {
             //performing acquiring report operation
             String cheque = "";
             boolean transactionStatus = false;
@@ -118,15 +123,18 @@ public class TransactionService {
             //obtaining operation cheque
             if (transactionStatus) {
                 transaction.setCheque(salesCounterService.getReportOperationToString(transaction, terminal) + cheque);
+            } else{
+                transaction.setCheque(cheque);
             }
             //when shift closed successfully, sales counter of given terminal is reset
             if (transactionStatus && transactionType == Type.CLOSE_DAY) {
-
                 salesCounterService.closeDay(terminal.getTid());
             }
             return convertToDto(transactionRepository.save(transaction));
         }
-        return new TransactionDto();
+        TransactionDto transactionDto = new TransactionDto();
+        transactionDto.setStatus(false);
+        return transactionDto;
     }
 
 
