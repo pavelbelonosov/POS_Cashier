@@ -193,6 +193,7 @@ public class SalesCounterServiceTest {
         transaction.setCheque("cheque");
         transaction.setAmount(1.10);
         transaction.setTerminal(terminal);
+        transaction.setStatus(true);
         return transaction;
     }
 
