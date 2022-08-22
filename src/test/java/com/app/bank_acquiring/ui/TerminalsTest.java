@@ -72,7 +72,7 @@ public class TerminalsTest extends BaseTest {
     }
 
     @Test
-    public void whenClick_TakeTerminalToWor_Button_thenPageRedirectsToMain() {
+    public void whenClick_TakeTerminalToWork_Button_thenPageRedirectsToMain() {
         //register->login->add shop
         registerAdminUser("useruser", "password");
         loginUser("useruser", "password");

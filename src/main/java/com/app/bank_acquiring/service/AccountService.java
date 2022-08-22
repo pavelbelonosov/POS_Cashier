@@ -99,7 +99,7 @@ public class AccountService {
     }
 
     public Account findByUsername(String username) {
-        if (username != null && !username.isEmpty()) {
+        if (username != null && !username.isEmpty() && !username.isBlank()) {
             return accountRepository.findByUsername(username);
         }
         return null;
