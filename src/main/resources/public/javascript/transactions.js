@@ -43,7 +43,7 @@ function getTransactionsStat() {
     http.send();
     http.onreadystatechange = function () {
         if (this.readyState != 4 || this.status != 200) {
-            return
+            return;
         }
         var stat = JSON.parse(this.responseText);
         console.log(stat);
@@ -107,7 +107,6 @@ function getResponseFromServerWithCheque(buttonId){
     http.onreadystatechange = function () {
 
         if (this.readyState != 4) {
-            document.getElementById("responseCheque").innerHTML = "Что-то пошло не так...";
             return;
         }
         var transactionResponsed = JSON.parse(this.responseText);
