@@ -12,10 +12,7 @@ function makePayment() {
 }
 
 function makeRefund(){
-    if(!verifyCartEmpty()){
-        if (!confirm("Вы уверены, что хотите сделать возврат?")) {
-            return;
-        }
+    if(!verifyCartEmpty()&&confirm("Вы уверены, что хотите сделать возврат?")){
         http.open("POST", url+"/refund", true);
         http.setRequestHeader('Content-Type', 'application/json');
         http.send(JSON.stringify(createTransactionObject()));
@@ -24,12 +21,11 @@ function makeRefund(){
 }
 
 function closeDay(){
-    if (!confirm("Вы уверены, что хотите закрыть смену?")) {
-        return;
+    if (confirm("Вы уверены, что хотите закрыть смену?")) {
+        http.open("GET", url+"/closeday", true);
+        http.send();
+        getResponseFromServerWithCheque("zReportBtn");
     }
-    http.open("GET", url+"/closeday", true);
-    http.send();
-    getResponseFromServerWithCheque("zReportBtn");
 }
 
 function makeXreport(){
