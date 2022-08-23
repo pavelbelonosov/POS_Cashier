@@ -40,7 +40,6 @@ public class TransactionService {
     public TransactionDto makeTransactionOperation(String currentUser, TransactionDto transactionDto, Type transactionType) {
         Account user = accountService.findByUsername(currentUser);
         Terminal terminal = terminalService.getTerminalByTid(user.getWorkTerminalTid());
-        System.out.println(currentUser+"\n"+user.getId());
         if (user != null && terminal != null) {
             //performing acquiring operation
             String cheque = "";
