@@ -134,15 +134,6 @@ public class AccountsTest extends BaseTest {
         isAtAccountProfilePage();
     }
 
-    @Test
-    public void test(){
-        //register->login->add shop
-        registerAdminUser("useruser", "password");
-        loginUser("useruser", "password");
-        createShop("MyShop");
-        createEmployee("MySlave", 0);
-    }
-
     private void verifyAccountTableIsEmpty() {
         assertThat(employeesTable.textContent()).contains("Нет добавленных сотрудников");
     }
