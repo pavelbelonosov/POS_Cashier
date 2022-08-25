@@ -23,11 +23,11 @@ public class UposService {
             File userUpos = new File("C:/temp/bank/" + accountId + "/" + terminal.getShop().getId() + "/" + terminal.getTid());
             FileUtils.copyDirectory(upos, userUpos);
             try (PrintWriter pw = new PrintWriter(userUpos + "/pinpad.ini")) {
-                //pw.println("pinpadIpAddr=" + terminal.getIp());
-                //pw.println("ipport=8888");
+                pw.println("PinpadIPAddr=" + terminal.getIp());
+                pw.println("PinpadIPPort=8888");
                 pw.println("header=" + terminal.getChequeHeader());
-                pw.println("comport=9");
-                pw.println("showscreens=1");
+                //pw.println("comport=9");
+                //pw.println("showscreens=1");
                 pw.println("printerfile=cheque.txt");
                 pw.println("terminalId=" + terminal.getTid());
                 pw.println("merchantId=" + terminal.getMid());
@@ -43,11 +43,11 @@ public class UposService {
     public boolean updateUposSettings(Long accountId, Terminal terminal) {
         File pinpadIni = new File("C:/temp/bank/" + accountId + "/" + terminal.getShop().getId() + "/" + terminal.getTid() + "/pinpad.ini");
         try (PrintWriter pw = new PrintWriter(pinpadIni)) {
-            //pw.println("pinpadIpAddr=" + terminal.getIp());
-            //pw.println("ipport=8888");
+            pw.println("PinpadIPAddr=" + terminal.getIp());
+            pw.println("PinpadIPPort=8888");
             pw.println("header=" + terminal.getChequeHeader());
-            pw.println("comport=99");
-            pw.println("showscreens=0");
+            //pw.println("comport=99");
+            //pw.println("showscreens=0");
             pw.println("printerfile=cheque.txt");
             return true;
         } catch (FileNotFoundException e) {
@@ -59,10 +59,11 @@ public class UposService {
     /**
      * The method performs acquiring operation with POS-terminal. In case of any process exception or
      * terminal's disconnection state, current operation is reckoned failed and method returns false.
-     * @param accountId account repository ID
-     * @param shopId ID of shop, belonging to given account
-     * @param terminalTid TID of terminal in use
-     * @param amount payment/refund amount
+     *
+     * @param accountId       account repository ID
+     * @param shopId          ID of shop, belonging to given account
+     * @param terminalTid     TID of terminal in use
+     * @param amount          payment/refund amount
      * @param transactionType type of transaction
      * @return operation state
      */
@@ -72,12 +73,12 @@ public class UposService {
         try {
             switch (transactionType) {
                 case PAYMENT:
-                    process = new ProcessBuilder(dir + "loadparm.exe", "9", "1").start();
-                    //case PAYMENT:process = new ProcessBuilder(dir + "loadparm.exe", "1", (int)(amount * 100) + "").start();
+                    //process = new ProcessBuilder(dir + "loadparm.exe", "9", "1").start();
+                    process = new ProcessBuilder(dir + "loadparm.exe", "1", (int) (amount * 100) + "").start();
                     break;
                 case REFUND:
-                    process = new ProcessBuilder(dir + "loadparm.exe", "9", "1").start();
-                    //case CANCEL:process = new ProcessBuilder(dir + "loadparm.exe", "3", (int)(amount * 100) + "").start();
+                    //process = new ProcessBuilder(dir + "loadparm.exe", "9", "1").start();
+                    process = new ProcessBuilder(dir + "loadparm.exe", "3", (int) (amount * 100) + "").start();
                     break;
                 case CLOSE_DAY:
                     process = new ProcessBuilder(dir + "loadparm.exe", "7").start();
@@ -134,11 +135,12 @@ public class UposService {
     }
 
     public boolean defineTransactionStatus(String cheque) {
-        cheque.toLowerCase();
-        if (cheque != null && (cheque.contains("одобрено") || cheque.contains("итоги совпали")
-                || cheque.contains("процессинг:работает") || cheque.contains("сводный чек"))) {
-            return true;
-        }
-        return false;
+        cheque = cheque.toLowerCase();
+        return cheque != null && (cheque.contains("одобрено")
+                || cheque.contains("итоги совпали")
+                || cheque.contains("процессинг:работает")
+                || cheque.contains("сводный чек")
+                || cheque.contains("контрольная лента"));
+
     }
 }
