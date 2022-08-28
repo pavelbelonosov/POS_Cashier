@@ -7,5 +7,5 @@ services:
     restart: always
     ports:
       - 8080:8080
-    command: ["java", "-jar", "./bank_acquiring-1.0.jar"]
+    command: ["java", "-jar", "./Shop_Inventory_POS-1.0.jar"]
     container_name: bankAPI_container
