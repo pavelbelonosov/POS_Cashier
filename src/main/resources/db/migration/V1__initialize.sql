@@ -1,3 +1,4 @@
+create sequence if not exists public.hibernate_sequence;
 
 create table account
  (
