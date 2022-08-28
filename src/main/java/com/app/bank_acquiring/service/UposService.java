@@ -76,23 +76,23 @@ public class UposService {
             switch (transactionType) {
                 case PAYMENT:
                     //process = new ProcessBuilder(dir + "loadparm.exe", "9", "1").start();
-                    process = new ProcessBuilder(dir + "sb_pilot.exe", "1", (int) (amount * 100) + "").start();
+                    process = new ProcessBuilder(dir + "sb_pilot", "1", (int) (amount * 100) + "").start();
                     break;
                 case REFUND:
                     //process = new ProcessBuilder(dir + "loadparm.exe", "9", "1").start();
-                    process = new ProcessBuilder(dir + "sb_pilot.exe", "3", (int) (amount * 100) + "").start();
+                    process = new ProcessBuilder(dir + "sb_pilot", "3", (int) (amount * 100) + "").start();
                     break;
                 case CLOSE_DAY:
-                    process = new ProcessBuilder(dir + "sb_pilot.exe", "7").start();
+                    process = new ProcessBuilder(dir + "sb_pilot", "7").start();
                     break;
                 case XREPORT:
-                    process = new ProcessBuilder(dir + "sb_pilot.exe", "9", "1").start();
+                    process = new ProcessBuilder(dir + "sb_pilot", "9", "1").start();
                     break;
                 case TEST:
-                    process = new ProcessBuilder(dir + "sb_pilot.exe", "47", "2").start();
+                    process = new ProcessBuilder(dir + "sb_pilot", "47", "2").start();
                     break;
                 default:
-                    process = new ProcessBuilder(dir + "sb_pilot.exe", "47", "2").start();
+                    process = new ProcessBuilder(dir + "sb_pilot", "47", "2").start();
             }
             process.waitFor();
             return true;
