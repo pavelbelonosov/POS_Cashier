@@ -1,4 +1,4 @@
-FROM openjdk:11-jdk-alpine as base
+FROM openjdk:17-jdk-alpine as base
 RUN apk add --no-cache maven
 WORKDIR /usr/src/app
 COPY . .
@@ -9,7 +9,7 @@ CMD mvn test
 FROM base as build
 RUN mvn package
 
-FROM openjdk:11-jre-alpine3.8 as production
+FROM eclipse-temurin:17-jre-alpine as production
 WORKDIR /usr/src/app
 COPY --from=build /usr/src/app/target/bank_acquiring-1.0.jar .
 COPY --from=build /usr/src/app/upos_base .
