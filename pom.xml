@@ -7,7 +7,7 @@
 
     <groupId>com.app</groupId>
     <artifactId>bank_acquiring</artifactId>
-    <name>Bank API</name>
+    <name>Shop_Inventory_POS</name>
     <version>1.0</version>
     <packaging>jar</packaging>
 
