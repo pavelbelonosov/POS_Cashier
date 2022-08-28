@@ -14,13 +14,15 @@ import java.io.*;
 public class UposService {
 
     private final Logger logger = LoggerFactory.getLogger(UposService.class);
-    private final String uposBase = "C:/temp/bank/upos";
+    //private final String uposBase = "C:/temp/bank/upos";
+    private final String uposBase = "./upos_base";
+    private final String userUposDir = "/usr/src/app/usersUpos/";
 
     @Async
     public boolean createUserUpos(Long accountId, Terminal terminal) {
         try {
             File upos = new File(this.uposBase);
-            File userUpos = new File("C:/temp/bank/" + accountId + "/" + terminal.getShop().getId() + "/" + terminal.getTid());
+            File userUpos = new File(userUposDir + accountId + "/" + terminal.getShop().getId() + "/" + terminal.getTid());
             FileUtils.copyDirectory(upos, userUpos);
             try (PrintWriter pw = new PrintWriter(userUpos + "/pinpad.ini")) {
                 pw.println("PinpadIPAddr=" + terminal.getIp());
@@ -41,7 +43,7 @@ public class UposService {
 
     @Async
     public boolean updateUposSettings(Long accountId, Terminal terminal) {
-        File pinpadIni = new File("C:/temp/bank/" + accountId + "/" + terminal.getShop().getId() + "/" + terminal.getTid() + "/pinpad.ini");
+        File pinpadIni = new File(userUposDir + accountId + "/" + terminal.getShop().getId() + "/" + terminal.getTid() + "/pinpad.ini");
         try (PrintWriter pw = new PrintWriter(pinpadIni)) {
             pw.println("PinpadIPAddr=" + terminal.getIp());
             pw.println("PinpadIPPort=8888");
@@ -68,29 +70,29 @@ public class UposService {
      * @return operation state
      */
     public boolean makeOperation(Long accountId, Long shopId, String terminalTid, double amount, Type transactionType) {
-        String dir = "C:/temp/bank/" + accountId + "/" + shopId + "/" + terminalTid + "/";
+        String dir = userUposDir + accountId + "/" + shopId + "/" + terminalTid + "/";
         Process process;
         try {
             switch (transactionType) {
                 case PAYMENT:
                     //process = new ProcessBuilder(dir + "loadparm.exe", "9", "1").start();
-                    process = new ProcessBuilder(dir + "loadparm.exe", "1", (int) (amount * 100) + "").start();
+                    process = new ProcessBuilder(dir + "sb_pilot.exe", "1", (int) (amount * 100) + "").start();
                     break;
                 case REFUND:
                     //process = new ProcessBuilder(dir + "loadparm.exe", "9", "1").start();
-                    process = new ProcessBuilder(dir + "loadparm.exe", "3", (int) (amount * 100) + "").start();
+                    process = new ProcessBuilder(dir + "sb_pilot.exe", "3", (int) (amount * 100) + "").start();
                     break;
                 case CLOSE_DAY:
-                    process = new ProcessBuilder(dir + "loadparm.exe", "7").start();
+                    process = new ProcessBuilder(dir + "sb_pilot.exe", "7").start();
                     break;
                 case XREPORT:
-                    process = new ProcessBuilder(dir + "loadparm.exe", "9", "1").start();
+                    process = new ProcessBuilder(dir + "sb_pilot.exe", "9", "1").start();
                     break;
                 case TEST:
-                    process = new ProcessBuilder(dir + "loadparm.exe", "47", "2").start();
+                    process = new ProcessBuilder(dir + "sb_pilot.exe", "47", "2").start();
                     break;
                 default:
-                    process = new ProcessBuilder(dir + "loadparm.exe", "47", "2").start();
+                    process = new ProcessBuilder(dir + "sb_pilot.exe", "47", "2").start();
             }
             process.waitFor();
             return true;
@@ -110,7 +112,7 @@ public class UposService {
 
 
     public String readCheque(Long accountId, Long shopId, String terminalTid) {
-        String dir = "C:/temp/bank/" + accountId + "/" + shopId + "/" + terminalTid + "/";
+        String dir = userUposDir + accountId + "/" + shopId + "/" + terminalTid + "/";
         try (FileInputStream fis = new FileInputStream(dir + "cheque.txt")) {
             byte[] buffer = new byte[fis.available()];
             fis.read(buffer, 0, fis.available());
@@ -124,7 +126,7 @@ public class UposService {
     }
 
     public boolean deleteUserUpos(Long accountId, Long shopId, String terminalTid) {
-        File userUpos = new File("C:/temp/bank/" + accountId + "/" + shopId + "/" + terminalTid + "/");
+        File userUpos = new File(userUposDir + accountId + "/" + shopId + "/" + terminalTid + "/");
         try {
             FileUtils.deleteDirectory(userUpos);
             return true;
