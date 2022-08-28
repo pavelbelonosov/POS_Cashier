@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.app</groupId>
-    <artifactId>bank_acquiring</artifactId>
+    <artifactId>Shop_Inventory_POS</artifactId>
     <name>Shop_Inventory_POS</name>
     <version>1.0</version>
     <packaging>jar</packaging>

@@ -8,7 +8,7 @@ FROM base as test
 CMD mvn test
 
 FROM base as build
-RUN mvn package
+RUN mvn -Dmaven.test.skip package
 
 FROM eclipse-temurin:17-jre-alpine as production
 WORKDIR /usr/src/app
