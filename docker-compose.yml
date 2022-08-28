@@ -2,10 +2,32 @@ version: '3.8'
 
 services:
   app:
-    #image: pavelbelonosov/db-tester
     build: .
     restart: always
     ports:
       - 8080:8080
+    volumes:
+      - ./usersUpos:/usr/src/app/usersUpos
     command: ["java", "-jar", "./Shop_Inventory_POS-1.0.jar"]
     container_name: bankAPI_container
+
+  postgres:
+    image: postgres:13.2-alpine
+    restart: unless-stopped
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=166831
+    volumes:
+      - ./pg_data:/var/lib/postgresql/data
+      #- ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    container_name: postgres_db
+
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 3450:8081
+    container_name: admin
