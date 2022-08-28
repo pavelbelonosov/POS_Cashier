@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  app:
+    #image: pavelbelonosov/db-tester
+    build: .
+    restart: always
+    ports:
+      - 8080:8080
+    command: ["java", "-jar", "./bank_acquiring-1.0.jar"]
+    container_name: bankAPI_container
