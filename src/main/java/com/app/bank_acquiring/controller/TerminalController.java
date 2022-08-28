@@ -82,7 +82,7 @@ public class TerminalController {
             terminalService.addTerminalToAccount(terminal, currentUser.getUsername());
             return "redirect:/terminals";
         } catch (RuntimeException e) {
-            bindingResult.addError(new FieldError("terminal", "tid", "Не удалось добавить терминал. Ошибка файловой сисnемы"));
+            bindingResult.addError(new FieldError("terminal", "tid", "Не удалось добавить терминал. Ошибка файловой системы"));
             return getTerminals(model, currentUser);
         }
     }
