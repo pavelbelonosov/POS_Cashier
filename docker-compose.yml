@@ -9,7 +9,7 @@ services:
     volumes:
       - ./usersUpos:/usr/src/app/usersUpos
     command: ["java", "-jar", "./Shop_Inventory_POS-1.0.jar"]
-    container_name: bankAPI_container
+    container_name: shop_pos
 
   postgres:
     image: postgres:13.2-alpine
