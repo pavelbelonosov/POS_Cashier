@@ -9,3 +9,6 @@ target/
 *.iml
 *.ipr
 
+pg_data/
+usersUpos/
+
