@@ -236,7 +236,7 @@ public class TerminalServiceTest {
         Mockito.when(uposService.updateUposSettings(anyLong(), any(Terminal.class))).thenReturn(true);
         Mockito.when(uposService.deleteUserUpos(anyLong(), anyLong(), anyString())).thenReturn(true);
         Mockito.when(uposService.readCheque(anyLong(), anyLong(), anyString())).thenReturn(" ");
-        Mockito.when(uposService.defineTransactionStatus(anyString())).thenReturn(true);
+        Mockito.when(uposService.defineTransactionStatusByCheque(anyString())).thenReturn(true);
         Mockito.when(uposService.testPSDB(anyLong(), anyLong(), anyString())).thenReturn(true);
     }
 
