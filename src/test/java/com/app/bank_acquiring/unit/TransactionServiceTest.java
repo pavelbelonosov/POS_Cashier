@@ -9,13 +9,11 @@ import com.app.bank_acquiring.domain.transaction.TransactionDto;
 import com.app.bank_acquiring.domain.transaction.Type;
 import com.app.bank_acquiring.repository.TransactionRepository;
 import com.app.bank_acquiring.service.*;
-import org.assertj.core.util.Arrays;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -173,7 +171,7 @@ public class TransactionServiceTest {
         Mockito.when(uposService.updateUposSettings(anyLong(), any(Terminal.class))).thenReturn(true);
         Mockito.when(uposService.deleteUserUpos(anyLong(), anyLong(), anyString())).thenReturn(true);
         Mockito.when(uposService.readCheque(anyLong(), anyLong(), anyString())).thenReturn(" ");
-        Mockito.when(uposService.defineTransactionStatus(anyString())).thenReturn(true);
+        Mockito.when(uposService.defineTransactionStatusByCheque(anyString())).thenReturn(true);
         Mockito.when(uposService.testPSDB(anyLong(), anyLong(), anyString())).thenReturn(true);
     }
 
