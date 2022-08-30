@@ -11,7 +11,6 @@ import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -67,11 +66,12 @@ public class TerminalService {
         validateIdAccess(current, terminal);
         if (uposService.testPSDB(terminal.getAccount().getId(), terminal.getShop().getId(), terminal.getTid())) {
             Transaction test = new Transaction();
+            int tranCode = uposService.getTransactionResponseCode(terminal.getAccount().getId(), terminal.getShop().getId(), terminal.getTid());
             String testCheque = uposService.readCheque(terminal.getAccount().getId(), terminal.getShop().getId(), terminal.getTid());
-            test.setStatus(uposService.defineTransactionStatus(testCheque));
+            test.setStatus(tranCode == 0);
             test.setType(Type.TEST);
             test.setDateTime(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
-            test.setCheque(testCheque);
+            test.setCheque(!testCheque.isEmpty() ? testCheque : "Ошибка "+ tranCode);
             test.setTerminal(terminal);
             transactionRepository.save(test);
             return true;
