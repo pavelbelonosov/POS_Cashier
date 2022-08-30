@@ -109,7 +109,7 @@ function getResponseFromServerWithCheque(buttonId){
         if(transactionResponsed.status==false){
             document.getElementById(buttonId).innerHTML = "Отказано";
             document.getElementById(buttonId).className = "btn btn-danger";
-            document.getElementById("responseCheque").innerHTML = "Что-то пошло не так...";
+            document.getElementById("responseCheque").innerHTML = "Что-то пошло не так...\n" + transactionResponsed.cheque;
         } else {
             document.getElementById(buttonId).innerHTML = "Одобрено" ;
             document.getElementById(buttonId).className = "btn btn-success";
