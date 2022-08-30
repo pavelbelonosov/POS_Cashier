@@ -589,9 +589,9 @@ public class TransactionControllerTest {
                 .andExpect(content().contentType("application/json;charset=UTF-8"))
                 //check content of json arr in server response, should contain one payment
                 .andExpect(jsonPath("$[0]").value("В кассе: "
-                        + (dto.getAmount() + "").replace('.', ',')))
+                        + (dto.getAmount() + ""))) //add dto.getAmount() + "".replace('.', ',') for windows
                 .andExpect(jsonPath("$[1]").value("Продажи: "
-                        + (dto.getAmount() + "").replace('.', ',') + "(1)"))
+                        + (dto.getAmount() + "") + "(1)")) //add dto.getAmount() + "".replace('.', ',') for windows
                 .andExpect(jsonPath("$[2]").value("Возвраты: 0,00(0)"));
         //clearing upos files from system
         shopService.deleteShop(shop.getId(), admin.getUsername());
@@ -623,9 +623,9 @@ public class TransactionControllerTest {
                 .andExpect(content().contentType("application/json;charset=UTF-8"))
                 //check content of json arr in server response, should contain one payment
                 .andExpect(jsonPath("$[0]").value("В кассе: "
-                        + (dto.getAmount() + "").replace('.', ',')))
+                        + (dto.getAmount() + ""))) //add dto.getAmount() + "".replace('.', ',') for windows
                 .andExpect(jsonPath("$[1]").value("Продажи: "
-                        + (dto.getAmount() + "").replace('.', ',') + "(1)"))
+                        + (dto.getAmount() + "") + "(1)")) //add dto.getAmount() + "".replace('.', ',') for windows
                 .andExpect(jsonPath("$[2]").value("Возвраты: 0,00(0)"));
         //clearing upos files from system
         shopService.deleteShop(shop.getId(), admin.getUsername());
@@ -657,9 +657,9 @@ public class TransactionControllerTest {
                 .andExpect(content().contentType("application/json;charset=UTF-8"))
                 //check content of json arr in server response, should contain one payment
                 .andExpect(jsonPath("$[0]").value("В кассе: "
-                        + (dto.getAmount() + "").replace('.', ',')))
+                        + (dto.getAmount() + ""))) //add dto.getAmount() + "".replace('.', ',') for windows
                 .andExpect(jsonPath("$[1]").value("Продажи: "
-                        + (dto.getAmount() + "").replace('.', ',') + "(1)"))
+                        + (dto.getAmount() + "") + "(1)"))//add dto.getAmount() + "".replace('.', ',') for windows
                 .andExpect(jsonPath("$[2]").value("Возвраты: 0,00(0)"));
         //clearing upos files from system
         shopService.deleteShop(shop.getId(), admin.getUsername());
