@@ -1,9 +1,6 @@
 package com.app.bank_acquiring.ui;
 
-import com.app.bank_acquiring.domain.Shop;
-import com.app.bank_acquiring.domain.account.Account;
 import com.app.bank_acquiring.repository.*;
-import org.assertj.core.api.Assertions;
 import org.fluentlenium.adapter.junit.FluentTest;
 import org.fluentlenium.configuration.FluentConfiguration;
 import org.junit.After;
@@ -11,27 +8,26 @@ import org.junit.Before;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
-import io.github.bonigarcia.wdm.WebDriverManager;
 
 import static org.fluentlenium.assertj.FluentLeniumAssertions.assertThat;
 import static org.fluentlenium.core.filter.FilterConstructor.containingTextContent;
 import static org.fluentlenium.core.filter.FilterConstructor.withName;
-import static org.fluentlenium.core.filter.MatcherConstructor.regex;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@FluentConfiguration(webDriver = "chrome", capabilities = "{\"chromeOptions\": {\"args\": [" +
-        "\"headless\"," +
-        "\"disable-gpu\"," +
-        "\"window-size=1920,1080\"]}}")
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@FluentConfiguration(webDriver = "remote", remoteUrl = "http://chrome:4444", capabilities = "{\"goog:chromeOptions\": {\"args\": [" +
+                "\"headless\"," +
+                "\"disable-gpu\"," +
+                "\"window-size=1920,1080\"]}}")//webDriver = "chrome",
+
 public abstract class BaseTest extends FluentTest {
-
+    /*
     static {
-        WebDriverManager.chromedriver().setup();
-    }
+        WebDriverManager.chromedriver().setup(); //setup webdriver locally with bonigarcia lib
+    }*/
 
     @LocalServerPort
     protected Integer port;
-    protected String host;
+    protected String hostUrl;
     protected String registrationUrl, regPageTitle;
     protected String loginUrl, loginPageTitle;
     protected String mainUrl, mainPageTitle;
@@ -61,16 +57,16 @@ public abstract class BaseTest extends FluentTest {
     @Before
     public void setUp() {
         clearTables();
-        host = "http://localhost:" + port;
-        registrationUrl = host + "/accounts/registration";
-        loginUrl = host + "/login";
-        mainUrl = host + "/main";
-        shopsUrl = host + "/shops";
-        productsUrl = host + "/products";
-        accountsUrl = host + "/accounts";
-        terminalsUrl = host + "/terminals";
-        currentProfileUrl = host + "/accounts/current";
-        logoutUrl = host + "/logout";
+        hostUrl = "http://" + System.getenv("APP_HOSTNAME") + ":" + port;
+        registrationUrl = hostUrl + "/accounts/registration";
+        loginUrl = hostUrl + "/login";
+        mainUrl = hostUrl + "/main";
+        shopsUrl = hostUrl + "/shops";
+        productsUrl = hostUrl + "/products";
+        accountsUrl = hostUrl + "/accounts";
+        terminalsUrl = hostUrl + "/terminals";
+        currentProfileUrl = hostUrl + "/accounts/current";
+        logoutUrl = hostUrl + "/logout";
         regPageTitle = "POS-кассир | Регистрация";
         loginPageTitle = "POS-кассир | Вход";
         mainPageTitle = "POS-кассир | Касса";
