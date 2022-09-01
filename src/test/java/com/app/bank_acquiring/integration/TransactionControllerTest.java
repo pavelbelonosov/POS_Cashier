@@ -592,7 +592,7 @@ public class TransactionControllerTest {
                         + (dto.getAmount() + ""))) //add dto.getAmount() + "".replace('.', ',') for windows
                 .andExpect(jsonPath("$[1]").value("Продажи: "
                         + (dto.getAmount() + "") + "(1)")) //add dto.getAmount() + "".replace('.', ',') for windows
-                .andExpect(jsonPath("$[2]").value("Возвраты: 0,00(0)"));
+                .andExpect(jsonPath("$[2]").value("Возвраты: 0.00(0)"));
         //clearing upos files from system
         shopService.deleteShop(shop.getId(), admin.getUsername());
     }
@@ -626,7 +626,7 @@ public class TransactionControllerTest {
                         + (dto.getAmount() + ""))) //add dto.getAmount() + "".replace('.', ',') for windows
                 .andExpect(jsonPath("$[1]").value("Продажи: "
                         + (dto.getAmount() + "") + "(1)")) //add dto.getAmount() + "".replace('.', ',') for windows
-                .andExpect(jsonPath("$[2]").value("Возвраты: 0,00(0)"));
+                .andExpect(jsonPath("$[2]").value("Возвраты: 0.00(0)"));
         //clearing upos files from system
         shopService.deleteShop(shop.getId(), admin.getUsername());
     }
@@ -660,7 +660,7 @@ public class TransactionControllerTest {
                         + (dto.getAmount() + ""))) //add dto.getAmount() + "".replace('.', ',') for windows
                 .andExpect(jsonPath("$[1]").value("Продажи: "
                         + (dto.getAmount() + "") + "(1)"))//add dto.getAmount() + "".replace('.', ',') for windows
-                .andExpect(jsonPath("$[2]").value("Возвраты: 0,00(0)"));
+                .andExpect(jsonPath("$[2]").value("Возвраты: 0.00(0)"));
         //clearing upos files from system
         shopService.deleteShop(shop.getId(), admin.getUsername());
     }
