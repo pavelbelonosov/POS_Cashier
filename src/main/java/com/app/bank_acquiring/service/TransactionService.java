@@ -11,9 +11,7 @@ import com.app.bank_acquiring.repository.TransactionRepository;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.text.DecimalFormat;
 import java.time.LocalDateTime;
@@ -50,7 +48,8 @@ public class TransactionService {
                 if (uposService.makeOperation(terminal.getAccount().getId(), terminal.getShop().getId(),
                         terminal.getTid(), transactionDto.getAmount(), transactionType)) {
                     cheque = uposService.readCheque(terminal.getAccount().getId(), terminal.getShop().getId(), terminal.getTid());
-                    transactionStatus = uposService.defineTransactionStatus(cheque);
+                    int transactionCodeResponse = uposService.getTransactionResponseCode(terminal.getAccount().getId(), terminal.getShop().getId(), terminal.getTid());
+                    transactionStatus = transactionCodeResponse == 0;
                     //update balance only if transaction finished successfully
                     if (transactionStatus) {
                         //update products' balance in db: decrease or increase due to transaction type - payment or refund, and getting sold products
@@ -60,7 +59,7 @@ public class TransactionService {
 
                     //if exception while parsing upos transaction cheque from system or upos doesnt perform cheque
                     if (cheque.isEmpty()) {
-                        cheque = "Ошибка считывания банковского слипа";
+                        cheque = "Ошибка считывания банковского слипа (Код: " + transactionCodeResponse + ")";
                     }
                 }
             } else {
@@ -103,9 +102,11 @@ public class TransactionService {
                 if (uposService.makeReportOperation(terminal.getAccount().getId(), terminal.getShop().getId(),
                         terminal.getTid(), transactionType)) {
                     cheque = uposService.readCheque(terminal.getAccount().getId(), terminal.getShop().getId(), terminal.getTid());
-                    transactionStatus = uposService.defineTransactionStatus(cheque);
+                    //transactionStatus = uposService.defineTransactionStatus(cheque);//windows-based
+                    int transactionCodeResponse = uposService.getTransactionResponseCode(terminal.getAccount().getId(), terminal.getShop().getId(), terminal.getTid());
+                    transactionStatus = transactionCodeResponse == 0;
                     if (cheque.isEmpty()) {
-                        cheque = "Ошибка считывания банковского слипа";
+                        cheque = "Ошибка считывания банковского слипа (Код: " + transactionCodeResponse + ")";
                     }
                 }
             } else {
