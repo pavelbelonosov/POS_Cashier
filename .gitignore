@@ -11,4 +11,5 @@ target/
 
 pg_data/
 usersUpos/
+*.log
 
