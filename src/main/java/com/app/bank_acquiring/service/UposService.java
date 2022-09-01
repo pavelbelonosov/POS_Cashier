@@ -9,6 +9,10 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 @Service
 public class UposService {
@@ -19,12 +23,15 @@ public class UposService {
     private final String userUposDir = "/usr/src/app/usersUpos/";
 
     @Async
-    public boolean createUserUpos(Long accountId, Terminal terminal) {
+    public boolean setUserUpos(Long accountId, Terminal terminal, boolean createNewFlag) {
         try {
-            File upos = new File(this.uposBase);
             File userUpos = new File(userUposDir + accountId + "/" + terminal.getShop().getId() + "/" + terminal.getTid());
-            FileUtils.copyDirectory(upos, userUpos);
-            try (PrintWriter pw = new PrintWriter(userUpos + "/pinpad.ini")) {
+            if (createNewFlag) {
+                File upos = new File(this.uposBase);
+                FileUtils.copyDirectory(upos, userUpos);
+            }
+            try (PrintWriter pw = new PrintWriter(userUpos + "/pinpad.ini");
+                 PrintWriter script = new PrintWriter(userUpos + "/script.sh")) {
                 pw.println("PinpadIPAddr=" + terminal.getIp());
                 pw.println("PinpadIPPort=8888");
                 pw.println("header=" + terminal.getChequeHeader());
@@ -33,27 +40,14 @@ public class UposService {
                 pw.println("printerfile=cheque.txt");
                 pw.println("terminalId=" + terminal.getTid());
                 pw.println("merchantId=" + terminal.getMid());
+                pw.println("LockPath=" + userUpos.getAbsolutePath());
+                script.println("#!/bin/sh");
+                script.println("echo \"" + terminal.getIp() + "      pos" + terminal.getTid() + "_ip\" >> /etc/hosts");
             }
+            new ProcessBuilder(userUpos.getAbsolutePath() + "/script.sh").start();
             return true;
         } catch (IOException e) {
-            logger.error("Error while creating user UPOS: " + e.getMessage());
-            return false;
-        }
-    }
-
-    @Async
-    public boolean updateUposSettings(Long accountId, Terminal terminal) {
-        File pinpadIni = new File(userUposDir + accountId + "/" + terminal.getShop().getId() + "/" + terminal.getTid() + "/pinpad.ini");
-        try (PrintWriter pw = new PrintWriter(pinpadIni)) {
-            pw.println("PinpadIPAddr=" + terminal.getIp());
-            pw.println("PinpadIPPort=8888");
-            pw.println("header=" + terminal.getChequeHeader());
-            //pw.println("comport=99");
-            //pw.println("showscreens=0");
-            pw.println("printerfile=cheque.txt");
-            return true;
-        } catch (FileNotFoundException e) {
-            logger.error("Error while updating pinpad settings: " + e.getMessage());
+            logger.error("Error while setting user UPOS: " + e.getMessage());
             return false;
         }
     }
@@ -110,19 +104,16 @@ public class UposService {
         return makeOperation(accountId, shopId, terminalTid, 0, Type.TEST);
     }
 
-
     public String readCheque(Long accountId, Long shopId, String terminalTid) {
-        String dir = userUposDir + accountId + "/" + shopId + "/" + terminalTid + "/";
-        try (FileInputStream fis = new FileInputStream(dir + "cheque.txt")) {
-            byte[] buffer = new byte[fis.available()];
-            fis.read(buffer, 0, fis.available());
-            String content = new String(buffer, "cp866");
-            //return Arrays.asList(content.split("\n"));
-            return content.replaceAll("=", "").stripTrailing();
-        } catch (Exception e) {
-            logger.error("Error while parsing cheque: " + e.getMessage());
-            return "";
-        }
+        String fileCheque = userUposDir + accountId + "/" + shopId + "/" + terminalTid + "/cheque.txt";
+        String content = readFileContent(fileCheque);
+        return content.replaceAll("=", "").stripTrailing();
+    }
+
+    public int getTransactionResponseCode(Long accountId, Long shopId, String terminalTid) {
+        String fileE = userUposDir + accountId + "/" + shopId + "/" + terminalTid + "/e";
+        String content = readFileContent(fileE);
+        return content != "" ? Integer.parseInt(content.split(",")[0]) : -1;
     }
 
     public boolean deleteUserUpos(Long accountId, Long shopId, String terminalTid) {
@@ -136,13 +127,21 @@ public class UposService {
         }
     }
 
-    public boolean defineTransactionStatus(String cheque) {
+    public boolean defineTransactionStatusByCheque(String cheque) {
         cheque = cheque.toLowerCase();
         return cheque != null && (cheque.contains("одобрено")
                 || cheque.contains("итоги совпали")
                 || cheque.contains("процессинг:работает")
                 || cheque.contains("сводный чек")
                 || cheque.contains("контрольная лента"));
+    }
 
+    private String readFileContent(String file) {
+        try {
+            return Files.readString(Paths.get(file), Charset.forName("KOI8-R"));
+        } catch (IOException e) {
+            logger.error("Error while parsing file: " + file + "  " + e.getMessage());
+            return "";
+        }
     }
 }
