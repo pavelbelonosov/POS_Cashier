@@ -1,0 +1,6 @@
+FROM deps:latest
+WORKDIR /usr/src/app
+COPY . .
+EXPOSE 8080
+EXPOSE 587
+CMD mvn test

@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  test:
+    build:
+      context: .
+      dockerfile: ./Dockerfile.test
+    container_name: apptest
+    environment:
+      - APP_HOSTNAME=apptest
+    depends_on:
+      - chrome
+
+  chrome:
+    image: selenium/standalone-chrome:4.4.0-20220812
+    shm_size: '2gb'
+    environment:
+      - SE_START_XVFB=false
+      - SE_SCREEN_WIDTH=1920
+      - SE_SCREEN_HEIGHT=1080
+      - SE_SESSION_REQUEST_TIMEOUT=5600
+    ports:
+      - 4444:4444
+      - 7900:7900
+
+
+
+
+
