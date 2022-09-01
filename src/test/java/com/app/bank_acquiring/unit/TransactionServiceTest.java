@@ -167,8 +167,7 @@ public class TransactionServiceTest {
     private void mockUposServiceMethods() {
         Mockito.when(uposService.makeOperation(anyLong(), anyLong(), anyString(),anyDouble(),any(Type.class))).thenReturn(true);
         Mockito.when(uposService.makeReportOperation(anyLong(), anyLong(), anyString(),any(Type.class))).thenReturn(true);
-        Mockito.when(uposService.createUserUpos(anyLong(), any(Terminal.class))).thenReturn(true);
-        Mockito.when(uposService.updateUposSettings(anyLong(), any(Terminal.class))).thenReturn(true);
+        Mockito.when(uposService.setUserUpos(anyLong(), any(Terminal.class), anyBoolean())).thenReturn(true);
         Mockito.when(uposService.deleteUserUpos(anyLong(), anyLong(), anyString())).thenReturn(true);
         Mockito.when(uposService.readCheque(anyLong(), anyLong(), anyString())).thenReturn(" ");
         Mockito.when(uposService.defineTransactionStatusByCheque(anyString())).thenReturn(true);
