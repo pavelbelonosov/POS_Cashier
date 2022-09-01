@@ -8,26 +8,33 @@ services:
       - 8080:8080
     volumes:
       - ./usersUpos:/usr/src/app/usersUpos
+    environment:
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_USER=${POSTGRES_USER}
+      - DB_PASSWORD=${POSTGRES_PASSWORD}
+      - DB_DRIVER=${DB_DRIVER}
+      - HIBERNATE_DIALECT=${HIBERNATE_DIALECT}
     command: ["java", "-jar", "./Shop_Inventory_POS-1.0.jar"]
+    depends_on:
+      - postgres
     container_name: shop_pos
 
   postgres:
     image: postgres:13.2-alpine
     restart: unless-stopped
-    ports:
-      - 5432:5432
+    expose:
+      - ${DB_PORT}
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=166831
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     volumes:
       - ./pg_data:/var/lib/postgresql/data
-      #- ./init.sql:/docker-entrypoint-initdb.d/init.sql
-    container_name: postgres_db
-
+    command: ["-p", "${DB_PORT}"]
 
   adminer:
     image: adminer
-    restart: always
+    restart: unless-stopped
     ports:
-      - 3450:8081
+      - 3450:8080
     container_name: admin
