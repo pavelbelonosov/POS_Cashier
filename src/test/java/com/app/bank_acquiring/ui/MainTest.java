@@ -189,9 +189,9 @@ public class MainTest extends BaseTest {
         assertThat(prodTable).isPresent();
         //clicking reports button ->modal pops up->clicking xreport button
         el("button", containingText("Отчеты")).click();
-        await().explicitlyFor(1, TimeUnit.SECONDS);
+        await().explicitlyFor(3, TimeUnit.SECONDS);
         el("#xReportBtn").click();
-        await().explicitlyFor(1, TimeUnit.SECONDS);
+        await().explicitlyFor(3, TimeUnit.SECONDS);
         //cheque should contain info
         assertThat(chequeArea.textContent()).contains("ПРОМЕЖУТОЧНЫЙ ОТЧЕТ");
     }
