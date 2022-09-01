@@ -36,7 +36,7 @@ public class TerminalService {
         terminal.setAccount(account);
         terminalRepository.save(terminal);
         account.getTerminals().add(terminal);
-        if (!uposService.createUserUpos(account.getId(), terminal)) {
+        if (!uposService.setUserUpos(account.getId(), terminal, true)) {
             logger.error("UPOS not created for the account(id " + account.getId() + ")");
             throw new RuntimeException("Error while creating UPOS for the account");
         }
@@ -52,7 +52,7 @@ public class TerminalService {
             terminal.setStandalone(false);//integrated with cash register POS
             if (ip != null && !ip.isBlank()) terminal.setIp(ip);
             if (chequeHeader != null & !chequeHeader.isBlank()) terminal.setChequeHeader(chequeHeader);
-            uposService.updateUposSettings(accountRepository.findByUsername(currentUser).getId(), terminal);
+            uposService.setUserUpos(accountRepository.findByUsername(currentUser).getId(), terminal, false);
         }
     }
 
