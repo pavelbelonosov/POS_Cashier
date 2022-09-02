@@ -17,7 +17,8 @@ services:
       - HIBERNATE_DIALECT=${HIBERNATE_DIALECT}
     command: ["java", "-jar", "./Shop_Inventory_POS-1.0.jar"]
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     container_name: shop_pos
 
   postgres:
@@ -28,9 +29,28 @@ services:
     environment:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     volumes:
       - ./pg_data:/var/lib/postgresql/data
     command: ["-p", "${DB_PORT}"]
+
+  flyway:
+    image: flyway/flyway:9.2.1-alpine
+    volumes:
+      - ./src/main/resources/db/migration:/flyway/sql
+      - ./flyway:/flyway/conf
+    command: ["migrate"]
+    environment:
+      - FLYWAY_URL=${DB_HOST}:${DB_PORT}/
+      - FLYWAY_USER=${POSTGRES_USER}
+      - FLYWAY_PASSWORD=${POSTGRES_PASSWORD}
+    depends_on:
+      postgres:
+        condition: service_healthy
 
   adminer:
     image: adminer
