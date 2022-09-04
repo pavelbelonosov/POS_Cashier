@@ -18,7 +18,7 @@ import java.nio.file.Paths;
 public class UposService {
 
     private final Logger logger = LoggerFactory.getLogger(UposService.class);
-    //private final String uposBase = "C:/temp/bank/upos";
+    //private final String userUposDir = "C:/temp/bank/upos/";//windows
     private final String uposBase = "./upos_base";
     private final String userUposDir = "/usr/src/app/usersUpos/";
 
