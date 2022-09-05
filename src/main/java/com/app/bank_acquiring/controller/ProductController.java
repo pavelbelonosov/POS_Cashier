@@ -124,7 +124,7 @@ public class ProductController {
     }
 
     @PostMapping("/products")
-    public String createProduct(@Valid @ModelAttribute Product product, BindingResult bindingResult, @RequestParam Shop shop,
+    public String createProduct(@Valid @ModelAttribute Product product, BindingResult bindingResult, @RequestParam(required = false) Shop shop,
                                 @AuthenticationPrincipal UserDetails currentUser, Model model) {
         if (shop == null) {
             bindingResult.addError(new FieldError("product", "shop", "Укажите магазин"));
