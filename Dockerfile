@@ -6,7 +6,7 @@ FROM base as unit_test
 CMD mvn -Dtest=com.app.bank_acquiring.unit.** test
 
 FROM base as integration_test
-CMD mvn com.app.bank_acquiring.integration.** test
+CMD mvn -Dtest=com.app.bank_acquiring.integration.** test
 
 FROM base as build
 RUN mvn -Dmaven.test.skip package
