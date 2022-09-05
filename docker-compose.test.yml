@@ -16,9 +16,7 @@ services:
     shm_size: '2gb'
     environment:
       - SE_START_XVFB=false
-      - SE_SCREEN_WIDTH=1920
-      - SE_SCREEN_HEIGHT=1080
-      - SE_SESSION_REQUEST_TIMEOUT=5600
+      - SE_SESSION_REQUEST_TIMEOUT=300
     ports:
       - 4444:4444
       - 7900:7900
