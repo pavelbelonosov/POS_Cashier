@@ -99,7 +99,7 @@ public class TransactionControllerTest {
                         .content(asJsonString(dto))
                         .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType("application/json;charset=UTF-8"))
+                .andExpect(content().contentType("application/json"))
                 //standalone pos -> transaction successful
                 .andExpect(jsonPath("$.status").value("true"))
                 //cheque content
@@ -139,7 +139,7 @@ public class TransactionControllerTest {
                         .content(asJsonString(dto))
                         .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType("application/json;charset=UTF-8"))
+                .andExpect(content().contentType("application/json"))
                 //standalone pos -> transaction successful
                 .andExpect(jsonPath("$.status").value("true"))
                 //cheque content
@@ -179,7 +179,7 @@ public class TransactionControllerTest {
                         .content(asJsonString(dto))
                         .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType("application/json;charset=UTF-8"))
+                .andExpect(content().contentType("application/json"))
                 //standalone pos -> transaction successful
                 .andExpect(jsonPath("$.status").value("true"))
                 //cheque content
@@ -217,7 +217,7 @@ public class TransactionControllerTest {
                         .content(asJsonString(dto))
                         .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType("application/json;charset=UTF-8"))
+                .andExpect(content().contentType("application/json"))
                 //standalone pos -> transaction successful
                 .andExpect(jsonPath("$.status").value("true"))
                 //cheque content
@@ -257,7 +257,7 @@ public class TransactionControllerTest {
                         .content(asJsonString(dto))
                         .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType("application/json;charset=UTF-8"))
+                .andExpect(content().contentType("application/json"))
                 //standalone pos -> transaction successful
                 .andExpect(jsonPath("$.status").value("true"))
                 //cheque content
@@ -297,7 +297,7 @@ public class TransactionControllerTest {
                         .content(asJsonString(dto))
                         .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType("application/json;charset=UTF-8"))
+                .andExpect(content().contentType("application/json"))
                 //standalone pos -> transaction successful
                 .andExpect(jsonPath("$.status").value("true"))
                 //cheque content
@@ -384,7 +384,7 @@ public class TransactionControllerTest {
                         .with(user(admin.getUsername()).password(admin.getPassword())
                                 .authorities(utilPopulate.getAuthorities(admin))))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType("application/json;charset=UTF-8"))
+                .andExpect(content().contentType("application/json"))
                 //standalone pos -> transaction successful
                 .andExpect(jsonPath("$.status").value("true"))
                 //cheque content
@@ -418,7 +418,7 @@ public class TransactionControllerTest {
                         .with(user(employee.getUsername()).password(employee.getPassword())
                                 .authorities(utilPopulate.getAuthorities(employee))))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType("application/json;charset=UTF-8"))
+                .andExpect(content().contentType("application/json"))
                 //standalone pos -> transaction successful
                 .andExpect(jsonPath("$.status").value("true"))
                 //cheque content
@@ -452,7 +452,7 @@ public class TransactionControllerTest {
                         .with(user(employee.getUsername()).password(employee.getPassword())
                                 .authorities(utilPopulate.getAuthorities(employee))))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType("application/json;charset=UTF-8"))
+                .andExpect(content().contentType("application/json"))
                 //standalone pos -> transaction successful
                 .andExpect(jsonPath("$.status").value("true"))
                 //cheque content
@@ -484,7 +484,7 @@ public class TransactionControllerTest {
                         .with(user(admin.getUsername()).password(admin.getPassword())
                                 .authorities(utilPopulate.getAuthorities(admin))))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType("application/json;charset=UTF-8"))
+                .andExpect(content().contentType("application/json"))
                 //standalone pos -> transaction successful
                 .andExpect(jsonPath("$.status").value("true"))
                 //cheque content
@@ -518,7 +518,7 @@ public class TransactionControllerTest {
                         .with(user(employee.getUsername()).password(employee.getPassword())
                                 .authorities(utilPopulate.getAuthorities(employee))))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType("application/json;charset=UTF-8"))
+                .andExpect(content().contentType("application/json"))
                 //standalone pos -> transaction successful
                 .andExpect(jsonPath("$.status").value("true"))
                 //cheque content
@@ -552,7 +552,7 @@ public class TransactionControllerTest {
                         .with(user(employee.getUsername()).password(employee.getPassword())
                                 .authorities(utilPopulate.getAuthorities(employee))))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType("application/json;charset=UTF-8"))
+                .andExpect(content().contentType("application/json"))
                 //standalone pos -> transaction successful
                 .andExpect(jsonPath("$.status").value("true"))
                 //cheque content
@@ -586,7 +586,7 @@ public class TransactionControllerTest {
                         .with(user(admin.getUsername()).password(admin.getPassword())
                                 .authorities(utilPopulate.getAuthorities(admin))))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType("application/json;charset=UTF-8"))
+                .andExpect(content().contentType("application/json"))
                 //check content of json arr in server response, should contain one payment
                 .andExpect(jsonPath("$[0]").value("В кассе: "
                         + (dto.getAmount() + ""))) //add dto.getAmount() + "".replace('.', ',') for windows
@@ -620,7 +620,7 @@ public class TransactionControllerTest {
                         .with(user(employee.getUsername()).password(employee.getPassword())
                                 .authorities(utilPopulate.getAuthorities(employee))))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType("application/json;charset=UTF-8"))
+                .andExpect(content().contentType("application/json"))
                 //check content of json arr in server response, should contain one payment
                 .andExpect(jsonPath("$[0]").value("В кассе: "
                         + (dto.getAmount() + ""))) //add dto.getAmount() + "".replace('.', ',') for windows
@@ -654,7 +654,7 @@ public class TransactionControllerTest {
                         .with(user(employee.getUsername()).password(employee.getPassword())
                                 .authorities(utilPopulate.getAuthorities(employee))))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType("application/json;charset=UTF-8"))
+                .andExpect(content().contentType("application/json"))
                 //check content of json arr in server response, should contain one payment
                 .andExpect(jsonPath("$[0]").value("В кассе: "
                         + (dto.getAmount() + ""))) //add dto.getAmount() + "".replace('.', ',') for windows
