@@ -91,7 +91,7 @@ public class TerminalService {
     @Transactional
     public void setWorkTerminalToAccount(@NonNull String currentUser, @NonNull Long id) {
         Account current = accountRepository.findByUsername(currentUser);
-        current.setWorkTerminalTid(terminalRepository.getOne(id).getTid());
+        current.setWorkTerminalTid(terminalRepository.getById(id).getTid());
     }
 
     public List<Account> getEmployeesWithThisWorkTerminal(@NonNull String terminalTid, @NonNull String currentUser) {
@@ -104,7 +104,7 @@ public class TerminalService {
                 .collect(Collectors.toList());
         //filtering employees by having given terminal in work
         return employees.stream().map(account -> account.getId()).distinct()
-                .map(id -> accountRepository.getOne(id))
+                .map(id -> accountRepository.getById(id))
                 .filter(account -> account.getWorkTerminalTid() != null && account.getWorkTerminalTid().equals(terminalTid))
                 .collect(Collectors.toList());
     }

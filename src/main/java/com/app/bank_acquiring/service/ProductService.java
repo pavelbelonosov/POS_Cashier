@@ -48,7 +48,7 @@ public class ProductService {
     @CacheEvict(value = "products", key = "#id")
     public void deleteProduct(@NonNull Long id, @NonNull String currentUser) {
         Account current = accountRepository.findByUsername(currentUser);
-        Product product = productRepository.getOne(id);
+        Product product = productRepository.getById(id);
         validateProductIdAccess(product, current);
         productRepository.delete(product);
     }

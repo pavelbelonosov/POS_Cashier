@@ -64,7 +64,7 @@ public class ShopService {
     @Transactional
     public void deleteShop(@NonNull Long shopId, @NonNull String currentUser) {
         Account owner = accountRepository.findByUsername(currentUser);
-        Shop shop = shopRepository.getOne(shopId);
+        Shop shop = shopRepository.getById(shopId);
         validateShopIdAccess(shop, owner);
         shop.getAccounts().removeIf(account -> {
             if (!account.getId().equals(owner.getId())) {

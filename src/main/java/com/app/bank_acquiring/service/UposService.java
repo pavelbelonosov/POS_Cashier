@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 
 @Service
@@ -22,6 +21,13 @@ public class UposService {
     private final String uposBase = "./upos_base";
     private final String userUposDir = "/usr/src/app/usersUpos/";
 
+    /**
+     * The method is used to create or update upos files for given app user by app user id.
+     * @param accountId app user repository ID
+     * @param terminal terminal, belonging to given through id user
+     * @param createNewFlag if true - upos files are copied into app user dir on system
+     * @return
+     */
     @Async
     public boolean setUserUpos(Long accountId, Terminal terminal, boolean createNewFlag) {
         try {
@@ -35,8 +41,6 @@ public class UposService {
                 pw.println("PinpadIPAddr=" + terminal.getIp());
                 pw.println("PinpadIPPort=8888");
                 pw.println("header=" + terminal.getChequeHeader());
-                //pw.println("comport=9");
-                //pw.println("showscreens=1");
                 pw.println("printerfile=cheque.txt");
                 pw.println("terminalId=" + terminal.getTid());
                 pw.println("merchantId=" + terminal.getMid());
@@ -69,11 +73,9 @@ public class UposService {
         try {
             switch (transactionType) {
                 case PAYMENT:
-                    //process = new ProcessBuilder(dir + "loadparm.exe", "9", "1").start();
                     process = new ProcessBuilder(dir + "sb_pilot", "1", (int) (amount * 100) + "").start();
                     break;
                 case REFUND:
-                    //process = new ProcessBuilder(dir + "loadparm.exe", "9", "1").start();
                     process = new ProcessBuilder(dir + "sb_pilot", "3", (int) (amount * 100) + "").start();
                     break;
                 case CLOSE_DAY:
