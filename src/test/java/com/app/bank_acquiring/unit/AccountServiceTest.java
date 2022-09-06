@@ -8,6 +8,7 @@ import com.app.bank_acquiring.repository.AccountInfoRepository;
 import com.app.bank_acquiring.repository.AccountRepository;
 import com.app.bank_acquiring.repository.ShopRepository;
 import com.app.bank_acquiring.service.AccountService;
+import com.app.bank_acquiring.service.EmailServiceComponent;
 import org.junit.*;
 import org.mockito.Mockito;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -30,6 +31,7 @@ public class AccountServiceTest{
     private AccountInfoRepository accountInfoRepository = Mockito.mock(AccountInfoRepository.class);
     private ShopRepository shopRepository = Mockito.mock(ShopRepository.class);
     private PasswordEncoder passwordEncoder = Mockito.mock(PasswordEncoder.class);
+    private EmailServiceComponent emailServiceComponent = Mockito.mock(EmailServiceComponent.class);
 
     private AccountService accountService;
 
@@ -38,7 +40,7 @@ public class AccountServiceTest{
         Mockito.when(passwordEncoder.encode(any(String.class))).thenReturn("encodedPwd");
         Mockito.when(passwordEncoder.matches(any(String.class), eq("encodedPwd"))).thenReturn(true);
         accountService = new AccountService(accountRepository, passwordEncoder,
-                accountInfoRepository, shopRepository);
+                accountInfoRepository, shopRepository, emailServiceComponent);
     }
 
     @Test

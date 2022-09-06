@@ -27,6 +27,7 @@ public class AccountService {
     private PasswordEncoder passwordEncoder;
     private AccountInfoRepository accountInfoRepository;
     private ShopRepository shopRepository;
+    private EmailServiceComponent emailService;
 
     @Transactional
     public void createAdminUser(@NonNull Account account, @NonNull AccountInfo accountInfo) {
@@ -35,6 +36,15 @@ public class AccountService {
         account.setAuthority(Authority.ADMIN);
         accountInfoRepository.save(accountInfo);
         accountRepository.save(account);
+        if (accountRepository.findByUsername(account.getUsername()) != null) {
+            try {
+                emailService.sendMail(accountInfo.getEmail(), "Успешная регистрация",
+                        "Ваш email был указан при регистрации в сервисе Pos Cashier. Если вы не имеете к этому отношения, проигнорируйте это письмо");
+                logger.info("Cheque was sent to: " + accountInfo.getEmail());
+            } catch (Exception e) {
+                logger.error("Cannot send cheque to email: " + e.getMessage());
+            }
+        }
     }
 
     @Transactional
@@ -43,13 +53,13 @@ public class AccountService {
         accountInfo.setAccount(account);
         accountInfoRepository.save(accountInfo);
         accountRepository.save(account);
-        shopRepository.getOne(shop.getId()).getAccounts().add(account);
+        shopRepository.getById(shop.getId()).getAccounts().add(account);
     }
 
     @Transactional
     public void updateEmployeeAccount(@NonNull Long id, @NonNull AccountInfo accountInfo,
                                       @NonNull Shop shop, @NonNull Authority authority) {
-        Account user = accountRepository.getOne(id);
+        Account user = accountRepository.getById(id);
         AccountInfo userInfo = user.getAccountInfo();
         Shop oldShop = user.getShops().get(0);
 
@@ -59,8 +69,8 @@ public class AccountService {
         userInfo.setEmail(accountInfo.getEmail());
 
         user.setAuthority(authority);
-        shopRepository.getOne(oldShop.getId()).getAccounts().remove(user);
-        shopRepository.getOne(shop.getId()).getAccounts().add(user);
+        shopRepository.getById(oldShop.getId()).getAccounts().remove(user);
+        shopRepository.getById(shop.getId()).getAccounts().add(user);
     }
 
     @Transactional
