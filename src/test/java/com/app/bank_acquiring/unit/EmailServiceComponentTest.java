@@ -30,7 +30,7 @@ public class EmailServiceComponentTest {
     public void whenSendMail_thenSetAddressAndMessageTextRight() {
         ArgumentCaptor<SimpleMailMessage> valueCapture = ArgumentCaptor.forClass(SimpleMailMessage.class);
         doNothing().when(javaMailSender).send(valueCapture.capture());
-        emailServiceComponent.sendMail("fooMail@gmail.com", "cheque");
+        emailServiceComponent.sendMail("fooMail@gmail.com","Чек об операции", "cheque");
 
         assertTrue(valueCapture.getValue().getTo()[0].equals("fooMail@gmail.com"));
         assertTrue(valueCapture.getValue().getText().equals("cheque"));
@@ -39,6 +39,6 @@ public class EmailServiceComponentTest {
     @Test(expected = Exception.class)
     public void givenIncorrectEmailAddress_whenSendMail_thenThrowException() {
         doThrow(Exception.class).when(javaMailSender).send(any(SimpleMailMessage.class));
-        emailServiceComponent.sendMail("pablo11grandegmail.com", "cheque");
+        emailServiceComponent.sendMail("pablo11grandegmail.com","Чек об операции", "cheque");
     }
 }

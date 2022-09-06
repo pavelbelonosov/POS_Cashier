@@ -15,13 +15,13 @@ public class EmailServiceComponent {
         this.javaMailSender = javaMailSender;
     }
 
-    public void sendMail(String sendTo, String cheque) throws MailException {
+    public void sendMail(String sendTo, String subject, String body) throws MailException {
 
         SimpleMailMessage mail = new SimpleMailMessage();
         mail.setTo(sendTo);
         mail.setFrom("poscashier2022@gmail.com");
-        mail.setSubject("Чек об операции");
-        mail.setText(cheque);
+        mail.setSubject(subject);
+        mail.setText(body);
         javaMailSender.send(mail);
     }
 }

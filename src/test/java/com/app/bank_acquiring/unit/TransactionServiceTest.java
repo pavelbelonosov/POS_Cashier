@@ -123,7 +123,7 @@ public class TransactionServiceTest {
         Terminal terminal = createTerminal();
         terminal.setAccount(account);
         account.setWorkTerminalTid(terminal.getTid());
-        doNothing().when(emailService).sendMail(anyString(),anyString());
+        doNothing().when(emailService).sendMail(anyString(),anyString(),anyString());
         assertTrue(transactionService.sendEmail(account.getUsername(), List.of("email","cheque")));
     }
 

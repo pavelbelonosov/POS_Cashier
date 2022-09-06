@@ -181,7 +181,8 @@ public class TransactionService {
             return false;
         }
         try {
-            emailService.sendMail(emailAddressAndCheque.get(0), emailAddressAndCheque.get(1));
+            emailService.sendMail(emailAddressAndCheque.get(0),"Чек об операции"
+                    , emailAddressAndCheque.get(1));
             logger.info("Cheque was sent to: " + emailAddressAndCheque.get(0));
             return true;
         } catch (Exception e) {
