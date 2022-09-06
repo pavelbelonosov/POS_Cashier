@@ -36,7 +36,9 @@ public class AccountService {
         account.setAuthority(Authority.ADMIN);
         accountInfoRepository.save(accountInfo);
         accountRepository.save(account);
-        if (accountRepository.findByUsername(account.getUsername()) != null) {
+        if (accountRepository.findByUsername(account.getUsername()) != null
+                && accountInfo.getEmail() != null
+                && !accountInfo.getEmail().isBlank()) {
             try {
                 emailService.sendMail(accountInfo.getEmail(), "Успешная регистрация",
                         "Ваш email был указан при регистрации в сервисе Pos Cashier. Если вы не имеете к этому отношения, проигнорируйте это письмо");
