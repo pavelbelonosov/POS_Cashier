@@ -214,7 +214,7 @@ public class TerminalServiceTest {
         terminal.setStandalone(false);
         terminal.setId(Math.abs(new Random().nextLong()));
         Mockito.when(terminalRepository.findByTid(terminal.getTid())).thenReturn(terminal);
-        Mockito.when(terminalRepository.getOne(terminal.getId())).thenReturn(terminal);
+        Mockito.when(terminalRepository.getById(terminal.getId())).thenReturn(terminal);
         Mockito.when(terminalRepository.findById(terminal.getId())).thenReturn(Optional.of(terminal));
         doAnswer(invocationOnMock -> {
             Terminal arg = invocationOnMock.getArgument(0);

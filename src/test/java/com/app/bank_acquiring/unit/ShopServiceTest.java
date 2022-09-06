@@ -189,7 +189,7 @@ public class ShopServiceTest {
         user.setAccountInfo(new AccountInfo());
 
         Mockito.when(accountRepository.findByUsername(user.getUsername())).thenReturn(user);
-        Mockito.when(accountRepository.getOne(user.getId())).thenReturn(user);
+        Mockito.when(accountRepository.getById(user.getId())).thenReturn(user);
         doAnswer(invocationOnMock -> {
             Account arg = invocationOnMock.getArgument(0);
             arg.setId(-1L);
@@ -202,7 +202,7 @@ public class ShopServiceTest {
         Shop shop = spy(Shop.class);
         shop.setName("shop");
         shop.setId(Math.abs(new Random().nextLong()));
-        Mockito.when(shopRepository.getOne(shop.getId())).thenReturn(shop);
+        Mockito.when(shopRepository.getById(shop.getId())).thenReturn(shop);
         doAnswer(invocationOnMock -> {
             Shop arg = invocationOnMock.getArgument(0);
             arg.setId(-1L);

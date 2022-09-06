@@ -62,7 +62,7 @@ public class TerminalService {
             return false;
         }
         Account current = accountRepository.findByUsername(currentUser);
-        Terminal terminal = terminalRepository.getOne(terminalId);
+        Terminal terminal = terminalRepository.getById(terminalId);
         validateIdAccess(current, terminal);
         if (uposService.testPSDB(terminal.getAccount().getId(), terminal.getShop().getId(), terminal.getTid())) {
             Transaction test = new Transaction();

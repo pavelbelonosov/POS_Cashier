@@ -124,7 +124,7 @@ public class AccountServiceTest{
 
         Mockito.when(accountRepository.findByUsername(user.getUsername()))
                 .thenReturn(user);
-        Mockito.when(accountRepository.getOne(user.getId()))
+        Mockito.when(accountRepository.getById(user.getId()))
                 .thenReturn(user);
         //Mockito.when(accountRepository.findById(user.getId())).thenReturn(Optional.of(user));
         return user;
@@ -136,7 +136,7 @@ public class AccountServiceTest{
         List<Account> accountList = new ArrayList<>();
         shop.setAccounts(accountList);
         shop.setId(Math.abs(new Random().nextLong()));
-        Mockito.when(shopRepository.getOne(shop.getId()))
+        Mockito.when(shopRepository.getById(shop.getId()))
                 .thenReturn(shop);
         return shop;
     }

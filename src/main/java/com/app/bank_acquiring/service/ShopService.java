@@ -30,7 +30,7 @@ public class ShopService {
     @Transactional
     public Shop getShop(@NonNull Long id, @NonNull String currentUser) {
         Account current = accountRepository.findByUsername(currentUser);
-        Shop shop = shopRepository.getOne(id);
+        Shop shop = shopRepository.getById(id);
         validateShopIdAccess(shop, current);
         return shop;
     }
@@ -51,9 +51,9 @@ public class ShopService {
     @Transactional
     public void deleteAccountFromShop(@NonNull Long shopId, @NonNull Long accountId, @NonNull String currentUser) {
         Account owner = accountRepository.findByUsername(currentUser);
-        Shop shop = shopRepository.getOne(shopId);
+        Shop shop = shopRepository.getById(shopId);
         validateShopIdAccess(shop, owner);
-        Account employee = accountRepository.getOne(accountId);
+        Account employee = accountRepository.getById(accountId);
         validateEmployeeIdAccess(shop, employee);
         AccountInfo accountInfo = employee.getAccountInfo();
         shop.getAccounts().remove(employee);
