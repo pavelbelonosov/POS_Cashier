@@ -12,11 +12,11 @@ services:
       - chrome
 
   chrome:
-    image: selenium/standalone-chrome:4.4.0-20220812
+    image: selenium/standalone-chrome:latest
     shm_size: '2gb'
     environment:
       - SE_START_XVFB=false
-      - SE_SESSION_REQUEST_TIMEOUT=300
+      - SE_SESSION_REQUEST_TIMEOUT=3600
     ports:
       - 4444:4444
       - 7900:7900
