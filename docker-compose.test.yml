@@ -8,6 +8,8 @@ services:
     container_name: apptest
     environment:
       - APP_HOSTNAME=apptest
+      - EMAIL_ROBOT_NAME=${EMAIL_ROBOT_NAME}
+      - EMAIL_ROBOT_PASS=${EMAIL_ROBOT_PASS}
     depends_on:
       - chrome
 

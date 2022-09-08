@@ -19,8 +19,8 @@ jobs:
          run: docker build -f Dockerfile.deps . -t deps:latest
 
        - name: Run tests
-         run: docker-compose -f docker-compose.test.yml up
-         env:
-           EMAIL_ROBOT_NAME: ${{secrets.EMAIL_ROBOT_NAME}}
-           EMAIL_ROBOT_PASS: ${{secrets.EMAIL_ROBOT_PASS}}
+         run: docker-compose -f docker-compose.test.yml up --build-arg EMAIL_ROBOT_NAME=${{secrets.EMAIL_ROBOT_NAME}} --build-arg EMAIL_ROBOT_PASS=${{secrets.EMAIL_ROBOT_PASS}}
+
+       - name: Down containers
+         run: docker-compose -f docker-compose.test.yml down
 
