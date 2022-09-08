@@ -18,13 +18,14 @@ public class UposService {
 
     private final Logger logger = LoggerFactory.getLogger(UposService.class);
     //private final String userUposDir = "C:/temp/bank/upos/";//windows
-    private final String uposBase = "./upos_base";
-    private final String userUposDir = "./usersUpos/";
+    private final String uposBase = System.getenv("WORKDIR") + "/upos_base";
+    private final String userUposDir = System.getenv("WORKDIR") + "/usersUpos/";
 
     /**
      * The method is used to create or update upos files for given app user by app user id.
-     * @param accountId app user repository ID
-     * @param terminal terminal, belonging to given through id user
+     *
+     * @param accountId     app user repository ID
+     * @param terminal      terminal, belonging to given through id user
      * @param createNewFlag if true - upos files are copied into app user dir on system
      * @return
      */
