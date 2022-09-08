@@ -23,5 +23,4 @@ jobs:
          env:
            EMAIL_ROBOT_NAME: ${{secrets.EMAIL_ROBOT_NAME}}
            EMAIL_ROBOT_PASS: ${{secrets.EMAIL_ROBOT_PASS}}
-           WORKDIR: ${{GITHUB_WORKSPACE}}
 
