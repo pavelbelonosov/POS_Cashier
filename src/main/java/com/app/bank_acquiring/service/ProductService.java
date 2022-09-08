@@ -100,7 +100,7 @@ public class ProductService {
         try {
             if (accountId == null || shopId == null || products == null) throw new IllegalArgumentException();
             Workbook workbook = generateExcel(products);
-            File excelFile = new File("/usr/src/app/usersUpos/" + accountId + "/" + shopId + "/products.xlsx");
+            File excelFile = new File("./usersUpos/" + accountId + "/" + shopId + "/products.xlsx");
             FileUtils.createParentDirectories(excelFile);
             FileOutputStream outputStream = new FileOutputStream(excelFile.getAbsolutePath());
             workbook.write(outputStream);

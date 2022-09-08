@@ -1,5 +1,4 @@
 FROM deps:latest
-WORKDIR /usr/src/app
 COPY . .
 EXPOSE 8081
 EXPOSE 587

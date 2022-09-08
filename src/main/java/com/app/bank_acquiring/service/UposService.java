@@ -19,7 +19,7 @@ public class UposService {
     private final Logger logger = LoggerFactory.getLogger(UposService.class);
     //private final String userUposDir = "C:/temp/bank/upos/";//windows
     private final String uposBase = "./upos_base";
-    private final String userUposDir = "/usr/src/app/usersUpos/";
+    private final String userUposDir = "./usersUpos/";
 
     /**
      * The method is used to create or update upos files for given app user by app user id.

@@ -17,6 +17,8 @@ services:
       - DB_SCHEMA=${POSTGRES_SCHEMA}
       - DB_DRIVER=${DB_DRIVER}
       - HIBERNATE_DIALECT=${HIBERNATE_DIALECT}
+      - EMAIL_ROBOT_NAME=${EMAIL_ROBOT_NAME}
+      - EMAIL_ROBOT_PASS=${EMAIL_ROBOT_PASS}
     command: ["java", "-jar", "./${APP_NAME}"]
     depends_on:
       postgres:
