@@ -47,7 +47,7 @@ public class UposService {
                 pw.println("merchantId=" + terminal.getMid());
                 pw.println("LockPath=" + userUpos.getAbsolutePath());
                 script.println("#!/bin/sh");
-                script.println("chmod u+x echo \"" + terminal.getIp() + "      pos" + terminal.getTid() + "_ip\" >> /etc/hosts");
+                script.println("echo \"" + terminal.getIp() + "      pos" + terminal.getTid() + "_ip\" >> /etc/hosts");
             }
             new ProcessBuilder(userUpos.getAbsolutePath() + "/script.sh").start();
             return true;
