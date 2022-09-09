@@ -2,12 +2,16 @@ version: '3.8'
 
 services:
   app:
-    build: .
+    build:
+      context: .
+      args:
+        - APP_NAME=${APP_NAME}
+        - DIR=${WORKDIR}
     restart: always
     expose:
       - 8080
     volumes:
-      - ./usersUpos:/usr/src/app/usersUpos
+      - ./usersUpos:${WORKDIR}/usersUpos
     environment:
       - DB_HOST=${DB_HOST}
       - DB_PORT=${DB_PORT}

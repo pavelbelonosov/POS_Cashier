@@ -5,6 +5,8 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile.test
+      args:
+        - DIR=${WORKDIR}
     container_name: apptest
     environment:
       - APP_HOSTNAME=apptest
