@@ -18,7 +18,7 @@ public class UposService {
 
     private final Logger logger = LoggerFactory.getLogger(UposService.class);
     //private final String userUposDir = "C:/temp/bank/upos/";//windows
-    private final String uposBase = System.getenv("WORKDIR") + "/upos_base";
+    private final String uposBase = "./upos_base";
     private final String userUposDir = System.getenv("WORKDIR") + "/usersUpos/";
 
     /**

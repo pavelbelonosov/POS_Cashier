@@ -1,6 +1,6 @@
 FROM deps:latest
-COPY . ${GITHUB_WORKSPACE}
-RUN mkdir -p /usersUpos && chmod -R 777 /usersUpos
+COPY . .
+RUN mkdir -p /usr/src/app/usersUpos && chmod -R 777 /usr/src/app/usersUpos
 EXPOSE 8081
 EXPOSE 587
 EXPOSE 8888
