@@ -20,9 +20,9 @@ services:
     environment:
       - SE_START_XVFB=false
       - SE_SESSION_REQUEST_TIMEOUT=3600
-    ports:
-      - 4444:4444
-      - 7900:7900
+    expose:
+      - 4444
+
 
 
 
