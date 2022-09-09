@@ -20,9 +20,6 @@ jobs:
          run: |
               sed -i "/\b\(WORKDIR\)\b/d" Dockerfile.deps
               sed -i "/\b\(WORKDIR\)\b/d" Dockerfile.test
-              sed -i "/\b\(CMD\)\b/d" Dockerfile.test
-              echo "USER root" >> Dockerfile.test
-              echo "CMD mvn test" >> Dockerfile.test
               sed -i "/\b\(WORKDIR\)\b/d" .env
               echo "WORKDIR=${GITHUB_WORKSPACE}" >> .env
               cat Dockerfile.test
@@ -32,7 +29,9 @@ jobs:
          run: docker build -f Dockerfile.deps . -t deps:latest
 
        - name: Run tests
-         run: docker-compose -f docker-compose.test.yml up --exit-code-from test
+         run: |
+              chmod +x ./upos_base/script.sh
+              docker-compose -f docker-compose.test.yml up --exit-code-from test
          env:
            EMAIL_ROBOT_NAME: ${{secrets.EMAIL_ROBOT_NAME}}
            EMAIL_ROBOT_PASS: ${{secrets.EMAIL_ROBOT_PASS}}
