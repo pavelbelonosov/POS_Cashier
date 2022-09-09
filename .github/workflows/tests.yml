@@ -19,11 +19,11 @@ jobs:
        - name: Build mvn deps image
          run: docker build -f Dockerfile.deps . -t deps:latest
 
-      - name: Synchronize users
-        run: |
-             touch .Dockerfile.test
-             echo USER 1001:1001 >> .Dockerfile.test
-             cat .Dockerfile.test
+       - name: Synchronize users
+         run: |
+              touch .Dockerfile.test
+              echo USER 1001:1001 >> .Dockerfile.test
+              cat .Dockerfile.test
 
 
        - name: Run tests
