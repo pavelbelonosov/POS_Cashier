@@ -17,14 +17,17 @@ jobs:
          uses: actions/checkout@v2
 
        - name: Build mvn deps image
-         run: docker build -f Dockerfile.deps . -t deps:latest
+         run: |
+              sed -i "/\b\(WORKDIR\)\b/d" Dockerfile.deps
+              docker build -f Dockerfile.deps . -t deps:latest
 
        - name: Set github actions reqs
          run: |
-              sed -i "/\b\(WORKDIR\)\b/d" Dockerfile.deps
               sed -i "/\b\(WORKDIR\)\b/d" Dockerfile.test
+              sed -i "/\b\(CMD\)\b/d" Dockerfile.test
               sed -i "/\b\(WORKDIR\)\b/d" .env
               echo "USER 1001:1001" >> Dockerfile.test
+              echo "CMD mvn test" >> Dockerfile.test
               cat Dockerfile.test
               echo "WORKDIR=${GITHUB_WORKSPACE}" >> .env
               cat .env
