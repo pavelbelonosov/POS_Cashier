@@ -21,13 +21,11 @@ jobs:
 
        - name: Synchronize users
          run: |
-              touch .Dockerfile.test
               echo USER 1001:1001 >> .Dockerfile.test
               cat .Dockerfile.test
 
 
        - name: Run tests
-         working-directory: /usr/src/app
          run: docker-compose -f docker-compose.test.yml up --exit-code-from test
          env:
            EMAIL_ROBOT_NAME: ${{secrets.EMAIL_ROBOT_NAME}}
