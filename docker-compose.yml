@@ -6,7 +6,6 @@ services:
       context: .
       args:
         - APP_NAME=${APP_NAME}
-        - DIR=${WORKDIR}
     restart: always
     expose:
       - 8080
