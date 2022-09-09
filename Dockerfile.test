@@ -1,6 +1,6 @@
 FROM deps:latest
+WORKDIR /usr/src/app
 COPY . .
-RUN mkdir -p /usr/src/app/usersUpos && chmod -R 777 /usr/src/app/usersUpos
 EXPOSE 8081
 EXPOSE 587
 EXPOSE 8888
