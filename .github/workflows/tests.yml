@@ -24,7 +24,7 @@ jobs:
               sed -i "/\b\(WORKDIR\)\b/d" Dockerfile.deps
               sed -i "/\b\(WORKDIR\)\b/d" Dockerfile.test
               sed -i "/\b\(WORKDIR\)\b/d" .env
-              echo "USER 1000:1000" >> Dockerfile.test
+              echo "USER 1001:1001" >> Dockerfile.test
               cat Dockerfile.test
               echo "WORKDIR=${GITHUB_WORKSPACE}" >> .env
               cat .env
