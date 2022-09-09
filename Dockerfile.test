@@ -1,7 +1,6 @@
 FROM deps:latest
-ARG DIR
-WORKDIR ${DIR}
-COPY . .
+COPY . ${GITHUB_WORKSPACE}
+RUN mkdir -p /usersUpos && chmod -R 777 /usersUpos
 EXPOSE 8081
 EXPOSE 587
 EXPOSE 8888

@@ -1,4 +1,3 @@
 FROM maven:3.8-eclipse-temurin-17-alpine
-WORKDIR /build
 COPY pom.xml .
 RUN mvn dependency:go-offline
