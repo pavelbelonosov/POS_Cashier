@@ -35,12 +35,12 @@ docker build . -t integration_test --target integration_test
 docker run -it --rm --name integration_test integration_test
 ```
 ### Flyway
-For migration, put the V_changes.sql file in the /src/main/resources/db/migration volume and start the container
+For migration, put the `V_changes.sql` file in the `/src/main/resources/db/migration` volume and start the container
 
 Status of migrations  
 ```
 docker exec -it flyway_container sh  
-$flyway info
+$ flyway info
 ```
 
 ### Bugs in UI testing
