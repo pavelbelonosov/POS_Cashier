@@ -19,17 +19,16 @@ Deployment requires Docker. Run via 'docker compose up'
 Java 17, Spring Boot 2.5, Postgres 13, Flyway 9
 
 ### Docker
-Build an image with dependencies (and rebuild with pom changes)  
-`docker build -f Dockerfile.deps . -t deps:latest`
+Build an image with dependencies (and rebuild with pom changes) `docker build -f Dockerfile.deps . -t deps:latest`
 
-Run all tests  
-`docker-compose -f docker-compose.test.yml up`
+Run all tests `docker-compose -f docker-compose.test.yml up`
 
 Build and run the unit test container and then delete it  
 ```
 docker build . -t unit_test --target unit_test  
 docker run -it --rm --name unit_test unit_test
 ```
+
 Build and run the integration test container with its subsequent removal  
 ```
 docker build . -t integration_test --target integration_test  
@@ -45,7 +44,7 @@ $flyway info
 ```
 
 ### Bugs in UI testing
-**[SEVERE]: bind() failed: Cannot assign requested address (99)** - is OK
+**[SEVERE]: bind() failed: Cannot assign requested address (99)** - is OK  
 **Error Unable to execute request: java.util.concurrent.TimeoutException** - floating bug, detailed in SeleniumHQ/Selenium #9528 issue
 
 ## What's next?
