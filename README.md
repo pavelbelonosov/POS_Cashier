@@ -13,7 +13,7 @@ Main functions:
 - Send check by email
 
 ## Installation and setup
-Deployment requires Docker. Run via 'docker compose up'
+Deployment requires Docker. Run via `docker compose up`
 
 ## For developers
 Java 17, Spring Boot 2.5, Postgres 13, Flyway 9
