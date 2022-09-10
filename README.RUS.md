@@ -45,7 +45,7 @@ $ flyway info
 ```
 
 ### Баги при ui тестировании
-**[SEVERE]: bind() failed: Cannot assign requested address (99)** - это норма (малышева.jpg)
+**[SEVERE]: bind() failed: Cannot assign requested address (99)** - это норма (малышева.jpg)  
 **Error Unable to execute request: java.util.concurrent.TimeoutException** - плавающий глюк, подробно описан в SeleniumHQ/Selenium #9528 issue
 
 ## Что дальше?
