@@ -9,6 +9,9 @@ jobs:
     name: 'Build production image & Push to Docker hub'
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
@@ -28,6 +31,7 @@ jobs:
             file: ./Dockerfile
             push: true
             tags: ${{ secrets.DOCKERHUB_USERNAME }}/shop_inventory_pos:${{ github.event.release.tag_name }}, ${{ secrets.DOCKERHUB_USERNAME }}/shop_inventory_pos:latest
+
 
       - name: Build, Push and Release to Heroku.
         uses: gonuit/heroku-docker-deploy@v1.3.3
