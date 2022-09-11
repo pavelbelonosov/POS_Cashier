@@ -14,4 +14,4 @@ ENV TZ=Europe/Moscow
 EXPOSE 8888
 EXPOSE 8081
 EXPOSE 587
-CMD java $JAVA_OPTS -Dspring.profiles.active=test -Dserver.port=$PORT -jar ${APP_NAME}
+CMD java $JAVA_OPTS -Dspring.profiles.active=test -Dserver.port=$PORT -jar *.jar
