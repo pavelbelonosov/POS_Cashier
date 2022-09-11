@@ -8,7 +8,7 @@
     <groupId>com.app</groupId>
     <artifactId>Shop_Inventory_POS</artifactId>
     <name>Shop_Inventory_POS</name>
-    <version>1.0</version>
+    <version>v1.0.0</version>
     <packaging>jar</packaging>
 
     <properties>
