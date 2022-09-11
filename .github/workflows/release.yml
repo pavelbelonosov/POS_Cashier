@@ -18,28 +18,33 @@ jobs:
       - name: Build mvn deps image
         run: docker build -f Dockerfile.deps . -t deps:latest
 
+      - name: Build app image
+        run: |
+             docker build -f Dockerfile . -t ${{ secrets.DOCKERHUB_USERNAME }}/shop_inventory_pos:${{ github.event.release.tag_name }}
+             docker tag ${{ secrets.DOCKERHUB_USERNAME }}/shop_inventory_pos:${{ github.event.release.tag_name }} ${{ secrets.DOCKERHUB_USERNAME }}/shop_inventory_pos:latest
+
+      - name: Build image for heroku
+        run:  docker build . -f Dockerfile.heroku -t registry.heroku.com/${{ env.HEROKU_APP_NAME }}/web --target heroku
+
       - name: Login to DockerHub
         uses: docker/login-action@v2
         with:
             username: ${{ secrets.DOCKERHUB_USERNAME }}
             password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build and push app image
-        uses: docker/build-push-action@v3
-        with:
-            context: .
-            file: ./Dockerfile
-            push: true
-            tags: ${{ secrets.DOCKERHUB_USERNAME }}/shop_inventory_pos:${{ github.event.release.tag_name }}, ${{ secrets.DOCKERHUB_USERNAME }}/shop_inventory_pos:latest
+      - name: Push app image to DockerHub
+        run: docker push --all-tags ${{ secrets.DOCKERHUB_USERNAME }}/shop_inventory_pos
 
-
-      - name: Build, Push and Release to Heroku.
-        uses: gonuit/heroku-docker-deploy@v1.3.3
+      - name: Login to Heroku
+        uses: akhileshns/heroku-deploy@v3.12.12
         with:
-            email: ${{ secrets.HEROKU_EMAIL }}
+            heroku_email: ${{ secrets.HEROKU_EMAIL }}
             heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
-            heroku_app_name: ${{ secrets.HEROKU_APP_NAME }}
-            dockerfile_directory: ./
-            dockerfile_name: Dockerfile.heroku
-            docker_options: "--no-cache"
-            process_type: web
+            heroku_app_name: ${{ env.HEROKU_APP_NAME }}
+            justlogin: true
+
+      - name: Deploy to heroku
+        run: |
+             heroku container:login
+             docker push registry.heroku.com/${{ env.HEROKU_APP_NAME }}/web
+             heroku container:release web --app ${{ env.HEROKU_APP_NAME }}
