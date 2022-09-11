@@ -20,11 +20,11 @@ jobs:
 
       - name: Build app image
         run: |
-             docker build -f Dockerfile . -t ${{ secrets.DOCKERHUB_USERNAME }}/shop_inventory_pos:${{ github.event.release.tag_name }}
+             docker build --build-arg APP_NAME=Shop_Inventory_POS-${{ github.event.release.tag_name }}.jar . -f Dockerfile -t ${{ secrets.DOCKERHUB_USERNAME }}/shop_inventory_pos:${{ github.event.release.tag_name }}
              docker tag ${{ secrets.DOCKERHUB_USERNAME }}/shop_inventory_pos:${{ github.event.release.tag_name }} ${{ secrets.DOCKERHUB_USERNAME }}/shop_inventory_pos:latest
 
       - name: Build image for heroku
-        run:  docker build . -f Dockerfile.heroku -t registry.heroku.com/${{ secrets.HEROKU_APP_NAME }}/web --target heroku
+        run:  docker build --build-arg APP_NAME=Shop_Inventory_POS-${{ github.event.release.tag_name }}.jar . -f Dockerfile.heroku -t registry.heroku.com/${{ secrets.HEROKU_APP_NAME }}/web --target heroku
 
       - name: Login to DockerHub
         uses: docker/login-action@v2
