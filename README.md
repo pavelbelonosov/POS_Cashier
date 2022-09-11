@@ -45,8 +45,8 @@ $ flyway info
 
 ### Bugs in UI testing
 **[SEVERE]: bind() failed: Cannot assign requested address (99)** - is OK  
-**Error Unable to execute request: java.util.concurrent.TimeoutException** - floating bug, detailed in SeleniumHQ/Selenium #9528 issue
-**Expected to read a START_MAP but instead have: END. Last 0 characters read** - floating bug, detailed in SeleniumHQ/Selenium #1507 issue  
+**Error Unable to execute request: java.util.concurrent.TimeoutException** - floating bug, detailed in SeleniumHQ/Selenium #9528 issue  
+**Expected to read a START_MAP but instead have: END. Last 0 characters read** - floating bug, detailed in SeleniumHQ/Selenium #1507 issue 
 
 ## What's next?
 - Adding new banking protocols (UniPOS, Arcus)
