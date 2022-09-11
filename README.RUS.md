@@ -46,7 +46,8 @@ $ flyway info
 
 ### Баги при ui тестировании
 **[SEVERE]: bind() failed: Cannot assign requested address (99)** - это норма (малышева.jpg)  
-**Error Unable to execute request: java.util.concurrent.TimeoutException** - плавающий глюк, подробно описан в SeleniumHQ/Selenium #9528 issue
+**Error Unable to execute request: java.util.concurrent.TimeoutException** - плавающий глюк, подробно описан в SeleniumHQ/Selenium #9528 issue  
+**Expected to read a START_MAP but instead have: END. Last 0 characters read** - плавающий глюк, подробно описан в SeleniumHQ/Selenium #1507 issue
 
 ## Что дальше?
 - Добавление новых банковских протоколов (УниПОС, Аркус)
