@@ -24,7 +24,7 @@ jobs:
              docker tag ${{ secrets.DOCKERHUB_USERNAME }}/shop_inventory_pos:${{ github.event.release.tag_name }} ${{ secrets.DOCKERHUB_USERNAME }}/shop_inventory_pos:latest
 
       - name: Build image for heroku
-        run:  docker build . -f Dockerfile.heroku -t registry.heroku.com/${{ env.HEROKU_APP_NAME }}/web --target heroku
+        run:  docker build . -f Dockerfile.heroku -t registry.heroku.com/${{ secrets.HEROKU_APP_NAME }}/web --target heroku
 
       - name: Login to DockerHub
         uses: docker/login-action@v2
@@ -40,11 +40,11 @@ jobs:
         with:
             heroku_email: ${{ secrets.HEROKU_EMAIL }}
             heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
-            heroku_app_name: ${{ env.HEROKU_APP_NAME }}
+            heroku_app_name: ${{ secrets.HEROKU_APP_NAME }}
             justlogin: true
 
       - name: Deploy to heroku
         run: |
              heroku container:login
-             docker push registry.heroku.com/${{ env.HEROKU_APP_NAME }}/web
-             heroku container:release web --app ${{ env.HEROKU_APP_NAME }}
+             docker push registry.heroku.com/${{ secrets.HEROKU_APP_NAME }}/web
+             heroku container:release web --app ${{ secrets.HEROKU_APP_NAME }}
