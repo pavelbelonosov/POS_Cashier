@@ -24,13 +24,13 @@ jobs:
 
       - name: Build app image
         run: |
-             chmod +x ./upos_base/script.sh
+             chmod -R 777 ./upos_base
              docker build --build-arg JAVA_APP_VERSION --build-arg EMAIL_ROBOT_NAME --build-arg EMAIL_ROBOT_PASS . -f Dockerfile -t ${{ secrets.DOCKERHUB_USERNAME }}/shop_inventory_pos:${{ github.event.release.tag_name }}
              docker tag ${{ secrets.DOCKERHUB_USERNAME }}/shop_inventory_pos:${{ github.event.release.tag_name }} ${{ secrets.DOCKERHUB_USERNAME }}/shop_inventory_pos:latest
 
       - name: Build image for heroku
         run:  |
-              chmod +x ./upos_base/script.sh
+              chmod -R 777 ./upos_base
               docker build --build-arg JAVA_APP_VERSION --build-arg EMAIL_ROBOT_NAME --build-arg EMAIL_ROBOT_PASS . -f Dockerfile.heroku -t registry.heroku.com/${{ secrets.HEROKU_APP_NAME }}/web --target heroku
 
       - name: Login to DockerHub
