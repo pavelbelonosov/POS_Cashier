@@ -14,6 +14,7 @@ RUN mvn -Dmaven.test.skip package
 FROM eclipse-temurin:17-jre-alpine as production
 WORKDIR /usr/src/app
 ARG JAVA_APP_VERSION
+ENV JAVA_APP_VERSION=${JAVA_APP_VERSION}
 COPY --from=build /usr/src/app/target/Shop_Inventory_POS-${JAVA_APP_VERSION}.jar .
 COPY --from=build /usr/src/app/upos_base ./upos_base
 RUN mkdir -p /usersUpos && chmod -R 777 /usersUpos && \
