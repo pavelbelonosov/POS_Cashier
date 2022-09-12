@@ -1,7 +1,7 @@
 # Shop Inventory POS
 [ENG](./README.md) [YouTube](https://youtu.be/SxvctngGpFo)  
 Товароучетное веб-приложение с функцией оплаты по пос-эквайрингу. Подоходит для малых предприятий с количеством товарных позиций до 1000 единиц.
-![Tests](https://github.com/pavelbelonosov/POS_Cashier/actions/workflows/tests.yml/badge.svg)  ![Release](gihub/v/release/:pavelbelonosov/:POS_Cashier)  
+![Tests](https://github.com/pavelbelonosov/POS_Cashier/actions/workflows/tests.yml/badge.svg)    
 Основные функции:
 - Добавление сотрудников с разными ролями
 - Прием и отпуск товара только при успешной банковской транзакции
@@ -21,7 +21,7 @@ Java 17, Spring Boot 2.5, Postgres 13, Flyway 9
 ### Docker
 Билдим образ с зависимостями(и пересобираем при изменениях pom) `docker build -f Dockerfile.deps . -t deps:latest`
 
-Прогон всех тестов `docker-compose -f docker-compose.test.yml up`
+Прогон всех тестов(в docker-compose.test нужно задать переменные) `docker-compose -f docker-compose.test.yml up`
 
 Билд и запуск контейнера юнит тестов с последующим его удалением
 ```
@@ -32,7 +32,7 @@ docker run  -it --rm --name unit_test  unit_test
 Билд и запуск контейнера интеграционных тестов с последующим его удалением
 ```
 docker build . -t integration_test --target integration_test   
-docker run  -it --rm --name integration_test  integration_test
+docker run  -it --env EMAIL_ROBOT_NAME=value --env EMAIL_ROBOT_PASS=value --rm --name integration_test  integration_test
 ```
 
 ### Flyway
