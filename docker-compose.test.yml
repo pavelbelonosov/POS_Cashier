@@ -10,6 +10,7 @@ services:
       - APP_HOSTNAME=apptest
       - EMAIL_ROBOT_NAME=${EMAIL_ROBOT_NAME}
       - EMAIL_ROBOT_PASS=${EMAIL_ROBOT_PASS}
+      - JAVA_APP_VERSION=${JAVA_APP_VERSION}
     depends_on:
       - chrome
 
