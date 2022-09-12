@@ -10,7 +10,6 @@ services:
       - APP_HOSTNAME=apptest
       - EMAIL_ROBOT_NAME=${EMAIL_ROBOT_NAME}
       - EMAIL_ROBOT_PASS=${EMAIL_ROBOT_PASS}
-      - WORKDIR=${WORKDIR}
     depends_on:
       - chrome
 
