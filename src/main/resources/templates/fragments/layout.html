@@ -41,8 +41,8 @@
 <div class="min-vh-100 d-flex flex-column
                 justify-content-between" th:fragment="footer">
     <footer class="footer fixed-bottom">
-        <div class="footer-copyright text-center py-1" th:text="${@environment.getProperty('JAVA_APP_VERSION')} + ' © 2022 Copyright:'">
-            <a href="mailto: pablo11grande@gmail.com"> pablo11grande@gmail.com</a>
+        <div class="footer-copyright text-center py-1" >
+            <span th:text="${@environment.getProperty('JAVA_APP_VERSION')} + ' © 2022 Copyright:'"></span><a href="mailto: pablo11grande@gmail.com"> pablo11grande@gmail.com</a>
         </div>
     </footer>
 </div>
