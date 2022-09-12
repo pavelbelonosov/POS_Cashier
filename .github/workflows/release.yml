@@ -15,14 +15,12 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      - name: Set app version env var for release
-        run: export JAVA_APP_VERSION=${{ github.event.release.tag_name }}
-
       - name: Build mvn deps image
         run: docker build -f Dockerfile.deps . -t deps:latest
 
       - name: Build app image
         run: |
+             export JAVA_APP_VERSION=${{ github.event.release.tag_name }}
              docker build --build-arg JAVA_APP_VERSION . -f Dockerfile -t ${{ secrets.DOCKERHUB_USERNAME }}/shop_inventory_pos:${{ github.event.release.tag_name }}
              docker tag ${{ secrets.DOCKERHUB_USERNAME }}/shop_inventory_pos:${{ github.event.release.tag_name }} ${{ secrets.DOCKERHUB_USERNAME }}/shop_inventory_pos:latest
 
