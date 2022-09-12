@@ -1,4 +1,4 @@
-name: 'build and deploy to heroku(test) && docker hub'
+name: Release
 
 on:
   release:

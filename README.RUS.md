@@ -1,7 +1,7 @@
 # Shop Inventory POS
 [ENG](./README.md) [YouTube](https://youtu.be/SxvctngGpFo)  
 Товароучетное веб-приложение с функцией оплаты по пос-эквайрингу. Подоходит для малых предприятий с количеством товарных позиций до 1000 единиц.
-
+![Tests](https://github.com/pavelbelonosov/POS_Cashier/actions/workflows/tests.yml/badge.svg)  ![Release](gihub/v/release/:pavelbelonosov/:POS_Cashier)  
 Основные функции:
 - Добавление сотрудников с разными ролями
 - Прием и отпуск товара только при успешной банковской транзакции
