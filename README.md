@@ -1,7 +1,7 @@
 # Shop Inventory POS
 [RUS](./README.RUS.md) [YouTube](https://youtu.be/SxvctngGpFo)    
 Inventory web application with the function of payment by pos-acquiring. Suitable for small businesses with up to 1000 items.  
-![Tests](https://github.com/pavelbelonosov/POS_Cashier/actions/workflows/tests.yml/badge.svg)  
+![Tests](https://github.com/pavelbelonosov/POS_Cashier/actions/workflows/tests.yml/badge.svg)  ![Release](gihub/v/release/:pavelbelonosov/:POS_Cashier)  
 Main functions:
 - Adding employees with different roles
 - Acceptance and release of goods only after a successful bank transaction
