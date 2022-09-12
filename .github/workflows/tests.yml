@@ -31,6 +31,7 @@ jobs:
               chmod +x ./upos_base/script.sh
               docker-compose -f docker-compose.test.yml up --exit-code-from test
          env:
+           JAVA_APP_VERSION: test
            EMAIL_ROBOT_NAME: ${{secrets.EMAIL_ROBOT_NAME}}
            EMAIL_ROBOT_PASS: ${{secrets.EMAIL_ROBOT_PASS}}
 
