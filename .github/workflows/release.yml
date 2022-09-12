@@ -3,7 +3,8 @@ name: 'build and deploy to heroku(test) && docker hub'
 on:
   release:
     types: [published]
-
+env:
+  JAVA_APP_VERSION: ${{ github.event.release.tag_name }}
 jobs:
   push_to_docker_hub:
     name: 'Build production image & Push to Docker hub'
@@ -20,7 +21,6 @@ jobs:
 
       - name: Build app image
         run: |
-             export JAVA_APP_VERSION=${{ github.event.release.tag_name }}
              docker build --build-arg JAVA_APP_VERSION . -f Dockerfile -t ${{ secrets.DOCKERHUB_USERNAME }}/shop_inventory_pos:${{ github.event.release.tag_name }}
              docker tag ${{ secrets.DOCKERHUB_USERNAME }}/shop_inventory_pos:${{ github.event.release.tag_name }} ${{ secrets.DOCKERHUB_USERNAME }}/shop_inventory_pos:latest
 
