@@ -2,15 +2,12 @@ version: '3.8'
 
 services:
   app:
-    build:
-      context: .
-      args:
-        - APP_NAME=${APP_NAME}
+    image: pavelbelonosov/shop_inventory_pos:latest
     restart: always
     expose:
       - 8080
     volumes:
-      - ./usersUpos:${WORKDIR}/usersUpos
+      - ./usersUpos:/usr/src/app/usersUpos
     environment:
       - DB_HOST=${DB_HOST}
       - DB_PORT=${DB_PORT}
@@ -22,8 +19,8 @@ services:
       - HIBERNATE_DIALECT=${HIBERNATE_DIALECT}
       - EMAIL_ROBOT_NAME=${EMAIL_ROBOT_NAME}
       - EMAIL_ROBOT_PASS=${EMAIL_ROBOT_PASS}
-      - WORKDIR=${WORKDIR}
-    command: ["java", "-jar", "./${APP_NAME}"]
+      - JAVA_APP_VERSION=${JAVA_APP_VERSION}
+    command: ["java", "-jar", "./Shop_Inventory_POS-${JAVA_APP_VERSION}.jar"]
     depends_on:
       postgres:
         condition: service_healthy

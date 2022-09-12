@@ -16,14 +16,12 @@ jobs:
        - name: Checkout
          uses: actions/checkout@v2
 
-       - name: Set github actions reqs
+       - name: Delete WORKDIR in dockerfiles for github actions reqs
          run: |
               sed -i "/\b\(WORKDIR\)\b/d" Dockerfile.deps
               sed -i "/\b\(WORKDIR\)\b/d" Dockerfile.test
-              sed -i "/\b\(WORKDIR\)\b/d" .env
-              echo "WORKDIR=${GITHUB_WORKSPACE}" >> .env
               cat Dockerfile.test
-              cat .env
+              cat Dockerfile.deps
 
        - name: Build mvn deps image
          run: docker build -f Dockerfile.deps . -t deps:latest
