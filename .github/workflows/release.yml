@@ -4,7 +4,7 @@ on:
   release:
     types: [published]
 env:
-  JAVA_APP_VERSION: ${{ github.event.release.tag_name }}
+  JAVA_APP_VERSION: ${{github.event.release.tag_name}}
   EMAIL_ROBOT_NAME: ${{secrets.EMAIL_ROBOT_NAME}}
   EMAIL_ROBOT_PASS: ${{secrets.EMAIL_ROBOT_PASS}}
 
@@ -24,11 +24,14 @@ jobs:
 
       - name: Build app image
         run: |
+             chmod +x ./upos_base/script.sh
              docker build --build-arg JAVA_APP_VERSION --build-arg EMAIL_ROBOT_NAME --build-arg EMAIL_ROBOT_PASS . -f Dockerfile -t ${{ secrets.DOCKERHUB_USERNAME }}/shop_inventory_pos:${{ github.event.release.tag_name }}
              docker tag ${{ secrets.DOCKERHUB_USERNAME }}/shop_inventory_pos:${{ github.event.release.tag_name }} ${{ secrets.DOCKERHUB_USERNAME }}/shop_inventory_pos:latest
 
       - name: Build image for heroku
-        run:  docker build --build-arg JAVA_APP_VERSION --build-arg EMAIL_ROBOT_NAME --build-arg EMAIL_ROBOT_PASS . -f Dockerfile.heroku -t registry.heroku.com/${{ secrets.HEROKU_APP_NAME }}/web --target heroku
+        run:  |
+              chmod +x ./upos_base/script.sh
+              docker build --build-arg JAVA_APP_VERSION --build-arg EMAIL_ROBOT_NAME --build-arg EMAIL_ROBOT_PASS . -f Dockerfile.heroku -t registry.heroku.com/${{ secrets.HEROKU_APP_NAME }}/web --target heroku
 
       - name: Login to DockerHub
         uses: docker/login-action@v2
