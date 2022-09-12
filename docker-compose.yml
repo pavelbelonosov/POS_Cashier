@@ -4,8 +4,6 @@ services:
   app:
     image: pavelbelonosov/shop_inventory_pos:latest
     restart: always
-    expose:
-      - 8080
     volumes:
       - ./usersUpos:/usr/src/app/usersUpos
     environment:
@@ -17,10 +15,6 @@ services:
       - DB_SCHEMA=${POSTGRES_SCHEMA}
       - DB_DRIVER=${DB_DRIVER}
       - HIBERNATE_DIALECT=${HIBERNATE_DIALECT}
-      - EMAIL_ROBOT_NAME=${EMAIL_ROBOT_NAME}
-      - EMAIL_ROBOT_PASS=${EMAIL_ROBOT_PASS}
-      - JAVA_APP_VERSION=${JAVA_APP_VERSION}
-    command: ["java", "-jar", "./Shop_Inventory_POS-${JAVA_APP_VERSION}.jar"]
     depends_on:
       postgres:
         condition: service_healthy
